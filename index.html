@@ -1,0 +1,2699 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sicherungskette – Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --paper: #E8EBE4; --paper2: #F1F3EE; --panel: #DDE1D8; --ink: #1C2226; --muted: #4B555B; --line: #B9C0B6;
+  --rock: #CFCFC6; --hachure: #5A5F63; --ice-fill: #CFE3F0; --ice-line: #3E86C0; --crev: #1F4E73; --snow: #F4F6F4;
+  --grass: #C9D3B4; --grass-ln: #6E7F52;
+  --rope: #6B3FC9; --ropeH: #2C7DA0; --helmF: #7A4FD6; --helmH: #2C7DA0;
+  --ok: #2F8F5B; --mid: #B8920F; --hi: #D9731A; --bad: #C8322B;
+  --contour: rgba(90, 95, 99, .16);
+  --body: #1C2226; --body-bk: #414C53; --skin: #D8B695; --pack: #56656D; --harn: #E2B23A;
+  --trail: #8E6FD8; --rope-tick: rgba(255,255,255,.42); --track: #9DB6C8; --groove: #6E9CC0; --dust: #9C8E7A;
+  --pSnow: #EAF2F8; --sky0: #B7CCD8; --sky1: #E6EAE3; --mtn1: #C6D1D6; --mtn2: #B2BEC3; --mtnsnow: #F3F6F5;
+  --lg0: rgba(255,255,255,.26); --lg2: rgba(0,0,0,.16); --vig: rgba(20,30,35,.16);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12181B; --paper2: #161D21; --panel: #1A2226; --ink: #E3E7E1; --muted: #9AA5A8; --line: #2E393E;
+    --rock: #2A3033; --hachure: #8E979B; --ice-fill: #183247; --ice-line: #6FB2E6; --crev: #06121C; --snow: #C9D0D2;
+    --grass: #2B3526; --grass-ln: #7E9463;
+    --rope: #A88BFF; --ropeH: #5FB4DA; --helmF: #9C7CF0; --helmH: #4AA3C8;
+    --ok: #4CB47D; --mid: #D9B83A; --hi: #EE8E3A; --bad: #EF5A4F;
+    --contour: rgba(160, 170, 175, .10);
+    --body: #DCE2DD; --body-bk: #9AA6A9; --skin: #C7A585; --pack: #6F7E86; --harn: #E2B23A;
+    --trail: #B49CFF; --rope-tick: rgba(18,24,27,.5); --track: #2F4658; --groove: #0A2336; --dust: #7A6E5E;
+    --pSnow: #D6E0E6; --sky0: #070C10; --sky1: #141C21; --mtn1: #1A242A; --mtn2: #1F2B31; --mtnsnow: #34444C;
+    --lg0: rgba(255,255,255,.07); --lg2: rgba(0,0,0,.32); --vig: rgba(0,0,0,.42);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12181B; --paper2: #161D21; --panel: #1A2226; --ink: #E3E7E1; --muted: #9AA5A8; --line: #2E393E;
+  --rock: #2A3033; --hachure: #8E979B; --ice-fill: #183247; --ice-line: #6FB2E6; --crev: #06121C; --snow: #C9D0D2;
+  --grass: #2B3526; --grass-ln: #7E9463;
+  --rope: #A88BFF; --ropeH: #5FB4DA; --helmF: #9C7CF0; --helmH: #4AA3C8;
+  --ok: #4CB47D; --mid: #D9B83A; --hi: #EE8E3A; --bad: #EF5A4F;
+  --contour: rgba(160, 170, 175, .10);
+  --body: #DCE2DD; --body-bk: #9AA6A9; --skin: #C7A585; --pack: #6F7E86; --harn: #E2B23A;
+  --trail: #B49CFF; --rope-tick: rgba(18,24,27,.5); --track: #2F4658; --groove: #0A2336; --dust: #7A6E5E;
+  --pSnow: #D6E0E6; --sky0: #070C10; --sky1: #141C21; --mtn1: #1A242A; --mtn2: #1F2B31; --mtnsnow: #34444C;
+  --lg0: rgba(255,255,255,.07); --lg2: rgba(0,0,0,.32); --vig: rgba(0,0,0,.42);
+  color-scheme: dark;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: "Archivo", "Helvetica Neue", Arial, system-ui, sans-serif;
+  font-size: 15px; line-height: 1.45; font-variant-numeric: tabular-nums;
+}
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--rope); outline-offset: 2px; }
+
+.app { max-width: 1720px; margin: 0 auto; padding: 18px clamp(12px, 2vw, 28px) 48px; }
+
+/* Kopf */
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 14px 28px; margin-bottom: 16px; }
+.brand h1 { margin: 0; font-size: clamp(30px, 4vw, 46px); font-weight: 800; font-stretch: 125%; letter-spacing: -.01em; line-height: 1; }
+.brand p { margin: 6px 0 0; color: var(--muted); font-size: 15px; font-stretch: 90%; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  display: flex; align-items: center; gap: 8px; white-space: nowrap; cursor: pointer;
+  background: transparent; border: 0; border-top: 3px solid transparent; padding: 8px 12px 9px;
+  color: var(--muted); font-weight: 600; font-stretch: 85%; font-size: 14px;
+}
+.tab svg { width: 26px; height: 20px; flex: none; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-top-color: var(--ink); background: var(--panel); }
+
+/* Raster */
+.grid {
+  display: grid; gap: 16px; align-items: start;
+  grid-template-columns: 300px minmax(0, 1fr) 370px;
+  grid-template-areas: "ctrl stage chain" "ctrl data chain";
+}
+@media (max-width: 1300px) {
+  .grid { grid-template-columns: 290px minmax(0, 1fr); grid-template-areas: "ctrl stage" "ctrl chain" "ctrl data"; }
+}
+@media (max-width: 840px) {
+  .grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "chain" "ctrl" "data"; }
+}
+.ctrl { grid-area: ctrl; }
+.stage { grid-area: stage; min-width: 0; }
+.chain { grid-area: chain; min-width: 0; }
+.data { grid-area: data; min-width: 0; }
+@media (min-width: 841px) {
+  .ctrl { position: sticky; top: 10px; max-height: calc(100vh - 20px); overflow-y: auto; scrollbar-width: thin; padding-right: 4px; }
+}
+@media (min-width: 1301px) {
+  .chain { position: sticky; top: 10px; max-height: calc(100vh - 20px); overflow-y: auto; scrollbar-width: thin; }
+}
+.panel { background: var(--paper2); border: 1px solid var(--line); border-radius: 10px; }
+h2 { font-size: 17px; font-weight: 700; font-stretch: 80%; margin: 0; letter-spacing: .005em; }
+
+/* Steuerung */
+.ctrl .panel { padding: 12px 14px 14px; }
+.blurb { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.preset {
+  border: 1px solid var(--line); background: var(--paper); border-radius: 6px; padding: 5px 9px; cursor: pointer;
+  font-size: 13px; font-stretch: 85%; text-align: left; line-height: 1.25;
+}
+.preset:hover { border-color: var(--muted); }
+.preset[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+fieldset { border: 0; border-top: 1px solid var(--line); margin: 12px 0 0; padding: 10px 0 0; min-width: 0; }
+legend { font-weight: 700; font-stretch: 80%; font-size: 15px; padding: 0 6px 0 0; }
+.fld { margin: 8px 0 10px; }
+.fld > label, .fld > .lbl { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+.fld output { color: var(--ink); font-weight: 600; white-space: nowrap; }
+select {
+  width: 100%; appearance: none; -webkit-appearance: none; background: var(--paper) no-repeat right 9px center / 10px 6px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(-45deg, transparent 50%, var(--muted) 50%);
+  background-size: 5px 5px, 5px 5px; background-position: right 13px center, right 8px center;
+  border: 1px solid var(--line); border-radius: 6px; padding: 7px 26px 7px 9px; font-size: 14px; color: var(--ink);
+}
+select:hover { border-color: var(--muted); }
+input[type=range] { width: 100%; appearance: none; -webkit-appearance: none; background: transparent; height: 22px; margin: 0; }
+input[type=range]::-webkit-slider-runnable-track { height: 4px; background: var(--line); border-radius: 2px; }
+input[type=range]::-moz-range-track { height: 4px; background: var(--line); border-radius: 2px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); margin-top: -6px; border: 2px solid var(--paper2); }
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--ink); border: 2px solid var(--paper2); }
+.tgl { display: flex; align-items: center; gap: 10px; font-size: 14px; margin: 10px 0; cursor: pointer; }
+.tgl input { appearance: none; -webkit-appearance: none; width: 34px; height: 20px; border-radius: 10px; background: var(--line); position: relative; flex: none; margin: 0; cursor: pointer; transition: background .15s; }
+.tgl input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper2); transition: transform .15s; }
+.tgl input:checked { background: var(--ink); }
+.tgl input:checked::after { transform: translateX(14px); }
+.sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* Bühne */
+.stage .panel { padding: 0; overflow: hidden; }
+.verdict { padding: 14px 18px 12px; border-left: 7px solid var(--st, var(--ok)); background: var(--paper2); }
+.verdict .vt { font-size: clamp(21px, 2.2vw, 27px); font-weight: 750; font-stretch: 92%; line-height: 1.15; }
+.verdict .vx { font-size: 16px; margin-top: 3px; }
+.verdict .vw { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.verdict .vw b { color: var(--ink); font-weight: 650; }
+.scene-wrap { position: relative; border-top: 1px solid var(--line); background: var(--paper); }
+#scene { display: block; width: 100%; height: auto; }
+.player { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper);
+  padding: 7px 13px; border-radius: 6px; cursor: pointer; font-weight: 650; font-size: 14px; font-stretch: 90%;
+}
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); font-weight: 600; }
+.btn.ghost:hover { border-color: var(--muted); }
+.btn svg { width: 12px; height: 12px; }
+.scrub { flex: 1 1 160px; min-width: 120px; }
+.speed { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.speed button { border: 0; background: transparent; padding: 6px 9px; cursor: pointer; font-size: 13px; color: var(--muted); }
+.speed button + button { border-left: 1px solid var(--line); }
+.speed button[aria-pressed="true"] { background: var(--panel); color: var(--ink); font-weight: 650; }
+.tread { font-size: 13px; color: var(--muted); min-width: 70px; text-align: right; }
+
+/* Szene */
+.s-rock { fill: url(#pRock); stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; }
+.s-ice { fill: url(#pIce); stroke: var(--ice-line); stroke-width: 1.2; }
+.s-snow { fill: url(#pSnow); stroke: var(--ink); stroke-width: 1.2; stroke-linejoin: round; }
+.s-snowb { fill: var(--snow); stroke: none; }
+.s-grass { fill: url(#pGrass); stroke: var(--ink); stroke-width: 1.3; }
+.s-crev { fill: url(#gCrev); stroke: var(--ice-line); stroke-width: 1.2; }
+.s-ground { stroke: var(--ink); stroke-width: 1.6; fill: none; }
+.pr-bg { fill: var(--rock); } .pr-ln { stroke: var(--hachure); stroke-width: 1; opacity: .75; }
+.pi-bg { fill: var(--ice-fill); } .pi-ln { stroke: var(--ice-line); stroke-width: .9; fill: none; opacity: .22; }
+.pg-bg { fill: var(--grass); } .pg-ln { stroke: var(--grass-ln); stroke-width: 1; fill: none; }
+.gc0 { stop-color: var(--ice-fill); } .gc1 { stop-color: var(--crev); }
+.contour { fill: none; stroke: var(--contour); stroke-width: 1; }
+.contour.idx { stroke-width: 1.8; }
+.gear { fill: var(--paper2); stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; }
+.gear-f { fill: var(--ink); }
+.sling { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.rope { fill: none; stroke: var(--rope); stroke-linecap: round; stroke-linejoin: round; }
+.rope.lan { stroke: var(--muted); stroke-dasharray: none; }
+.rope.brk { opacity: .8; }
+.knot { fill: var(--rope); stroke: var(--paper); stroke-width: 1; }
+.fig { fill: none; stroke: var(--body); stroke-linecap: round; stroke-linejoin: round; }
+.fig .bk { stroke: var(--body-bk); }
+.fig .pack { stroke: var(--pack); stroke-linecap: round; }
+.fig .head { fill: var(--skin); stroke: var(--body); stroke-width: 1.4; }
+.fig .hf { fill: var(--helmF); stroke: none; }
+.fig .hh { fill: var(--helmH); stroke: none; }
+.fig .harn { stroke: var(--harn); }
+.fig .hp { fill: var(--rope); stroke: var(--paper); stroke-width: 1; }
+.fig.gh { opacity: .26; }
+.fig.trail, .fig.trail .bk, .fig.trail .pack { stroke: var(--trail); }
+.fig.trail .head, .fig.trail .hf, .fig.trail .hh { fill: var(--trail); stroke: none; }
+.fig.trail .harn, .fig.trail .hp { display: none; }
+.traj { fill: none; stroke: var(--muted); stroke-dasharray: 3 5; stroke-width: 1.5; }
+.tr-lbl { fill: var(--muted); font-weight: 600; }
+.tag rect { stroke-width: 1.4; }
+.tag.f rect { fill: var(--paper2); stroke: var(--rope); }
+.tag.h rect { fill: var(--paper2); stroke: var(--ropeH); }
+.tag text { font-weight: 700; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.mk { cursor: pointer; }
+.mk circle.c { stroke: var(--paper); stroke-width: 2.5; }
+.mk text { fill: #fff; font-weight: 800; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.mk line { stroke: var(--ink); stroke-width: 1.2; opacity: .55; }
+.mk.hl circle.c { stroke: var(--ink); }
+.st-ok { fill: var(--ok); } .st-mid { fill: var(--mid); } .st-hi { fill: var(--hi); } .st-bad { fill: var(--bad); }
+.pulse { fill: none; stroke-width: 3; animation: pulse 1.6s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes pulse { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(2.3); opacity: 0; } }
+.co rect.bx { fill: var(--ink); }
+.co rect.bar { }
+.co text { fill: var(--paper); }
+.co .k { opacity: .75; }
+.co .n { font-weight: 750; }
+.co line { stroke: var(--ink); stroke-width: 1.3; }
+.strike path { fill: var(--bad); stroke: var(--paper); stroke-width: 1.5; }
+.strike text { fill: var(--bad); font-weight: 750; }
+.note { fill: var(--muted); }
+.scalebar line { stroke: var(--ink); stroke-width: 2; }
+.scalebar text { fill: var(--ink); font-weight: 600; }
+.fail-x { stroke: var(--bad); stroke-width: 3.5; stroke-linecap: round; }
+
+/* Kette */
+.chain .panel { padding: 12px 14px 14px; }
+.chain-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.chain-head span { font-size: 12px; color: var(--muted); }
+.grp { margin-top: 12px; }
+.grp-h { display: flex; align-items: center; gap: 8px; font-weight: 700; font-stretch: 85%; font-size: 14px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.badge { width: 20px; height: 20px; border-radius: 50%; color: #fff; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; flex: none; }
+.bg-ok { background: var(--ok); } .bg-mid { background: var(--mid); } .bg-hi { background: var(--hi); } .bg-bad { background: var(--bad); }
+.grp-h .gs { margin-left: auto; font-weight: 600; font-size: 12px; color: var(--muted); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 7px 6px 8px; border-bottom: 1px dashed var(--line); border-radius: 4px; }
+.row.hl { background: var(--panel); }
+.row .nm { font-weight: 650; font-size: 14px; }
+.row .dt { font-size: 12px; color: var(--muted); display: block; line-height: 1.3; }
+.row .rv { text-align: right; font-size: 13px; white-space: nowrap; }
+.row .rv b { font-size: 15px; }
+.row .rv small { display: block; color: var(--muted); font-size: 12px; }
+.row .br { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+.bar { position: relative; flex: 1; height: 7px; background: var(--panel); border-radius: 4px; overflow: visible; }
+.bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+.bar em { position: absolute; left: 66.667%; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .55; }
+.row .pc { font-size: 12px; font-weight: 650; min-width: 64px; text-align: right; }
+.chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+.chip { font-size: 12px; border-radius: 4px; padding: 1px 7px; background: var(--panel); border: 1px solid var(--line); }
+.chip.warn { border-color: var(--hi); }
+.chip.bad { border-color: var(--bad); color: var(--bad); font-weight: 650; }
+.weak-lbl { display: inline-block; font-size: 11px; font-weight: 750; letter-spacing: .01em; color: var(--paper); background: var(--ink); border-radius: 3px; padding: 0 6px; margin-left: 6px; vertical-align: 2px; }
+.c-ok { color: var(--ok); } .c-mid { color: var(--mid); } .c-hi { color: var(--hi); } .c-bad { color: var(--bad); }
+.legend-risk { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+.legend-risk span { display: inline-flex; align-items: center; gap: 5px; }
+.legend-risk i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* Daten */
+.data .panel { padding: 12px 14px 14px; }
+.data-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 10px; }
+@media (max-width: 560px) { .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.met { background: var(--paper2); padding: 9px 11px 10px; }
+.met .ml { font-size: 12px; color: var(--muted); line-height: 1.25; }
+.met .mv { font-size: 22px; font-weight: 700; font-stretch: 90%; line-height: 1.15; margin-top: 3px; }
+.met .mv small { font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 2px; }
+.met .mc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.chart-box { margin-top: 12px; }
+.chart-leg { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.chart-leg i { display: inline-block; width: 18px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 5px; }
+#chart { display: block; width: 100%; height: auto; }
+.ch-ax { stroke: var(--line); stroke-width: 1; }
+.ch-tx { fill: var(--muted); font-size: 11px; }
+.ch-ff { fill: none; stroke: var(--rope); stroke-width: 2.4; stroke-linejoin: round; }
+.ch-fh { fill: none; stroke: var(--ropeH); stroke-width: 2.2; stroke-linejoin: round; }
+.ch-ref { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.ch-w { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 2 4; }
+.ch-free { fill: var(--panel); }
+.ch-post { fill: var(--bad); opacity: .1; }
+.ch-cur { stroke: var(--ink); stroke-width: 1.2; }
+.ch-pk { font-size: 11.5px; font-weight: 700; }
+details.notes { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+details.notes summary { cursor: pointer; font-weight: 700; font-stretch: 80%; font-size: 16px; }
+details.notes p, details.notes li { font-size: 13.5px; color: var(--ink); }
+details.notes ul { padding-left: 18px; margin: 6px 0; }
+details.notes li { margin: 4px 0; }
+.disc { color: var(--muted); font-size: 13px; }
+
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; opacity: .6; } * { transition: none !important; } }
+.s-earth { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
+.bridge { fill: var(--snow); stroke: var(--ink); stroke-width: 1.1; }
+.kink-lbl { fill: var(--muted); }
+.ps-bg { fill: var(--snow); } .ps-ln { stroke: var(--ice-line); stroke-width: 1; opacity: .35; }
+.tr-lbl, .note, .scalebar text { paint-order: stroke; stroke: var(--paper); stroke-width: 3.5px; stroke-linejoin: round; }
+@media (max-width: 1300px) and (min-width: 841px) {
+  #chainList { columns: 2; column-gap: 22px; }
+  #chainList .grp { break-inside: avoid; }
+}
+
+/* Szene: Hintergrund, Licht, Effekte */
+.sky { fill: url(#gSky); }
+.sk0 { stop-color: var(--sky0); } .sk1 { stop-color: var(--sky1); }
+.hz0 { stop-color: var(--paper); stop-opacity: 0; } .hz1 { stop-color: var(--paper); stop-opacity: .75; }
+.mtn1 { fill: var(--mtn1); } .mtn2 { fill: var(--mtn2); } .mtnsnow { fill: var(--mtnsnow); }
+.haze { fill: url(#gHaze); }
+.vig { fill: url(#gVig); pointer-events: none; }
+.vg0 { stop-color: var(--vig); stop-opacity: 0; } .vg1 { stop-color: var(--vig); }
+.shade { fill: url(#gLight); pointer-events: none; }
+.lg0 { stop-color: var(--lg0); } .lg1 { stop-color: rgba(255,255,255,0); } .lg2 { stop-color: var(--lg2); }
+.crack { fill: none; stroke: var(--hachure); stroke-width: 1.1; opacity: .5; stroke-linecap: round; stroke-linejoin: round; }
+.ice-str { fill: none; stroke: var(--ice-line); stroke-width: 1; opacity: .3; }
+.s-crevlight { fill: var(--ice-fill); opacity: .35; }
+.biner { fill: none; stroke: var(--ink); stroke-width: 1.9; }
+.rust { stroke: #9A5B2E; stroke-width: 1.3; fill: none; }
+.rglow { fill: none; stroke: var(--rope); filter: url(#fGlow); stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.rtick { fill: none; stroke: var(--rope-tick); }
+.track { fill: none; stroke: var(--track); stroke-linecap: round; opacity: .75; }
+.groove { fill: var(--groove); }
+.snowbulge { fill: var(--snow); stroke: var(--ink); stroke-width: .8; }
+.knot ellipse { fill: var(--rope); stroke: var(--ink); stroke-width: 1.1; }
+.knot path { fill: none; stroke: var(--rope-tick); stroke-width: 1.3; stroke-linecap: round; }
+.heat { fill: url(#gHeat); pointer-events: none; }
+.ht0 { stop-color: #FFE7A0; stop-opacity: .95; } .ht1 { stop-color: #FF8A3D; stop-opacity: .55; } .ht2 { stop-color: #FF6A2A; stop-opacity: 0; }
+.spd { stroke: var(--muted); stroke-linecap: round; opacity: .55; }
+.jolt { stroke: var(--rope); stroke-linecap: round; fill: none; }
+.shock { fill: none; stroke: var(--rope); }
+.pdot { fill: #fff; stroke: var(--rope); stroke-width: 2; }
+.flash { fill: none; stroke: var(--bad); }
+.p-snow { fill: var(--pSnow); }
+.p-powder { fill: var(--snow); filter: url(#fSoft); }
+.p-chunk { fill: var(--snow); stroke: var(--ink); stroke-width: .7; }
+.p-ice { fill: var(--ice-fill); stroke: var(--ice-line); stroke-width: .7; }
+.p-dust { fill: var(--dust); }
+.p-rock { fill: var(--hachure); }
+.p-grass { stroke: var(--grass-ln); stroke-width: 1.4; stroke-linecap: round; }
+.p-spark { stroke: #FFC247; stroke-width: 1.8; stroke-linecap: round; }
+.p-metal { fill: var(--ink); }
+.slowmo rect { fill: var(--paper2); stroke: var(--line); }
+.slowmo path { fill: var(--rope); }
+.slowmo text { fill: var(--ink); font-weight: 700; }
+.tag text.sub { font-weight: 600; fill: var(--muted); }
+.verdict.live .vw { visibility: hidden; }
+.verdict { min-height: 110px; }
+#chainList.playing .chips { opacity: .35; }
+.bar i { transition: none; }
+
+.layer { fill: none; stroke: var(--ice-line); stroke-width: 1; opacity: .22; stroke-linecap: round; }
+.mag-bg { fill: var(--sky1); }
+.mag-ring { fill: none; stroke: var(--ink); }
+.mag-ln { stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 3 3; opacity: .7; }
+.mag-pt { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.mag-lbl { fill: var(--ink); font-weight: 650; paint-order: stroke; stroke: var(--paper); stroke-width: 3.5px; stroke-linejoin: round; }
+
+.fld .hint { display: block; margin-top: 4px; font-size: 11.5px; line-height: 1.35; color: var(--muted); }
+.jbar .jb-bg { fill: var(--paper2); stroke: var(--line); opacity: .94; }
+.jbar .jb-t { fill: var(--ink); font-weight: 700; }
+.jbar .jb-l { fill: var(--muted); }
+.jbar .jb-tr { fill: var(--line); }
+.jbar .jb-re { fill: var(--muted); opacity: .45; }
+.jbar .jb-ju { fill: var(--hi); opacity: .8; }
+.jbar .jb-now { fill: var(--ink); }
+.jbar .jb-lim.ok { stroke: var(--ok); }
+.jbar .jb-lim.bad { stroke: var(--bad); }
+.jbar .c-ok { fill: var(--ok); } .jbar .c-bad { fill: var(--bad); }
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Sicherungskette</h1>
+      <p>Wo reißt es zuerst? Lastverlauf vom Gestürzten bis zum Fixpunkt.</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Szenario" id="tabs"></nav>
+  </header>
+
+  <main class="grid">
+    <aside class="ctrl" aria-label="Parameter">
+      <div class="panel" id="ctrl"></div>
+    </aside>
+
+    <section class="stage" aria-label="Szene">
+      <div class="panel">
+        <div class="verdict" id="verdict" aria-live="polite"></div>
+        <div class="scene-wrap">
+          <svg id="scene" viewBox="0 0 800 500" role="img" aria-label="Schnittbild der Sicherungskette">
+            <defs>
+              <pattern id="pRock" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><rect class="pr-bg" width="7" height="7"/><line class="pr-ln" x1="0" y1="0" x2="0" y2="7"/></pattern>
+              <pattern id="pIce" width="140" height="22" patternUnits="userSpaceOnUse"><rect class="pi-bg" width="140" height="22"/><path class="pi-ln" d="M0 6 C35 4 70 9 140 6"/><path class="pi-ln" d="M-70 17 C-35 15 0 20 70 17 C105 15 120 19 210 17" opacity=".6"/></pattern>
+              <pattern id="pSnow" width="16" height="12" patternUnits="userSpaceOnUse"><rect class="ps-bg" width="16" height="12"/><path class="ps-ln" d="M2 3h3M10 9h3"/></pattern>
+              <pattern id="pGrass" width="12" height="10" patternUnits="userSpaceOnUse"><rect class="pg-bg" width="12" height="10"/><path class="pg-ln" d="M2 9 L3 5 M4 9 L4.6 6 M8 9 L9 5.5"/></pattern>
+              <linearGradient id="gCrev" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="gc0"/><stop offset="1" class="gc1"/></linearGradient>
+              <linearGradient id="gSky" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="500"><stop offset="0" class="sk0"/><stop offset=".62" class="sk1"/></linearGradient>
+              <linearGradient id="gHaze" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="500"><stop offset=".3" class="hz0"/><stop offset=".75" class="hz1"/></linearGradient>
+              <linearGradient id="gLight" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="800" y2="500"><stop offset="0" class="lg0"/><stop offset=".5" class="lg1"/><stop offset="1" class="lg2"/></linearGradient>
+              <radialGradient id="gHeat"><stop offset="0" class="ht0"/><stop offset=".45" class="ht1"/><stop offset="1" class="ht2"/></radialGradient>
+              <radialGradient id="gVig" cx=".5" cy=".5" r=".75"><stop offset=".55" class="vg0"/><stop offset="1" class="vg1"/></radialGradient>
+              <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+              <filter id="fSoft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6"/></filter>
+            </defs>
+            <g id="lyBg"></g>
+            <g id="cam"><g id="scn"><g id="lyStatic"></g><g id="lyDyn"></g></g><g id="lyFx"></g><g id="lyLab"></g></g>
+            <rect id="vig" class="vig" x="-40" y="-40" width="880" height="580"/>
+            <g id="lyHudS"></g>
+            <g id="lyHud"></g>
+          </svg>
+        </div>
+        <div class="player">
+          <button class="btn" id="play" type="button"></button>
+          <input class="scrub" id="scrub" type="range" min="0" max="1000" step="1" value="1000" aria-label="Zeitpunkt">
+          <span class="tread" id="tread"></span>
+          <div class="speed" role="group" aria-label="Abspielgeschwindigkeit" id="speed">
+            <button type="button" data-v="0.25">0,25×</button><button type="button" data-v="0.5">0,5×</button><button type="button" data-v="1">1×</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chain" aria-label="Kettenglieder">
+      <div class="panel">
+        <div class="chain-head"><h2>Kettenglieder</h2><span>Last beim Fangstoß im Verhältnis zur Bruchlast</span></div>
+        <div id="chainList"></div>
+        <div class="legend-risk">
+          <span><i class="bg-ok"></i>unter 50 %</span><span><i class="bg-mid"></i>50–80 %</span><span><i class="bg-hi"></i>80–100 %</span><span><i class="bg-bad"></i>versagt</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="data" aria-label="Kennwerte">
+      <div class="panel">
+        <div class="data-head"><h2>Kennwerte</h2><button class="btn ghost" id="refBtn" type="button"></button></div>
+        <div class="metrics" id="metrics"></div>
+        <div class="chart-box">
+          <div class="chart-leg" id="chartLeg"></div>
+          <svg id="chart" viewBox="0 0 800 230" role="img" aria-label="Kraft-Zeit-Verlauf"></svg>
+        </div>
+        <details class="notes">
+          <summary>Modell und Annahmen</summary>
+          <ul>
+            <li><b>Seil:</b> lineare Feder. Die Steifigkeit wird aus dem Norm-Fangstoß nach EN 892 zurückgerechnet (Normsturz: 80 kg, bei Halbseil 55 kg, Sturzfaktor 1,77). Fangstoß ohne Seildurchlauf: F = mg + √((mg)² + 2·mg·k·f).</li>
+            <li><b>Umlenkung:</b> Seilreibung nach Euler-Eytelwein, μ ≈ 0,16 am Karabiner. Bei 180° erreicht die Sicherungsseite rund 60 % der Last am Gestürzten, die Zwischensicherung trägt die Summe (ca. 1,6-fach). Seilverlauf im Zickzack erhöht die Reibung.</li>
+            <li><b>Sicherungsgeräte:</b> Bremskraft als Schwelle, darüber läuft Seil durch. Richtwerte bei 9,8 mm: Tube 2,3 kN, HMS 3,0 kN, Halbautomat 6,5 kN, Plate im Guide-Modus 9 kN. Skaliert mit Durchmesser, Nässe und Strangzahl. Tube bei Zug nach unten mit halber Bremskraft.</li>
+            <li><b>Sichernder und Partner:</b> Haltekraft aus Masse, Reibung, Hangneigung und Reaktion. Stufenmodell: mitgehen, angehoben werden, rutschen, mitgerissen werden.</li>
+            <li><b>Gelände:</b> Kanten, Spaltenrand und Felszacken als Umlenkung mit Reibung; Festigkeitsminderung des Seils über Kanten und in Knoten nach Erfahrungswerten (Achterknoten ca. 75 %, Kante 15–60 %). Bremsknoten bremsen je nach Schnee mit 0,1–0,9 kN.</li>
+            <li><b>Bruchlasten:</b> Normwerte nach EN 12277 (Gurt), EN 12275 (Karabiner), EN 566 (Schlingen), EN 959 (Bohrhaken), EN 892 (Seil) oder typische Herstellerangaben. Körpergrenze 12 kN entsprechend der UIAA-Obergrenze für den Norm-Fangstoß.</li>
+            <li><b>Grat, gleichzeitiges Gehen:</b> Das Seil liegt entlang der Schneide, der Gestürzte rutscht quer dazu in die Flanke. Straff wird es nach dem Rutschweg d = √((L + s)² − L²) (L Seilabstand, s Schlappseil). Das Zeitfenster für den Gegensprung ist die Rutschzeit über diesen Weg. Der Absprung bis zum Gewicht auf der Gegenseite ist mit 0,47 s angesetzt (Abdruck 0,15 s, Schwerpunkt 0,5 m tiefer). Kommt der Seilzug früher, hält der Partner nur mit Standreibung bzw. im Absprung praktisch nicht.</li>
+            <li><b>Darstellung:</b> Seildehnung (Abstand der Mantelmarkierungen), Einschneiden von Seil und Bremsknoten sowie die Lupe sind zur Anschauung überhöht. Schneestaub, Kamerabewegung und die Zeitlupe beim Fangstoß sind Gestaltungsmittel; Zeitverlauf, Wege und Kräfte stammen aus der Rechnung.</li>
+            <li><b>Nicht abgebildet:</b> Reaktionszeit und Körperträgheit des Sichernden als eigener Zeitverlauf, Pendelsturz, Anprall am Fels, Seilschnitt an scharfen Kanten als Bruchvorgang, Folgesturz nach Ausbruch einer Zwischensicherung, Streuung von Material und Platzierung.</li>
+          </ul>
+          <p class="disc">Lehrmodell. Die Werte zeigen Größenordnungen und Tendenzen. Sie ersetzen weder Ausbildung noch Herstellerangaben und sind keine Freigabe einer Technik oder eines Produkts.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+(() => {
+'use strict';
+// ===== Physik-Engine Sicherungskette =====
+const G = 9.81;
+const rad = d => d * Math.PI / 180;
+
+const STR = {
+  tieIn:     { typ: 20, norm: 15 },
+  belayLoop: { typ: 22, norm: 15 },
+  hms: { major: { typ: 24, norm: 20 }, open: { typ: 8, norm: 6 }, minor: { typ: 9, norm: 7 } },
+  qd:  { major: { typ: 23, norm: 20 }, open: { typ: 9, norm: 7 }, edge: { typ: 6, norm: 5 } },
+  sling: { typ: 22, norm: 22 },
+};
+const HARN = { neu: 1, gebraucht: 0.85, verschlissen: 0.4 };
+const ROPES = {
+  single: { label: 'Einfachseil', d: [8.9, 10.5, 9.8], imp: [7.4, 9.8, 8.6], testMass: 80, testStr: 1, useStr: 1, sigma: 0.28 },
+  half1:  { label: 'Halbseil, ein Strang', d: [7.7, 9.0, 8.3], imp: [4.8, 6.8, 5.7], testMass: 55, testStr: 1, useStr: 1, sigma: 0.28 },
+  half2:  { label: 'Halbseil, beide Stränge', d: [7.7, 9.0, 8.3], imp: [4.8, 6.8, 5.7], testMass: 55, testStr: 1, useStr: 2, sigma: 0.28 },
+  twin:   { label: 'Zwillingsseil, beide Stränge', d: [6.9, 8.0, 7.5], imp: [7.8, 10.2, 8.8], testMass: 80, testStr: 2, useStr: 2, sigma: 0.28 },
+  static: { label: 'Semistatikseil', d: [9.0, 11.5, 10.5], imp: null, testMass: 100, useStr: 1, sigma: 0.33 },
+};
+const ROPE_COND = { neu: { s: 1, k: 1 }, gebraucht: { s: 0.85, k: 1.1 }, alt: { s: 0.7, k: 1.2 } };
+const PIECES = {
+  bolt_glue: { label: 'Bohrhaken, Klebeanker', str: 25 },
+  bolt_exp:  { label: 'Bohrhaken, Spreizanker', str: 20 },
+  piton_good:{ label: 'Normalhaken, gut geschlagen', str: 12 },
+  piton_old: { label: 'Normalhaken, alt/fraglich', str: 5 },
+  cam_good:  { label: 'Klemmgerät, optimal platziert', str: 12 },
+  cam_small: { label: 'Klemmgerät, klein/suboptimal', str: 6 },
+  nut:       { label: 'Klemmkeil', str: 7 },
+  thread:    { label: 'Sanduhr-/Köpfelschlinge', str: 12 },
+  screw_good:{ label: 'Eisschraube, kompaktes Eis', str: 10 },
+  screw_bad: { label: 'Eisschraube, schlechtes Eis', str: 4 },
+  snow:      { label: 'Firnanker/T-Schlitz', str: 3 },
+};
+const STANDS = {
+  two_bolts: { label: '2 Bohrhaken, verbunden', str: 30 },
+  one_bolt:  { label: '1 Bohrhaken', str: 20 },
+  pitons:    { label: '2 Normalhaken, verbunden', str: 14 },
+  horn:      { label: 'Köpfel/Felszacken', str: 18 },
+  screws:    { label: '2 Eisschrauben', str: 14 },
+  tslot:     { label: 'T-Anker (Pickel im Firn)', str: 3.5 },
+};
+const DEVICES = {
+  tube:  { label: 'Tube', thr: 2.3, dir: true },
+  hms:   { label: 'Halbmastwurf (HMS)', thr: 3.0 },
+  semi:  { label: 'Halbautomat', thr: 6.5 },
+  plate: { label: 'Plate, Guide-Modus', thr: 9.0 },
+};
+const TIEIN = {
+  direct:   { label: 'direkt eingebunden' },
+  hms:      { label: 'HMS-Karabiner, längs', s: b => STR.hms.major[b] },
+  hmsOpen:  { label: 'HMS-Karabiner, Verschluss offen', s: b => STR.hms.open[b] },
+  hmsCross: { label: 'HMS-Karabiner, querbelastet', s: b => STR.hms.minor[b] },
+  twoHms:   { label: '2 gegengleiche HMS', s: b => STR.hms.major[b] * 1.8 },
+};
+
+function rope(c) {
+  const t = ROPES[c.ropeType];
+  const d = c.ropeD;
+  let k;
+  if (t.imp) {
+    const W = t.testMass * G, Fi = c.impact * 1000, f = 1.77;
+    k = ((Fi - W) ** 2 - W * W) / (2 * W * f) * t.useStr / t.testStr;
+  } else k = 55000 * (d / 10.5) ** 2;
+  const cond = ROPE_COND[c.ropeCond];
+  k *= cond.k * (c.wet ? 1.08 : 1);
+  const strand = Math.PI * (d / 2) ** 2 * t.sigma;
+  const str = strand * (t.useStr === 2 ? 1.8 : 1) * cond.s * (c.wet ? 0.85 : 1);
+  return { k, str, d, strands: t.useStr, label: t.label };
+}
+function devThr(key, R, c) {
+  return DEVICES[key].thr * Math.pow(R.d / 9.8, 1.3) * (c.wet ? 0.85 : 1) * (R.strands === 2 ? 1.35 : 1) * 1000;
+}
+
+// ---------- Kettenglieder ----------
+function personGroup(c, R, who, loc, F) {
+  // who: 'F' (Gestürzter) | 'H' (Sichernder, am Seil)
+  const b = c.basis, hc = HARN[c.harnessCond];
+  const L = [];
+  const sub = who === 'F' ? 'Gestürzter' : 'Sichernder';
+  if (who === 'F') L.push({ id: 'body', loc, name: 'Körper', detail: 'Grenzwert 12 kN (UIAA-Fangstoß)', kind: 'limit', strength: 12, load: F });
+  L.push({ id: 'tiein' + who, loc, name: 'Anseilpunkt Gurt', detail: 'Einbindeschlaufen, ' + (c.harnessCond === 'neu' ? 'neu' : c.harnessCond), strength: STR.tieIn[b] * hc, load: F });
+  if (c.tieIn !== 'direct') L.push({ id: 'kar' + who, loc, name: 'Anseilkarabiner', detail: TIEIN[c.tieIn].label, strength: TIEIN[c.tieIn].s(b), load: F });
+  L.push({ id: 'knot' + who, loc, name: 'Anseilknoten', detail: 'Achterknoten, ca. 75 % Seilfestigkeit', strength: R.str * 0.75, load: F });
+  return L;
+}
+const fF = (Ff) => Ff, fH = (Ff, Fh) => Fh;
+
+// ---------- Szenarien ----------
+const TC = Math.exp(-0.163 * Math.PI); // Karabinerumlenkung 180°, ~0,60
+
+function buildLead(p, c) {
+  const R = rope(c), mF = c.mF, mH = c.mH, b = c.basis;
+  const none = p.piece === 'none';
+  const a = p.above, s = p.slack, Dp = none ? 0 : p.dist;
+  const zz = { straight: 1, light: 0.82, zigzag: 0.6 }[p.path];
+  const T = none ? 1 : TC * zz;
+  const dFree = 2 * a + s;
+  const Ltot = Dp + a + s;
+  const Leff = none ? a + s : (a + s) + Dp * TC * Math.sqrt(zz);
+  const central = p.belay === 'central', ground = p.belay === 'body_ground';
+  let thrDev = devThr(p.device, R, c);
+  const dirPenalty = none && !central && DEVICES[p.device].dir;
+  if (dirPenalty) thrDev *= 0.5;
+  const stages = [];
+  if (!central) {
+    if (!none) {
+      if (p.dynamic) stages.push({ id: 'dyn', el: 'stance', thr: 0.5 * mH * G, cap: 0.4, label: 'aktives Mitgehen', sev: 0.2 });
+      stages.push({ id: 'lift', el: 'stance', thr: 1.15 * mH * G, cap: ground ? 1.2 : 0.3, label: 'angehoben', sev: ground ? 0.7 : 0.35,
+        warn: ground ? 'Sichernder prallt an Wand/erste Zwischensicherung' : 'Selbstsicherung gestrafft' });
+    } else {
+      stages.push({ id: 'pull', el: 'stance', thr: 0.2 * mH * G, cap: 0.3, label: 'nach unten gerissen', sev: 0.75, warn: 'Sichernder in die Selbstsicherung gerissen' });
+    }
+  }
+  stages.push({ id: 'dev', el: 'device', thr: thrDev, cap: Infinity, label: 'Seildurchlauf' });
+
+  const els = personGroup(c, R, 'F', 'A', fF);
+  els.push({ id: 'ropeF', loc: 'A', name: 'Seil', detail: R.label + ', ' + fmt(R.d, 1) + ' mm', strength: R.str, load: fF });
+  if (!none) {
+    const q = p.qdMode;
+    const qLbl = { major: 'längs belastet', open: 'Schnapper offen', edge: 'über Felskante gelegt' }[q];
+    const res = (Ff) => Ff * (1 + TC);
+    els.push({ id: 'bend', loc: 'B', name: 'Seil an Umlenkung', detail: 'Biegung über Karabiner, ca. 65 %', strength: R.str * 0.65, load: fF });
+    els.push({ id: 'qdKar', loc: 'B', name: 'Exe-Karabiner', detail: qLbl, strength: STR.qd[q][b], load: res });
+    els.push({ id: 'qdSling', loc: 'B', name: 'Expressschlinge', detail: 'EN 566', strength: STR.sling[b], load: res });
+    els.push({ id: 'piece', loc: 'B', name: 'Zwischensicherung', detail: PIECES[p.piece].label, strength: PIECES[p.piece].str, load: res });
+  }
+  els.push({ id: 'ropeH', loc: 'C', name: 'Seil, Sicherungsseite', detail: none ? 'direkt zum Gerät' : 'nach Umlenkung' + (zz < 1 ? ' und Seilreibung' : ''), strength: R.str, load: fH });
+  els.push({ id: 'device', loc: 'C', name: 'Sicherungsgerät', detail: DEVICES[p.device].label + (dirPenalty ? ', Zug nach unten' : ''), kind: 'hold', thr: thrDev / 1000, load: fH });
+  els.push({ id: 'hmsB', loc: central ? 'D' : 'C', name: central ? 'Zentralpunkt-Karabiner' : 'Sicherungskarabiner', detail: 'HMS, längs', strength: STR.hms.major[b], load: (Ff, Fh) => Fh * 1.05 });
+  if (!central) {
+    els.push({ id: 'loop', loc: 'C', name: 'Sicherungsring', detail: 'Gurt ' + c.harnessCond, strength: STR.belayLoop[b] * HARN[c.harnessCond], load: fH });
+    els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail: ground ? 'am Boden, unverankert' : 'selbstgesichert', kind: 'hold', thr: stages.find(x => x.el === 'stance').thr / 1000, load: fH });
+  }
+  if (!ground) {
+    const W = mH * G;
+    const standLoad = central ? (Ff, Fh) => Fh : none ? (Ff, Fh) => Fh + W : (Ff, Fh) => Math.max(0, Fh - W);
+    if (!central) els.push({ id: 'lanyard', loc: 'D', name: 'Selbstsicherung', detail: 'Seil mit Mastwurf, ca. 65 %', strength: R.str * 0.65, load: standLoad });
+    els.push({ id: 'stand', loc: 'D', name: 'Standplatz', detail: STANDS[p.standType].label + (none ? '' : ', Zug nach oben'), strength: STANDS[p.standType].str, load: standLoad });
+  }
+  let strike = null, strikeMsg = '';
+  if (!none) { strike = a + Dp - 0.6; strikeMsg = ground ? 'Bodensturz' : 'Aufprall auf dem Standplatz'; }
+  else if (ground) { strike = a; strikeMsg = 'Bodensturz'; }
+  return {
+    m: mF, gPre: G, gDrive: G, dFree, Ltot, Leff, k: R.k, T, K: 0, stages, els, strike, strikeMsg, R,
+    ff: dFree / Ltot, info: { none, central, ground, zz, a, s, Dp },
+  };
+}
+
+function buildTop(p, c) {
+  const R = rope(c), mF = c.mF, mH = c.mH, b = c.basis;
+  const els = personGroup(c, R, 'F', 'A', fF);
+  els.push({ id: 'ropeF', loc: 'A', name: 'Seil', detail: R.label + ', ' + fmt(R.d, 1) + ' mm', strength: R.str, load: fF });
+  const s = p.slack;
+  if (p.variant === 'tr') {
+    const H = p.H, hc = Math.min(p.hc, H - 1);
+    const T = TC, dFree = s, Ltot = (H - hc) + H + s, Leff = (H - hc + s) + H * TC;
+    const free = p.belayPos === 'ground_free';
+    const stages = [];
+    if (free) stages.push({ id: 'lift', el: 'stance', thr: 1.15 * mH * G, cap: 1.0, label: 'angehoben', sev: 0.6, warn: 'Sichernder prallt an die Wand' });
+    const thr = devThr(p.device, R, c);
+    stages.push({ id: 'dev', el: 'device', thr, cap: Infinity, label: 'Seildurchlauf' });
+    const res = (Ff) => Ff * (1 + TC);
+    els.push({ id: 'bend', loc: 'B', name: 'Seil an Umlenkung', detail: 'Biegung über Karabiner, ca. 65 %', strength: R.str * 0.65, load: fF });
+    els.push({ id: 'topKar', loc: 'B', name: 'Umlenkkarabiner', detail: 'HMS, längs', strength: STR.hms.major[b], load: res });
+    els.push({ id: 'stand', loc: 'B', name: 'Umlenkung (Stand)', detail: STANDS[p.standType].label, strength: STANDS[p.standType].str, load: res });
+    els.push({ id: 'ropeH', loc: 'C', name: 'Seil, Sicherungsseite', detail: 'nach Umlenkung', strength: R.str, load: fH });
+    els.push({ id: 'device', loc: 'C', name: 'Sicherungsgerät', detail: DEVICES[p.device].label, kind: 'hold', thr: thr / 1000, load: fH });
+    els.push({ id: 'hmsB', loc: 'C', name: 'Sicherungskarabiner', detail: 'HMS, längs', strength: STR.hms.major[b], load: (Ff, Fh) => Fh * 1.05 });
+    els.push({ id: 'loop', loc: 'C', name: 'Sicherungsring', detail: 'Gurt ' + c.harnessCond, strength: STR.belayLoop[b] * HARN[c.harnessCond], load: fH });
+    els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail: free ? 'am Boden, unverankert' : 'Bodenanker', kind: 'hold', thr: free ? 1.15 * mH * G / 1000 : 99, load: fH });
+    return { m: mF, gPre: G, gDrive: G, dFree, Ltot, Leff, k: R.k, T, K: 0, stages, els, strike: hc - 0.3, strikeMsg: 'Bodensturz', R,
+      ff: dFree / Ltot, info: { variant: 'tr', H, hc, s, free } };
+  }
+  // Nachstieg
+  const L = p.L;
+  const edge = p.edge === 'edge';
+  const T = edge ? Math.exp(-0.45 * Math.PI / 3) : 1;
+  const thr = devThr(p.device, R, c);
+  const stages = [{ id: 'dev', el: 'device', thr, cap: Infinity, label: 'Seildurchlauf' }];
+  if (edge) els.push({ id: 'edge', loc: 'E', name: 'Seil an Felskante', detail: 'kantige Felskante, ca. 35 %', strength: R.str * 0.35, load: fF });
+  els.push({ id: 'device', loc: 'D', name: 'Sicherungsgerät', detail: DEVICES[p.device].label + ' am Zentralpunkt', kind: 'hold', thr: thr / 1000, load: fH });
+  els.push({ id: 'hmsB', loc: 'D', name: 'Zentralpunkt-Karabiner', detail: 'HMS, längs', strength: STR.hms.major[b], load: (Ff, Fh) => Fh * 1.05 });
+  els.push({ id: 'stand', loc: 'D', name: 'Standplatz', detail: STANDS[p.standType].label, strength: STANDS[p.standType].str, load: (Ff, Fh) => Fh + (edge ? Ff * 0.3 : 0) });
+  return { m: mF, gPre: G, gDrive: G, dFree: s, Ltot: L + s, Leff: L + s, k: R.k, T, K: 0, stages, els, strike: null, R,
+    ff: s / (L + s), info: { variant: 'second', L, s, edge } };
+}
+
+function buildGlacier(p, c) {
+  const R = rope(c), mF = c.mF, mH = c.mH;
+  const mu = { soft: 0.55, firn: 0.4, hard: 0.2 }[p.snow];
+  const Tl = Math.exp(-mu * Math.PI / 2);
+  const K = { soft: 900, firn: 420, hard: 100 }[p.snow] * p.knots;
+  const muS = { surprised: 0.25, ready: 0.45, arrest: 0.7 }[p.react];
+  const al = rad(p.alpha);
+  const n = +p.holders;
+  let Rh = n * mH * G * (muS * Math.cos(al) - Math.sin(al));
+  Rh = Math.max(Rh, 20);
+  const dFree = p.slack + 0.2;
+  const cap = Math.max(0.2, p.Lr - dFree - 0.5);
+  const stages = [{ id: 'drag', el: 'stance', thr: Rh, cap, fail: true, label: 'mitgezogen', failMsg: 'Sichernder wird in die Spalte gerissen' }];
+  const els = personGroup(c, R, 'F', 'A', fF);
+  els.push({ id: 'ropeF', loc: 'A', name: 'Seil', detail: R.label + ', ' + fmt(R.d, 1) + ' mm', strength: R.str, load: fF });
+  els.push({ id: 'lip', loc: 'E', name: 'Seil an Spaltenkante', detail: { soft: 'Weichschnee', firn: 'Firn', hard: 'Hartschnee/Eis' }[p.snow] + ', Reibung ' + fmt(Math.round((1 - Tl) * 100), 0) + ' %', strength: R.str * { soft: 0.9, firn: 0.85, hard: 0.7 }[p.snow], load: fF });
+  if (p.knots > 0) els.push({ id: 'bknot', loc: 'E', name: 'Bremsknoten', detail: p.knots + ' Sackstich, je ca. ' + fmt(K / p.knots / 1000, 1) + ' kN Bremswirkung', strength: R.str * 0.65, load: fF });
+  const fh = (Ff, Fh) => Fh;
+  els.push({ id: 'ropeH', loc: 'C', name: 'Seil, Sichernderseite', detail: 'nach Spaltenkante', strength: R.str, load: fh });
+  els.push(...personGroup(c, R, 'H', 'C', fh));
+  els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail: { surprised: 'überrascht', ready: 'aufmerksam, zurückgelehnt', arrest: 'Sturzlage, Pickel eingesetzt' }[p.react] + (n === 2 ? ', 2 Personen' : ''), kind: 'hold', thr: Rh / 1000, load: fh });
+  return { m: mF, gPre: G, gDrive: G, dFree, Ltot: p.Lr, Leff: p.Lr, k: R.k, T: Tl, K, stages, els, strike: null, R,
+    ff: dFree / p.Lr, info: { Lr: p.Lr, slack: p.slack, alpha: p.alpha, knots: p.knots, n, cap } };
+}
+
+// Gegensprung: Absprung bis Körperschwerpunkt ca. 0,5 m unter der Schneide der Gegenseite
+// (Abdruck ca. 0,15 s + freier Fall 0,5 m ca. 0,32 s)
+const JUMP_T = 0.15 + Math.sqrt(2 * 0.5 / G);
+
+function buildRidge(p, c) {
+  const R = rope(c), mF = c.mF, mH = c.mH, b = c.basis;
+  const muT = { rock: 0.45, firn: 0.25, ice: 0.12 }[p.terrain];
+  const muF = { rock: 0.35, firn: 0.15, ice: 0.05 }[p.terrain];
+  const be = rad(p.beta);
+  const gDrive = Math.max(0.2, G * (Math.sin(be) - muF * Math.cos(be)));
+  const s = p.slack;
+  // Gleichzeitiges Gehen: Seil liegt entlang der Gratschneide. Der Gestürzte rutscht quer dazu in die Flanke;
+  // straff wird das Seil erst, wenn die Diagonale Seilabstand + Schlappseil erreicht: d = sqrt((Lr+s)^2 - Lr^2).
+  const along = p.action === 'none' || p.action === 'jump';
+  const dFree = along ? Math.max(0.3, Math.sqrt(s * (2 * p.Lr + s))) : s + 0.3;
+  const tAvail = Math.sqrt(2 * dFree / gDrive);
+  const tJ = JUMP_T, tR = p.tR ?? 0.5;
+  const edgeF = { round: 0.6, edge: 0.35, sharp: 0.15 }[p.edge];
+  const edgeLbl = { round: 'abgerundet', edge: 'kantig', sharp: 'scharfkantig' }[p.edge];
+  const kap = { surprised: 0.3, ready: 0.55 }[p.react];
+  let T, Leff, stages, jump = null, els = personGroup(c, R, 'F', 'A', fF);
+  els.push({ id: 'ropeF', loc: 'A', name: 'Seil', detail: R.label + ', ' + fmt(R.d, 1) + ' mm', strength: R.str, load: fF });
+  const fh = (Ff, Fh) => Fh;
+  const holder = (thrN, detail) => {
+    els.push({ id: 'ropeH', loc: 'C', name: 'Seil, Sichernderseite', detail: 'nach Umlenkung', strength: R.str, load: fh });
+    els.push(...personGroup(c, R, 'H', 'C', fh));
+    els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail, kind: 'hold', thr: thrN / 1000, load: fh });
+  };
+  if (p.action === 'horn') {
+    T = Math.exp(-muT * Math.PI); Leff = p.Lr / 2 + s;
+    const Rh = kap * mH * G;
+    stages = [{ id: 'hold', el: 'stance', thr: Rh, cap: 1.2, label: 'zum Zacken gezogen', sev: 0.6, warn: 'Sichernder an den Zacken gezogen' }];
+    els.push({ id: 'edge', loc: 'E', name: 'Seil am Felszacken', detail: edgeLbl + ', ca. ' + Math.round(edgeF * 100) + ' %', strength: R.str * edgeF, load: fF });
+    els.push({ id: 'horn', loc: 'E', name: 'Felszacken', detail: p.hornType === 'solid' ? 'kompakt, fest' : 'brüchig/fraglich', strength: p.hornType === 'solid' ? 20 : 4, load: (Ff, Fh) => Ff + Fh });
+    holder(Rh, 'am Grat, hinter dem Zacken');
+  } else if (p.action === 'jump') {
+    Leff = p.Lr + s;
+    jump = { tAvail, tR, tJ, tNeed: tR + tJ, phase: tAvail >= tR + tJ ? 'ok' : tAvail > tR ? 'air' : 'stand' };
+    if (jump.phase === 'ok') {
+      T = Math.exp(-muT * 2 * be);
+      const Rh = mH * G * (Math.sin(be) + muF * Math.cos(be));
+      stages = [{ id: 'hold', el: 'stance', thr: Rh, cap: 1.5, fail: true, label: 'hochgezogen', failMsg: 'Sichernder über den Grat gezogen' }];
+      els.push({ id: 'edge', loc: 'E', name: 'Seil an Gratkante', detail: edgeLbl + ', ca. ' + Math.round(edgeF * 100) + ' %', strength: R.str * edgeF, load: fF });
+      holder(Rh, 'Gegensprung, Gegengewicht');
+    } else {
+      T = Math.exp(-muT * be);
+      const air = jump.phase === 'air';
+      const Rh = (air ? 0.15 : 0.55) * mH * G;
+      const msg = air ? 'Gegensprung zu spät: Sichernder im Absprung vom Seil erfasst' : 'Gegensprung zu spät: Seil straff vor dem Absprung';
+      stages = [{ id: 'hold', el: 'stance', thr: Rh, cap: 0.3, fail: true, label: 'Standverlust', failMsg: msg }];
+      els.push({ id: 'edge', loc: 'E', name: 'Seil an Gratkante', detail: edgeLbl + ', ca. ' + Math.round(edgeF * 100) + ' %', strength: R.str * edgeF, load: fF });
+      holder(Rh, air ? 'im Absprung, ohne Stand' : 'noch am Grat, Absprung nicht erfolgt');
+    }
+  } else if (p.action === 'stand') {
+    T = Math.exp(-muT * be); Leff = p.Lr + s;
+    const thr = devThr(p.device, R, c);
+    stages = [{ id: 'dev', el: 'device', thr, cap: Infinity, label: 'Seildurchlauf' }];
+    els.push({ id: 'edge', loc: 'E', name: 'Seil an Gratkante', detail: edgeLbl + ', ca. ' + Math.round(edgeF * 100) + ' %', strength: R.str * edgeF, load: fF });
+    els.push({ id: 'device', loc: 'D', name: 'Sicherungsgerät', detail: DEVICES[p.device].label + ' am Zentralpunkt', kind: 'hold', thr: thr / 1000, load: fh });
+    els.push({ id: 'hmsB', loc: 'D', name: 'Zentralpunkt-Karabiner', detail: 'HMS, längs', strength: STR.hms.major[b], load: (Ff, Fh) => Fh * 1.05 });
+    els.push({ id: 'stand', loc: 'D', name: 'Standplatz', detail: STANDS[p.standType].label, strength: STANDS[p.standType].str, load: fh });
+  } else {
+    T = Math.exp(-muT * be); Leff = p.Lr + s;
+    const Rh = kap * mH * G;
+    stages = [{ id: 'hold', el: 'stance', thr: Rh, cap: 0.3, fail: true, label: 'Standverlust', failMsg: 'Sichernder vom Grat gerissen' }];
+    els.push({ id: 'edge', loc: 'E', name: 'Seil an Gratkante', detail: edgeLbl + ', ca. ' + Math.round(edgeF * 100) + ' %', strength: R.str * edgeF, load: fF });
+    holder(Rh, 'steht am Grat, ' + (p.react === 'ready' ? 'aufmerksam' : 'überrascht'));
+  }
+  return { m: mF, gPre: gDrive, gDrive, dFree, Ltot: Leff, Leff, k: R.k, T, K: 0, stages, els, strike: null, R,
+    ff: dFree / Leff, info: { beta: p.beta, action: p.action, Lr: p.Lr, s, jump, tAvail } };
+}
+
+const TERRAIN = {
+  firnSoft: { label: 'Firn, weich', muF: 0.35, grip: 1.0 },
+  firnHard: { label: 'Firn, hart', muF: 0.15, grip: 0.85 },
+  ice:      { label: 'Blankeis', muF: 0.06, grip: 0.7 },
+  grass:    { label: 'Steilgras, nass', muF: 0.25, grip: 0.75 },
+  scree:    { label: 'Schrofen', muF: 0.45, grip: 0.9 },
+};
+
+function buildSteep(p, c) {
+  const R = rope(c), mF = c.mF, mH = c.mH, b = c.basis;
+  const t = TERRAIN[p.terrain];
+  const al = rad(p.alpha);
+  const gD = G * (Math.sin(al) - t.muF * Math.cos(al));
+  const kap = { surprised: 0.9, ready: 1.3, axe: 1.8 }[p.react] * t.grip;
+  const s = p.slack;
+  const els = personGroup(c, R, 'F', 'A', fF);
+  els.push({ id: 'ropeF', loc: 'A', name: 'Seil', detail: R.label + ', ' + fmt(R.d, 1) + ' mm', strength: R.str, load: fF });
+  const fh = (Ff, Fh) => Fh;
+  const stLbl = { surprised: 'überrascht', ready: 'aufmerksam, im Tritt', axe: 'Pickel-/Körpersicherung' }[p.react];
+  let dFree, Leff, T = 1, stages;
+  const pos = p.protect === 'running' ? 'above' : p.pos;
+  if (p.protect === 'none') {
+    dFree = pos === 'above' ? 2 * p.Lr + s : s;
+    Leff = p.Lr + s;
+    const Rh = Math.max(20, mH * G * (kap * Math.cos(al) - Math.sin(al)));
+    const selfArrest = Math.tan(al) < t.muF + 0.15;
+    stages = [{ id: 'hold', el: 'stance', thr: Rh, cap: selfArrest ? 2.0 : 0.3, fail: true, label: 'Standverlust', failMsg: 'Sichernder wird mitgerissen' }];
+    els.push({ id: 'ropeH', loc: 'C', name: 'Seil, Sichernderseite', detail: 'direkt', strength: R.str, load: fh });
+    els.push(...personGroup(c, R, 'H', 'C', fh));
+    els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail: stLbl + ', Zug hangabwärts', kind: 'hold', thr: Rh / 1000, load: fh });
+  } else if (p.protect === 'running') {
+    const a = Math.min(p.above, p.Lr - 1), D = p.Lr - a;
+    dFree = 2 * a + s; T = TC; Leff = a + s + D * TC;
+    const Rh = mH * G * (kap * Math.cos(al) + Math.sin(al));
+    stages = [{ id: 'hold', el: 'stance', thr: Rh, cap: Math.max(0.2, D - 0.5), label: 'hochgerissen', sev: 0.6, warn: 'Sichernder bis zur Zwischensicherung gezogen' }];
+    const res = (Ff) => Ff * (1 + TC);
+    els.push({ id: 'qdKar', loc: 'B', name: 'Exe-Karabiner', detail: 'längs belastet', strength: STR.qd.major[b], load: res });
+    els.push({ id: 'qdSling', loc: 'B', name: 'Expressschlinge', detail: 'EN 566', strength: STR.sling[b], load: res });
+    els.push({ id: 'piece', loc: 'B', name: 'Zwischensicherung', detail: PIECES[p.piece].label, strength: PIECES[p.piece].str, load: res });
+    els.push({ id: 'ropeH', loc: 'C', name: 'Seil, Sichernderseite', detail: 'nach Umlenkung', strength: R.str, load: fh });
+    els.push(...personGroup(c, R, 'H', 'C', fh));
+    els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail: stLbl + ', Zug hangaufwärts', kind: 'hold', thr: Rh / 1000, load: fh });
+  } else {
+    dFree = pos === 'above' ? 2 * p.Lr + s : s;
+    Leff = p.Lr + s;
+    const thr = devThr(p.device, R, c);
+    stages = [{ id: 'dev', el: 'device', thr, cap: Infinity, label: 'Seildurchlauf' }];
+    els.push({ id: 'device', loc: 'D', name: 'Sicherungsgerät', detail: DEVICES[p.device].label + ' am Zentralpunkt', kind: 'hold', thr: thr / 1000, load: fh });
+    els.push({ id: 'hmsB', loc: 'D', name: 'Zentralpunkt-Karabiner', detail: 'HMS, längs', strength: STR.hms.major[b], load: (Ff, Fh) => Fh * 1.05 });
+    els.push({ id: 'stand', loc: 'D', name: 'Standplatz', detail: STANDS[p.standType].label, strength: STANDS[p.standType].str, load: fh });
+  }
+  return { m: mF, gPre: gD, gDrive: gD, dFree, Ltot: Leff, Leff, k: R.k, T, K: 0, stages, els, strike: null, R,
+    ff: dFree / Leff, selfStop: gD <= 0.05, info: { alpha: p.alpha, pos, protect: p.protect, Lr: p.Lr, s, a: p.above } };
+}
+
+function buildShort(p, c) {
+  const R = rope(c), mF = c.mF, mH = c.mH;
+  const t = TERRAIN[p.terrain];
+  const al = rad(p.alpha);
+  const muF = p.slip === 'stumble' ? 0.55 : t.muF;
+  const gD = G * (Math.sin(al) - muF * Math.cos(al));
+  const kap = { surprised: 0.9, ready: 1.3, braced: 1.9 }[p.react] * t.grip;
+  const Rh = Math.max(20, mH * G * (kap * Math.cos(al) - Math.sin(al)));
+  const s = p.slack;
+  const stages = [
+    { id: 'arm', el: 'hand', thr: 550, cap: 0.35, label: 'Arm gibt nach', sev: 0.6, warn: 'Armzug ausgeschöpft' },
+    { id: 'hold', el: 'stance', thr: Rh, cap: 0.25, fail: true, label: 'Standverlust', failMsg: 'Führer wird mitgerissen' },
+  ];
+  const els = personGroup(c, R, 'F', 'A', fF);
+  els.push({ id: 'ropeF', loc: 'A', name: 'Seil', detail: fmt(p.Lr, 1) + ' m, ' + R.label, strength: R.str, load: fF });
+  const fh = (Ff, Fh) => Fh;
+  els.push({ id: 'hand', loc: 'C', name: 'Hand und Arm', detail: 'Seilschlaufen in der Hand, ca. 0,55 kN', kind: 'hold', thr: 0.55, load: fh });
+  els.push({ id: 'tieinH', loc: 'C', name: 'Anseilpunkt Gurt', detail: 'Führer', strength: STR.tieIn[c.basis] * HARN[c.harnessCond], load: fh });
+  els.push({ id: 'stance', loc: 'C', name: 'Stand des Führers', detail: { surprised: 'überrascht', ready: 'aufmerksam', braced: 'verspreizt, Geländeform genutzt' }[p.react] + ', Zug hangabwärts', kind: 'hold', thr: Rh / 1000, load: fh });
+  return { m: mF, gPre: gD, gDrive: gD, dFree: s, Ltot: p.Lr + s, Leff: p.Lr + s, k: R.k, T: 1, K: 0, stages, els, strike: null, R,
+    ff: s / (p.Lr + s), selfStop: gD <= 0.05, info: { alpha: p.alpha, Lr: p.Lr, s, slip: p.slip } };
+}
+
+const BUILDERS = { lead: buildLead, top: buildTop, glacier: buildGlacier, ridge: buildRidge, steep: buildSteep, short: buildShort };
+
+// ---------- Simulation ----------
+function simulate(M) {
+  const out = { t: [], Ff: [], Fh: [], x: [], slip: [], sl: {}, tFail: null, tFree: 0, peakF: 0, peakFh: 0, tPeak: 0, outcome: 'held', failStage: null, stageUsed: [], vImpact: 0 };
+  const st = M.stages.map(s => ({ ...s, used: 0 })).sort((a, b) => a.thr - b.thr);
+  const elIds = [...new Set(st.map(s => s.el))];
+  elIds.forEach(e => out.sl[e] = []);
+  const rec = () => elIds.forEach(e => out.sl[e].push(st.reduce((a, s) => a + (s.el === e ? s.used : 0), 0)));
+  const m = M.m, kL = M.k / M.Leff;
+  if (M.selfStop) {
+    out.outcome = 'selfstop';
+    out.t = [0, 0.5]; out.Ff = [0, 0]; out.Fh = [0, 0]; out.x = [0, 0.15]; out.slip = [0, 0]; out.xMax = 0.15; out.stretch = 0; out.slipTot = 0; rec(); rec();
+    out.stageUsed = st.map(s => ({ id: s.id, el: s.el, used: 0, cap: s.cap, exhausted: false, label: s.label }));
+    return out;
+  }
+  const gP = Math.max(0, M.gPre), gD = M.gDrive;
+  const tFree = M.dFree > 0 && gP > 0 ? Math.sqrt(2 * M.dFree / gP) : 0;
+  out.tFree = tFree;
+  const N0 = 40;
+  for (let i = 0; i <= N0; i++) {
+    const t = tFree * i / N0;
+    out.t.push(t); out.Ff.push(0); out.Fh.push(0); out.x.push(0.5 * gP * t * t); out.slip.push(0); rec();
+  }
+  let v = gP * tFree; out.vImpact = v;
+  let stretch = 0, slipTot = 0, t = tFree, x = M.dFree;
+  const dt = 0.0002;
+  let lastRec = t, iter = 0;
+  const Fh = F => Math.max(0, (F - M.K)) * M.T;
+  while (iter++ < 150000) {
+    let act = st.find(s => s.used < s.cap);
+    const capF = act ? act.thr / M.T + M.K : Infinity;
+    let F = kL * stretch;
+    const a = gD - F / m;
+    v += a * dt;
+    const dx = v * dt;
+    if (dx > 0) {
+      if (kL * (stretch + dx) <= capF) stretch += dx;
+      else {
+        const room = Math.max(0, capF / kL - stretch);
+        stretch += room;
+        let rest = dx - room;
+        while (rest > 0 && act) {
+          const can = act.cap - act.used;
+          if (rest <= can) { act.used += rest; slipTot += rest; rest = 0; }
+          else {
+            act.used = act.cap; slipTot += can; rest -= can;
+            if (act.fail) { out.outcome = 'dragged'; out.failStage = act; break; }
+            act = st.find(s => s.used < s.cap);
+            if (act) {
+              const cf = act.thr / M.T + M.K, r2 = Math.max(0, cf / kL - stretch);
+              const use = Math.min(rest, r2); stretch += use; rest -= use;
+            } else { stretch += rest; rest = 0; }
+          }
+        }
+      }
+      x += dx;
+    } else {
+      stretch = Math.max(0, stretch + dx); x += dx;
+    }
+    t += dt;
+    F = kL * stretch;
+    if (F > out.peakF) { out.peakF = F; out.tPeak = t; }
+    const fh = Fh(F); if (fh > out.peakFh) out.peakFh = fh;
+    if (t - lastRec >= 0.004 || out.outcome === 'dragged' || v <= 0) {
+      out.t.push(t); out.Ff.push(F); out.Fh.push(fh); out.x.push(x); out.slip.push(slipTot); rec(); lastRec = t;
+    }
+    if (out.outcome === 'dragged') break;
+    if (v <= 0) break;
+  }
+  if (iter >= 150000 && v > 0) { out.outcome = 'runaway'; }
+  // Nachlauf: Ausschwingen zur statischen Last
+  if (out.outcome === 'held') {
+    const Fs = m * Math.max(0, gD), F0 = out.Ff[out.Ff.length - 1], x0 = out.x[out.x.length - 1];
+    const xs = x0 - (F0 - Fs) / kL * 0.6;
+    for (let i = 1; i <= 50; i++) {
+      const tt = i * 0.012, e = Math.exp(-tt / 0.09), osc = Math.cos(tt * 18);
+      const F = Fs + (F0 - Fs) * e * osc;
+      out.t.push(t + tt); out.Ff.push(Math.max(0, F)); out.Fh.push(Fh(Math.max(0, F)));
+      out.x.push(xs + (x0 - xs) * e * osc); out.slip.push(slipTot); rec();
+    }
+  }
+  // Nach Versagen: beide gleiten/fallen weiter (nur für die Darstellung)
+  if (out.outcome === 'dragged') {
+    out.tFail = t;
+    const fe = out.failStage.el, F0 = out.Ff[out.Ff.length - 1], ap = Math.max(1.2, gD * 0.7);
+    let vp = Math.max(v, 0.5), xp = x, hsExtra = 0;
+    for (let i = 1; i <= 50 && hsExtra < 2.5; i++) {
+      const dd = vp * 0.02 + 0.5 * ap * 0.0004; vp += ap * 0.02; xp += dd; hsExtra += dd;
+      const F = F0 * Math.exp(-i * 0.02 / 0.25);
+      out.t.push(t + i * 0.02); out.Ff.push(F); out.Fh.push(Fh(F)); out.x.push(xp); out.slip.push(slipTot + hsExtra);
+      elIds.forEach(e => out.sl[e].push(st.reduce((a, s) => a + (s.el === e ? s.used : 0), 0) + (e === fe ? hsExtra : 0)));
+    }
+  }
+  out.stretch = stretch; out.slipTot = slipTot; out.xMax = Math.max(...out.x.slice(0, out.tFail != null ? out.t.findIndex(tt => tt > out.tFail) : out.x.length));
+  out.stageUsed = st.map(s => ({ id: s.id, el: s.el, used: s.used, cap: s.cap, exhausted: s.used >= s.cap - 1e-9, label: s.label, warn: s.warn, fail: s.fail, failMsg: s.failMsg, thr: s.thr, sev: s.sev }));
+  if (M.strike != null && out.xMax >= M.strike) { out.strike = true; }
+  return out;
+}
+
+// ---------- Bewertung ----------
+function evaluate(M, S) {
+  const Ff = S.peakF, FhP = S.peakFh;
+  const rows = M.els.map(e => {
+    const load = e.load(Ff, FhP) / 1000;
+    const r = { ...e, kind: e.kind || 'break', loadKN: load };
+    if (e.kind === 'hold') {
+      const stg = S.stageUsed.filter(s => s.el === e.id);
+      const used = stg.reduce((a, s) => a + s.used, 0);
+      r.slip = used; r.stages = stg;
+      r.util = e.thr > 0 ? load / e.thr : 0;
+      const failStg = stg.find(s => s.fail);
+      const infStg = stg.find(s => s.cap === Infinity);
+      const warnEx = stg.filter(s => !s.fail && s.cap < Infinity && s.exhausted);
+      if (failStg && failStg.exhausted && S.outcome === 'dragged') { r.risk = 1.5; r.state = 'fail'; r.msg = failStg.failMsg; }
+      else if (infStg && infStg.used > 5) { r.risk = 1.2; r.state = 'fail'; r.msg = 'Seil läuft unkontrolliert durch'; }
+      else {
+        let rk = stg.length ? 0 : Math.min(r.util, 1) * 0.6;
+        if (infStg) rk = Math.min(r.util, 1) * 0.3;
+        if (failStg) rk = Math.max(rk, Math.min(r.util, 1) * 0.5);
+        if (infStg && infStg.used > 0.005) rk = 0.25 + 0.14 * infStg.used;
+        if (failStg && failStg.used > 0.005) rk = Math.max(rk, 0.5 + 0.49 * failStg.used / failStg.cap);
+        warnEx.forEach(s => { rk = Math.max(rk, s.sev ?? 0.5); });
+        stg.forEach(s => { if (!s.fail && s.cap < Infinity && s.used > 0.005 && !s.exhausted) rk = Math.max(rk, Math.min(s.sev ?? 0.5, 0.35)); });
+        r.risk = rk;
+        r.state = used > 0.005 ? (warnEx.length ? 'warn' : 'slip') : 'ok';
+        if (warnEx.length) r.msg = warnEx.map(s => s.warn).join('; ');
+      }
+    } else {
+      r.util = load / e.strength; r.risk = r.util; r.state = r.util >= 1 ? 'fail' : 'ok';
+    }
+    return r;
+  });
+  const weak = rows.reduce((a, r) => (!a || r.risk > a.risk ? r : a), null);
+  const breakFail = rows.filter(r => r.kind === 'break' && r.util >= 1).sort((a, b) => b.util - a.util)[0];
+  let verdict;
+  if (S.outcome === 'selfstop') verdict = { level: 'ok', title: 'Kein Seilzug', text: 'Die Geländereibung stoppt die Rutschbewegung, bevor das Seil belastet wird.' };
+  else if (breakFail) verdict = { level: 'fail', title: 'Kette versagt', text: breakFail.name + ' (' + breakFail.detail + ') hält ' + fmt(breakFail.loadKN, 1) + ' kN nicht. Weiterer Sturzverlauf nicht gerechnet.' };
+  else if (S.outcome === 'dragged') verdict = { level: 'fail', title: 'Nicht gehalten', text: S.failStage.failMsg + '.' };
+  else if (rows.find(r => r.kind === 'hold' && r.state === 'fail')) { const h = rows.find(r => r.kind === 'hold' && r.state === 'fail'); verdict = { level: 'fail', title: 'Nicht kontrolliert gehalten', text: h.name + ': ' + h.msg + ' (' + fmt(h.slip, 1) + ' m).' }; }
+  else if (S.outcome === 'runaway') verdict = { level: 'fail', title: 'Nicht gehalten', text: 'Die Bremskraft reicht nicht, um den Sturz zu stoppen.' };
+  else if (S.strike) verdict = { level: 'warn', title: 'Gehalten, aber zu spät', text: M.strikeMsg + ': Der Sturzweg reicht bis zum Hindernis.' };
+  else if (rows.find(r => r.id === 'body' && r.util >= 0.75)) verdict = { level: 'warn', title: 'Gehalten, hohe Körperbelastung', text: 'Fangstoß am Gestürzten im verletzungsrelevanten Bereich.' };
+  else verdict = { level: weak && weak.risk >= 0.8 ? 'warn' : 'ok', title: 'Gehalten', text: '' };
+  return { rows, weak, verdict };
+}
+
+function fmt(x, d = 1) { return (Math.round(x * 10 ** d) / 10 ** d).toFixed(d).replace('.', ','); }
+
+
+
+// ===== UI-Konfiguration =====
+const OPT = {
+  piece: Object.entries(PIECES).map(([k, v]) => [k, v.label]),
+  stand: Object.entries(STANDS).map(([k, v]) => [k, v.label]),
+  terrain: Object.entries(TERRAIN).map(([k, v]) => [k, v.label]),
+};
+const SCEN = {
+  lead: {
+    label: 'Vorstieg', roleF: 'Vorsteiger', roleH: 'Sichernder',
+    locNames: { A: 'Gestürzter', B: 'Zwischensicherung', C: 'Sichernder', D: 'Standplatz' },
+    common: { ropeType: 'single', tieIn: 'direct' },
+    blurb: 'Sturz über der letzten Zwischensicherung, Sicherung vom Standplatz.',
+    groups: [
+      ['Sturz', [
+        { id: 'above', label: 'Höhe über Zwischensicherung', type: 'range', min: 0.3, max: 8, step: 0.1, unit: 'm', dec: 1, def: 2 },
+        { id: 'slack', label: 'Schlappseil', type: 'range', min: 0, max: 3, step: 0.1, unit: 'm', dec: 1, def: 0.5 },
+        { id: 'dist', label: 'Zwischensicherung über Stand', type: 'range', min: 1, max: 40, step: 0.5, unit: 'm', dec: 1, def: 6, show: p => p.piece !== 'none' },
+      ]],
+      ['Zwischensicherung', [
+        { id: 'piece', label: 'Fixpunkt', type: 'select', options: [['none', 'Keine: Sturz in den Stand'], ...OPT.piece], def: 'bolt_glue' },
+        { id: 'qdMode', label: 'Exe-Karabiner', type: 'select', options: [['major', 'längs belastet'], ['open', 'Schnapper offen'], ['edge', 'über Felskante gelegt']], def: 'major', show: p => p.piece !== 'none' },
+        { id: 'path', label: 'Seilverlauf', type: 'select', options: [['straight', 'gerade'], ['light', 'leicht versetzt'], ['zigzag', 'stark im Zickzack']], def: 'straight', show: p => p.piece !== 'none' },
+      ]],
+      ['Sicherung', [
+        { id: 'belay', label: 'Methode', type: 'select', options: [['body_stand', 'Körpersicherung, selbstgesichert'], ['central', 'Zentralpunkt (Gerät am Stand)'], ['body_ground', 'Körpersicherung am Boden, unverankert']], def: 'body_stand' },
+        { id: 'device', label: 'Sicherungsgerät', type: 'select', options: [['tube', 'Tube'], ['hms', 'Halbmastwurf (HMS)'], ['semi', 'Halbautomat']], def: 'tube' },
+        { id: 'dynamic', label: 'Aktiv dynamisch sichern', type: 'toggle', def: false, show: p => p.belay !== 'central' && p.piece !== 'none' },
+        { id: 'standType', label: 'Standplatz', type: 'select', options: OPT.stand, def: 'two_bolts', show: p => p.belay !== 'body_ground' },
+      ]],
+    ],
+    presets: [
+      ['Normaler Sturz', {}],
+      ['Alter Normalhaken', { piece: 'piton_old' }],
+      ['Sturz in den Stand, Tube am Gurt', { piece: 'none', above: 3, belay: 'body_stand', device: 'tube' }],
+      ['Sturz in den Stand, HMS am Zentralpunkt', { piece: 'none', above: 3, belay: 'central', device: 'hms' }],
+      ['Exe über Felskante', { qdMode: 'edge', above: 2.5, dist: 10 }],
+      ['Leichter Sichernder am Boden', { belay: 'body_ground', dist: 3, above: 1.5, device: 'tube', _mH: 55, _mF: 85 }],
+    ],
+  },
+  top: {
+    label: 'Toprope und Nachstieg', roleF: 'Kletterer', roleH: 'Sichernder',
+    locNames: { A: 'Kletterer', B: 'Umlenkung', C: 'Sichernder', D: 'Standplatz', E: 'Felskante' },
+    common: { ropeType: 'single', tieIn: 'direct' },
+    blurb: 'Seil von oben: kurzer Sturzweg, Last vor allem an Umlenkung und Stand.',
+    groups: [
+      ['Situation', [
+        { id: 'variant', label: 'Variante', type: 'select', options: [['tr', 'Toprope, Sichernder unten'], ['second', 'Nachstieg, Sicherung vom Stand']], def: 'tr' },
+        { id: 'H', label: 'Wandhöhe', type: 'range', min: 6, max: 35, step: 0.5, unit: 'm', dec: 1, def: 15, show: p => p.variant === 'tr' },
+        { id: 'hc', label: 'Höhe des Kletterers', type: 'range', min: 1, max: 34, step: 0.5, unit: 'm', dec: 1, def: 8, show: p => p.variant === 'tr', maxFn: p => p.H - 1 },
+        { id: 'L', label: 'Seillänge zum Stand', type: 'range', min: 3, max: 50, step: 0.5, unit: 'm', dec: 1, def: 15, show: p => p.variant === 'second' },
+        { id: 'slack', label: 'Schlappseil', type: 'range', min: 0, max: 3, step: 0.1, unit: 'm', dec: 1, def: 0.3 },
+        { id: 'edge', label: 'Seil am Stand', type: 'select', options: [['free', 'läuft frei'], ['edge', 'läuft über Felskante']], def: 'free', show: p => p.variant === 'second' },
+      ]],
+      ['Sicherung', [
+        { id: 'belayPos', label: 'Sichernder', type: 'select', options: [['ground_free', 'am Boden, unverankert'], ['ground_anchor', 'mit Bodenanker']], def: 'ground_free', show: p => p.variant === 'tr' },
+        { id: 'device', label: 'Sicherungsgerät', type: 'select', options: [['tube', 'Tube'], ['hms', 'Halbmastwurf (HMS)'], ['semi', 'Halbautomat'], ['plate', 'Plate, Guide-Modus']], def: 'tube' },
+        { id: 'standType', label: 'Umlenkung / Stand', type: 'select', options: OPT.stand, def: 'two_bolts' },
+      ]],
+    ],
+    presets: [
+      ['Toprope, straff gesichert', { variant: 'tr', slack: 0.1 }],
+      ['Toprope, viel Schlappseil', { variant: 'tr', slack: 2, hc: 3 }],
+      ['Schwerer Kletterer, leichter Sichernder', { variant: 'tr', _mF: 95, _mH: 55 }],
+      ['Nachstieg über Felskante', { variant: 'second', edge: 'edge', slack: 1.5, device: 'plate' }],
+    ],
+  },
+  glacier: {
+    label: 'Spaltensturz', roleF: 'Gestürzter', roleH: 'Haltender',
+    locNames: { A: 'Gestürzter', E: 'Spaltenrand', C: 'Haltender' },
+    common: { ropeType: 'half1', tieIn: 'hms' },
+    blurb: 'Zweier- oder Dreierseilschaft am aperen oder verschneiten Gletscher.',
+    groups: [
+      ['Seilschaft', [
+        { id: 'Lr', label: 'Seilabstand', type: 'range', min: 6, max: 20, step: 0.5, unit: 'm', dec: 1, def: 12 },
+        { id: 'slack', label: 'Durchhang / Schlappseil', type: 'range', min: 0, max: 4, step: 0.1, unit: 'm', dec: 1, def: 1 },
+        { id: 'knots', label: 'Bremsknoten', type: 'range', min: 0, max: 5, step: 1, unit: '', dec: 0, def: 0 },
+        { id: 'holders', label: 'Haltende Personen', type: 'select', options: [['1', 'eine (Zweierseilschaft)'], ['2', 'zwei (Dreierseilschaft)']], def: '1' },
+      ]],
+      ['Gelände', [
+        { id: 'snow', label: 'Schnee am Spaltenrand', type: 'select', options: [['soft', 'weich, Seil schneidet ein'], ['firn', 'Firn'], ['hard', 'hart / Blankeis']], def: 'soft' },
+        { id: 'alpha', label: 'Neigung zur Spalte hin', type: 'range', min: -10, max: 20, step: 1, unit: '°', dec: 0, def: 5 },
+      ]],
+      ['Reaktion', [
+        { id: 'react', label: 'Haltender', type: 'select', options: [['surprised', 'überrascht, im Gehen'], ['ready', 'aufmerksam, zurückgelehnt'], ['arrest', 'Sturzlage, Pickel eingesetzt']], def: 'surprised' },
+      ]],
+    ],
+    presets: [
+      ['Überrascht, ohne Bremsknoten', { react: 'surprised', knots: 0, snow: 'soft' }],
+      ['3 Bremsknoten, Weichschnee', { knots: 3, snow: 'soft' }],
+      ['3 Bremsknoten, Blankeis', { knots: 3, snow: 'hard' }],
+      ['Dreierseilschaft, aufmerksam', { holders: '2', react: 'ready', knots: 0 }],
+      ['Sturzlage mit Pickel', { react: 'arrest', knots: 0 }],
+    ],
+  },
+  ridge: {
+    label: 'Absturz am Grat', roleF: 'Gestürzter', roleH: 'Partner',
+    locNames: { A: 'Gestürzter', E: 'Grat', C: 'Partner', D: 'Standplatz' },
+    common: { ropeType: 'single', tieIn: 'direct' },
+    blurb: 'Gleichzeitiges Gehen am Grat, Sturz in die Flanke.',
+    groups: [
+      ['Seilschaft', [
+        { id: 'Lr', label: 'Seilabstand', type: 'range', min: 3, max: 15, step: 0.5, unit: 'm', dec: 1, def: 6 },
+        { id: 'slack', label: 'Schlappseil', type: 'range', min: 0, max: 3, step: 0.1, unit: 'm', dec: 1, def: 1 },
+      ]],
+      ['Gelände', [
+        { id: 'beta', label: 'Flankenneigung', type: 'range', min: 40, max: 85, step: 1, unit: '°', dec: 0, def: 60 },
+        { id: 'terrain', label: 'Untergrund', type: 'select', options: [['rock', 'Fels'], ['firn', 'Firn'], ['ice', 'Eis']], def: 'rock' },
+        { id: 'edge', label: 'Gratkante', type: 'select', options: [['round', 'abgerundet'], ['edge', 'kantig'], ['sharp', 'scharfkantig']], def: 'edge' },
+      ]],
+      ['Sicherung', [
+        { id: 'action', label: 'Reaktion / Technik', type: 'select', options: [['none', 'Partner bleibt am Grat stehen'], ['jump', 'Gegensprung auf die andere Seite'], ['horn', 'Seil über Felszacken gelegt'], ['stand', 'Standplatz mit HMS']], def: 'none' },
+        { id: 'react', label: 'Partner', type: 'select', options: [['surprised', 'überrascht'], ['ready', 'aufmerksam']], def: 'ready', show: p => p.action === 'none' || p.action === 'horn' },
+        { id: 'tR', label: 'Reaktionszeit bis Absprung', type: 'range', min: 0.2, max: 1.5, step: 0.05, unit: 's', dec: 2, def: 0.5, show: p => p.action === 'jump', hint: 'Richtwerte: 0,2–0,3 s Sturz erwartet, 0,5–0,8 s aufmerksam, ab 1 s überrascht. Absprung bis Gewicht auf der Gegenseite: 0,47 s.' },
+        { id: 'hornType', label: 'Felszacken', type: 'select', options: [['solid', 'kompakt, fest'], ['loose', 'brüchig / fraglich']], def: 'solid', show: p => p.action === 'horn' },
+        { id: 'device', label: 'Sicherungsgerät', type: 'select', options: [['hms', 'Halbmastwurf (HMS)'], ['tube', 'Tube'], ['plate', 'Plate, Guide-Modus']], def: 'hms', show: p => p.action === 'stand' },
+        { id: 'standType', label: 'Standplatz', type: 'select', options: OPT.stand, def: 'two_bolts', show: p => p.action === 'stand' },
+      ]],
+    ],
+    presets: [
+      ['Stehen bleiben', { action: 'none' }],
+      ['Gegensprung', { action: 'jump', tR: 0.5 }],
+      ['Gegensprung zu spät', { action: 'jump', tR: 0.9 }],
+      ['Seil über Zacken', { action: 'horn', hornType: 'solid' }],
+      ['Stand, scharfe Kante', { action: 'stand', edge: 'sharp' }],
+    ],
+  },
+  steep: {
+    label: 'Steilgelände', roleF: 'Gestürzter', roleH: 'Partner',
+    locNames: { A: 'Gestürzter', B: 'Zwischensicherung', C: 'Partner', D: 'Standplatz' },
+    common: { ropeType: 'single', tieIn: 'direct' },
+    blurb: 'Rutschender Absturz in Firn, Eis, Gras oder Schrofen.',
+    groups: [
+      ['Gelände', [
+        { id: 'alpha', label: 'Hangneigung', type: 'range', min: 25, max: 60, step: 1, unit: '°', dec: 0, def: 40 },
+        { id: 'terrain', label: 'Untergrund', type: 'select', options: OPT.terrain, def: 'firnHard' },
+      ]],
+      ['Seilschaft', [
+        { id: 'Lr', label: 'Seilabstand', type: 'range', min: 3, max: 20, step: 0.5, unit: 'm', dec: 1, def: 8 },
+        { id: 'slack', label: 'Schlappseil', type: 'range', min: 0, max: 3, step: 0.1, unit: 'm', dec: 1, def: 0.5 },
+        { id: 'pos', label: 'Wer stürzt', type: 'select', options: [['below', 'Partner unterhalb'], ['above', 'Partner oberhalb (rutscht vorbei)']], def: 'below', show: p => p.protect !== 'running' },
+      ]],
+      ['Sicherung', [
+        { id: 'protect', label: 'Technik', type: 'select', options: [['none', 'gleichzeitig, ohne Fixpunkt'], ['running', 'laufende Sicherung'], ['stand', 'Standplatz mit Gerät']], def: 'none' },
+        { id: 'above', label: 'Gestürzter über Zwischensicherung', type: 'range', min: 1, max: 10, step: 0.5, unit: 'm', dec: 1, def: 3, show: p => p.protect === 'running', maxFn: p => p.Lr - 1 },
+        { id: 'piece', label: 'Zwischensicherung', type: 'select', options: OPT.piece, def: 'screw_good', show: p => p.protect === 'running' },
+        { id: 'react', label: 'Partner', type: 'select', options: [['surprised', 'überrascht'], ['ready', 'aufmerksam, im Tritt'], ['axe', 'Pickel-/Körpersicherung']], def: 'ready', show: p => p.protect !== 'stand' },
+        { id: 'device', label: 'Sicherungsgerät', type: 'select', options: [['hms', 'Halbmastwurf (HMS)'], ['tube', 'Tube'], ['semi', 'Halbautomat']], def: 'hms', show: p => p.protect === 'stand' },
+        { id: 'standType', label: 'Standplatz', type: 'select', options: OPT.stand, def: 'screws', show: p => p.protect === 'stand' },
+      ]],
+    ],
+    presets: [
+      ['Partner unterhalb rutscht', { protect: 'none', pos: 'below' }],
+      ['Vorausgehender rutscht vorbei', { protect: 'none', pos: 'above' }],
+      ['Laufende Sicherung, Eisschraube', { protect: 'running', piece: 'screw_good' }],
+      ['Stand mit HMS', { protect: 'stand', pos: 'above' }],
+      ['Weicher Firn, 30°', { protect: 'none', pos: 'below', alpha: 30, terrain: 'firnSoft', react: 'axe' }],
+    ],
+  },
+  short: {
+    label: 'Kurzes Seil', roleF: 'Gast', roleH: 'Führer',
+    locNames: { A: 'Gast', C: 'Führer' },
+    common: { ropeType: 'single', tieIn: 'direct' },
+    blurb: 'Führen am kurzen Seil, Seilschlaufen in der Hand.',
+    groups: [
+      ['Gelände', [
+        { id: 'alpha', label: 'Hangneigung', type: 'range', min: 20, max: 50, step: 1, unit: '°', dec: 0, def: 35 },
+        { id: 'terrain', label: 'Untergrund', type: 'select', options: OPT.terrain, def: 'firnHard' },
+      ]],
+      ['Seil', [
+        { id: 'Lr', label: 'Abstand Hand bis Gast', type: 'range', min: 1, max: 3, step: 0.1, unit: 'm', dec: 1, def: 1.5 },
+        { id: 'slack', label: 'Schlappseil', type: 'range', min: 0, max: 1.5, step: 0.05, unit: 'm', dec: 2, def: 0.3 },
+      ]],
+      ['Ereignis', [
+        { id: 'slip', label: 'Gast', type: 'select', options: [['stumble', 'stolpert, bleibt teils auf den Füßen'], ['slide', 'rutscht aus, gleitet ab']], def: 'stumble' },
+        { id: 'react', label: 'Führer', type: 'select', options: [['surprised', 'überrascht'], ['ready', 'aufmerksam'], ['braced', 'verspreizt, Geländeform genutzt']], def: 'ready' },
+      ]],
+    ],
+    presets: [
+      ['Stolpern, Seil straff', { slip: 'stumble', slack: 0.05 }],
+      ['Stolpern bei 42°', { slip: 'stumble', alpha: 42 }],
+      ['Ausrutschen mit Schlappseil', { slip: 'slide', slack: 0.6 }],
+      ['Ausrutschen, straff, verspreizt', { slip: 'slide', slack: 0, react: 'braced', alpha: 30 }],
+    ],
+  },
+};
+const SC_ORDER = ['lead', 'top', 'glacier', 'ridge', 'steep', 'short'];
+const COMMON_GROUPS = [
+  ['Personen', [
+    { id: 'mF', label: r => 'Masse ' + r.roleF, type: 'range', min: 45, max: 120, step: 1, unit: 'kg', dec: 0, glob: true },
+    { id: 'mH', label: r => 'Masse ' + r.roleH, type: 'range', min: 45, max: 120, step: 1, unit: 'kg', dec: 0, glob: true },
+  ]],
+  ['Seil', [
+    { id: 'ropeType', label: 'Seiltyp', type: 'select', options: Object.entries(ROPES).map(([k, v]) => [k, v.label]) },
+    { id: 'ropeD', label: 'Durchmesser', type: 'range', step: 0.1, unit: 'mm', dec: 1, minFn: c => ROPES[c.ropeType].d[0], maxFn: c => ROPES[c.ropeType].d[1] },
+    { id: 'impact', label: 'Norm-Fangstoß (Herstellerangabe)', type: 'range', step: 0.1, unit: 'kN', dec: 1, minFn: c => (ROPES[c.ropeType].imp || [0, 1])[0], maxFn: c => (ROPES[c.ropeType].imp || [0, 1])[1], show: c => !!ROPES[c.ropeType].imp },
+    { id: 'ropeCond', label: 'Zustand', type: 'select', options: [['neu', 'neu'], ['gebraucht', 'gebraucht'], ['alt', 'stark beansprucht']] },
+    { id: 'wet', label: 'Nass oder vereist', type: 'toggle' },
+  ]],
+  ['Anseilen und Gurt', [
+    { id: 'tieIn', label: 'Anseilen', type: 'select', options: Object.entries(TIEIN).map(([k, v]) => [k, v.label]) },
+    { id: 'harnessCond', label: 'Gurt', type: 'select', options: [['neu', 'neu'], ['gebraucht', 'gebraucht'], ['verschlissen', 'verschlissen, Sicherungsring aufgescheuert']] },
+  ]],
+  ['Bewertung', [
+    { id: 'basis', label: 'Bruchlasten', type: 'select', options: [['typ', 'typische Herstellerwerte'], ['norm', 'Normmindestwerte']], glob: true },
+  ]],
+];
+
+// ===== App: Grundlagen =====
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const vadd = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k];
+const vsub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const vdist = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+const unit = v => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; };
+const vlerp = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
+const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+const R1 = v => Math.round(v * 10) / 10;
+const pt = p => R1(p[0]) + ',' + R1(p[1]);
+const RL = r => r >= 1 ? 'bad' : r >= 0.8 ? 'hi' : r >= 0.5 ? 'mid' : 'ok';
+const LOC_ORDER = ['A', 'E', 'B', 'C', 'D'];
+const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const compH = h => h <= 10 ? h : 10 + (h - 10) * 0.25;
+const compD = d => d <= 8 ? d : 8 + (d - 8) * 0.3;
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+function rng32(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+const STATE = { sc: 'lead', mF: 80, mH: 75, basis: 'typ', preset: 0, speed: 0.5 };
+const P = {}, C = {};
+function defaultsP(sc) { const o = {}; SCEN[sc].groups.forEach(([, its]) => its.forEach(it => { o[it.id] = it.def; })); return o; }
+function defaultsC(sc) {
+  const rt = SCEN[sc].common.ropeType, R = ROPES[rt];
+  return { ropeType: rt, ropeD: R.d[2], impact: R.imp ? R.imp[2] : 0, ropeCond: 'neu', wet: false, tieIn: SCEN[sc].common.tieIn, harnessCond: 'neu' };
+}
+SC_ORDER.forEach(sc => { P[sc] = defaultsP(sc); C[sc] = defaultsC(sc); });
+
+// ---------- Figuren ----------
+// Winkel in Grad, im Uhrzeigersinn ab "oben"; +x = Blickrichtung
+const POSES = {
+  stand:   { t: 0,   ua: [168, 192], fa: [175, 185], th: [174, 186], sh: [178, 182] },
+  belay:   { t: -8,  ua: [52, 200],  fa: [22, 168],  th: [168, 192], sh: [180, 184] },
+  belayUp: { t: -14, ua: [26, 206],  fa: [6, 168],   th: [164, 194], sh: [180, 188] },
+  climb:   { t: 14,  ua: [18, 55],   fa: [4, 20],    th: [140, 196], sh: [206, 178] },
+  fall:    { t: -18, ua: [-35, 35],  fa: [-15, 65],  th: [150, 200], sh: [200, 172] },
+  hang:    { t: -26, ua: [75, 115],  fa: [105, 150], th: [98, 112],  sh: [158, 170] },
+  lean:    { t: -28, ua: [82, 96],   fa: [86, 92],   th: [156, 198], sh: [176, 186] },
+  brace:   { t: -18, ua: [100, 128], fa: [112, 140], th: [148, 204], sh: [186, 170] },
+  walk:    { t: 6,   ua: [158, 204], fa: [150, 196], th: [160, 202], sh: [186, 176] },
+  prone:   { t: 0,   ua: [-18, 18],  fa: [-8, 8],    th: [175, 187], sh: [178, 184] },
+  slide:   { t: 0,   ua: [40, -40],  fa: [62, -62],  th: [168, 192], sh: [176, 184] },
+  stumble: { t: 58,  ua: [112, 142], fa: [122, 152], th: [168, 214], sh: [206, 182] },
+  sit:     { t: -12, ua: [150, 168], fa: [140, 158], th: [92, 100],  sh: [168, 176] },
+  jump:    { t: -8,  ua: [-30, 40],  fa: [-10, 70],  th: [118, 150], sh: [200, 190] },
+  lifted:  { t: -22, ua: [70, 100],  fa: [60, 95],   th: [150, 190], sh: [190, 200] },
+};
+const PK = ['ua', 'fa', 'th', 'sh'];
+function poseOf(p) { return typeof p === 'string' ? (POSES[p] || POSES.stand) : p; }
+function mixP(a, b, w) {
+  const A = poseOf(a), B = poseOf(b), k = clamp(w, 0, 1), o = { t: lerp(A.t, B.t, k) };
+  PK.forEach(key => { o[key] = [lerp(A[key][0], B[key][0], k), lerp(A[key][1], B[key][1], k)]; });
+  return o;
+}
+function flailP(p, amp, tt) {
+  const A = poseOf(p);
+  if (!amp) return A;
+  const s = (f, ph) => amp * Math.sin(tt * f + ph);
+  return { t: A.t + s(7, 0) * 0.25, ua: [A.ua[0] + s(13, 0), A.ua[1] + s(11, 2)], fa: [A.fa[0] + s(17, 1), A.fa[1] + s(15, 3)],
+    th: [A.th[0] + s(10, 1) * 0.5, A.th[1] + s(9, 4) * 0.5], sh: [A.sh[0] + s(14, 2) * 0.6, A.sh[1] + s(12, 5) * 0.6] };
+}
+// f: { hip:[px], pose, rot, mir, role, reach:[px], flail, pack }
+function figSVG(f, h, tt, cls, style) {
+  const P0 = flailP(f.pose, f.flail || 0, tt || 0);
+  const hip = f.hip, mir = !!f.mir, rot = f.rot || 0;
+  const A = a => (mir ? -a : a) + rot;
+  const dir = a => { const r = A(a) * Math.PI / 180; return [Math.sin(r), -Math.cos(r)]; };
+  const go = (p, a, l) => vadd(p, dir(a), l * h);
+  const sh = go(hip, P0.t, 0.30), hd = go(sh, P0.t, 0.125), fwd = dir(P0.t + 90);
+  const leg = i => { const k = go(hip, P0.th[i], 0.255), ft = go(k, P0.sh[i], 0.255); return { d: `M${pt(hip)}L${pt(k)}L${pt(ft)}`, ft }; };
+  const arm = i => {
+    if (i === 0 && f.reach) { const m = [(sh[0] + f.reach[0]) / 2, (sh[1] + f.reach[1]) / 2 + h * 0.03]; return `M${pt(sh)}L${pt(m)}L${pt(f.reach)}`; }
+    const e = go(sh, P0.ua[i], 0.165), hn = go(e, P0.fa[i], 0.15); return `M${pt(sh)}L${pt(e)}L${pt(hn)}`;
+  };
+  const lw = R1(clamp(h * 0.085, 3, 9)), aw = R1(clamp(h * 0.07, 2.5, 7.5)), tw = R1(clamp(h * 0.15, 5, 16));
+  const L1 = leg(1), L0 = leg(0);
+  const boot = ft => `M${pt(ft)}l${R1(fwd[0] * h * 0.07)},${R1(fwd[1] * h * 0.07)}`;
+  let s = `<g class="fig ${cls || ''}"${style ? ` style="${style}"` : ''}>`;
+  s += `<path class="bk" d="${L1.d}${boot(L1.ft)}" stroke-width="${lw}"/><path class="bk" d="${arm(1)}" stroke-width="${aw}"/>`;
+  if (f.pack) {
+    const ax = vsub(sh, hip), b0 = vadd(vadd(hip, ax, 0.3), fwd, -h * 0.07), b1 = vadd(vadd(hip, ax, 0.95), fwd, -h * 0.07);
+    s += `<path class="pack" d="M${pt(b0)}L${pt(b1)}" stroke-width="${R1(tw * 1.25)}"/>`;
+  }
+  s += `<path d="M${pt(hip)}L${pt(sh)}" stroke-width="${tw}"/>`;
+  s += `<path d="${L0.d}${boot(L0.ft)}" stroke-width="${lw}"/><path d="${arm(0)}" stroke-width="${aw}"/>`;
+  const hr = h * 0.072, up = dir(P0.t);
+  s += `<circle class="head" cx="${R1(hd[0])}" cy="${R1(hd[1])}" r="${R1(hr)}"/>`;
+  let dome = '';
+  const base = Math.atan2(up[0], -up[1]);
+  for (let a = -100; a <= 100; a += 20) { const r = base + a * Math.PI / 180; dome += (dome ? 'L' : 'M') + pt([hd[0] + Math.sin(r) * hr * 1.14, hd[1] - Math.cos(r) * hr * 1.14]); }
+  s += `<path class="${f.role === 'F' ? 'hf' : 'hh'}" d="${dome}Z"/>`;
+  const hb = vadd(hip, vsub(sh, hip), 0.08), side = [-(sh[1] - hip[1]), sh[0] - hip[0]], sl = Math.hypot(side[0], side[1]) || 1;
+  s += `<path class="harn" d="M${pt(vadd(hb, side, -0.07 * h / sl))}L${pt(vadd(hb, side, 0.07 * h / sl))}" stroke-width="${R1(clamp(h * 0.045, 2, 4.5))}"/>`;
+  s += `<circle class="hp" cx="${R1(hip[0])}" cy="${R1(hip[1])}" r="${R1(clamp(h * 0.04, 2, 4.2))}"/></g>`;
+  return s;
+}
+function headPos(f, h) {
+  const P0 = poseOf(f.pose), a = ((f.mir ? -P0.t : P0.t) + (f.rot || 0)) * Math.PI / 180;
+  return [f.hip[0] + Math.sin(a) * 0.425 * h, f.hip[1] - Math.cos(a) * 0.425 * h];
+}
+
+// ---------- Ausrüstung und Gelände ----------
+const poly = (tf, cls, pts) => `<polygon class="${cls}" points="${pts.map(p => pt(tf.p(p[0], p[1]))).join(' ')}"/>`;
+const polyS = (tf, cls, pts) => poly(tf, cls, pts) + poly(tf, 'shade', pts);
+function bolt(tf, w, k) {
+  const [x, y] = tf.p(w[0], w[1]);
+  return `<rect class="gear" x="${R1(x - 5 * k)}" y="${R1(y - 6 * k)}" width="${R1(7 * k)}" height="${R1(12 * k)}" rx="${R1(2.5 * k)}"/><circle class="gear-f" cx="${R1(x - 1.5 * k)}" cy="${R1(y - 2 * k)}" r="${R1(1.6 * k)}"/>`;
+}
+function binerPx(p, k, ang) {
+  return `<ellipse class="biner" cx="${R1(p[0])}" cy="${R1(p[1])}" rx="${R1(3.6 * k)}" ry="${R1(6.4 * k)}" transform="rotate(${R1(ang || 0)} ${R1(p[0])} ${R1(p[1])})"/>`;
+}
+function biner(tf, w, k, ang) { return binerPx(tf.p(w[0], w[1]), k, ang); }
+function pieceSVG(tf, type, w, k) {
+  const [x, y] = tf.p(w[0], w[1]);
+  if (type.startsWith('bolt')) return bolt(tf, w, k);
+  if (type.startsWith('piton')) return `<path class="gear" d="M${R1(x + 7 * k)},${R1(y - 1.5 * k)} L${R1(x - 3 * k)},${R1(y - 3 * k)} L${R1(x - 3 * k)},${R1(y + 3 * k)} Z"/><circle class="gear" cx="${R1(x - 5 * k)}" cy="${R1(y + 2 * k)}" r="${R1(2.8 * k)}"/>` + (type === 'piton_old' ? `<path class="rust" d="M${R1(x - 8 * k)},${R1(y - 1 * k)} l${R1(1 * k)},${R1(5 * k)} M${R1(x - 3 * k)},${R1(y + 4 * k)} l${R1(1 * k)},${R1(3 * k)}"/>` : '');
+  if (type.startsWith('cam')) return `<circle class="gear" cx="${R1(x + 2 * k)}" cy="${R1(y)}" r="${R1((type === 'cam_small' ? 3.5 : 5) * k)}"/><path class="sling" d="M${R1(x + 2 * k)},${R1(y)} l${R1(-9 * k)},${R1(4 * k)}" stroke-width="2"/>`;
+  if (type === 'nut') return `<path class="gear" d="M${R1(x + 5 * k)},${R1(y - 5 * k)} L${R1(x - 1 * k)},${R1(y - 3 * k)} L${R1(x)},${R1(y + 3 * k)} L${R1(x + 5 * k)},${R1(y + 4 * k)} Z"/><path class="sling" d="M${R1(x)},${R1(y + 1 * k)} l${R1(-7 * k)},${R1(4 * k)}" stroke-width="1.4"/>`;
+  if (type === 'thread') return `<circle class="gear" cx="${R1(x + 3 * k)}" cy="${R1(y)}" r="${R1(3 * k)}"/><path class="sling" d="M${R1(x + 3 * k)},${R1(y - 4 * k)} q${R1(-12 * k)},${R1(2 * k)} ${R1(-8 * k)},${R1(8 * k)} q${R1(4 * k)},${R1(1 * k)} ${R1(8 * k)},${R1(-1 * k)}" stroke-width="2"/>`;
+  if (type.startsWith('screw')) return `<path class="sling" d="M${R1(x + 9 * k)},${R1(y - 2 * k)} L${R1(x - 2 * k)},${R1(y)}" stroke-width="${R1(3 * k)}" stroke-dasharray="${R1(1.5 * k)} ${R1(1 * k)}"/><rect class="gear" x="${R1(x - 5 * k)}" y="${R1(y - 3 * k)}" width="${R1(5 * k)}" height="${R1(8 * k)}" rx="${R1(1.5 * k)}"/>`;
+  return `<path class="sling" d="M${R1(x + 10 * k)},${R1(y - 4 * k)} L${R1(x - 2 * k)},${R1(y)}" stroke-width="${R1(3 * k)}"/>`;
+}
+function drawSVG(tf, from, to, k) {
+  const a = tf.p(from[0], from[1]), b = tf.p(to[0], to[1]);
+  return `<path class="sling" d="M${pt(a)}L${pt(b)}"/>` + binerPx(b, k, Math.atan2(b[0] - a[0], a[1] - b[1]) * 180 / Math.PI);
+}
+function anchorSVG(tf, pts, center, k) {
+  let s = '';
+  pts.forEach(w => { const a = tf.p(w[0], w[1]), c = tf.p(center[0], center[1]); s += `<path class="sling" d="M${pt(a)}L${pt(c)}" stroke-width="2"/>`; });
+  pts.forEach(w => { s += bolt(tf, w, k); });
+  return s + biner(tf, center, k, 0);
+}
+// Felsstruktur entlang einer Kante (Risse), deterministisch
+function cracks(tf, a, b, inward, n, seed, depth) {
+  const r = rng32(seed), along = unit(vsub(b, a)); let s = '';
+  const rot = (v, t) => [v[0] * Math.cos(t) - v[1] * Math.sin(t), v[0] * Math.sin(t) + v[1] * Math.cos(t)];
+  for (let i = 0; i < n; i++) {
+    const p0 = vlerp(a, b, r()), len = 0.25 + r() * (depth || 0.9);
+    const dir = rot(inward, (r() - 0.5) * 1.3);
+    const p1 = vadd(p0, dir, len * 0.45), p2 = vadd(p1, along, (r() < 0.5 ? -1 : 1) * len * (0.3 + r() * 0.5)), p3 = vadd(p2, dir, len * 0.35 * r());
+    s += `M${pt(tf.p(p0[0], p0[1]))}L${pt(tf.p(p1[0], p1[1]))}L${pt(tf.p(p2[0], p2[1]))}L${pt(tf.p(p3[0], p3[1]))}`;
+  }
+  return `<path class="crack" d="${s}"/>`;
+}
+// Schneeschichtung parallel zur Oberfläche
+function layers(tf, a, b, nrm, n, seed) {
+  const r = rng32(seed); let s = '';
+  for (let i = 0; i < n; i++) {
+    const d = 0.35 + i * 0.55 + r() * 0.3, f0 = r() * 0.3, f1 = 0.7 + r() * 0.3;
+    const p0 = vadd(vlerp(a, b, f0), nrm, -d), p1 = vadd(vlerp(a, b, f1), nrm, -d - (r() - 0.5) * 0.2);
+    s += `M${pt(tf.p(p0[0], p0[1]))}L${pt(tf.p(p1[0], p1[1]))}`;
+  }
+  return `<path class="layer" d="${s}"/>`;
+}
+// Karabiner an der Zwischensicherung richtet sich nach der Resultierenden der beiden Seilstränge aus
+function qdContact(piece, a, b, w, len, rest) {
+  const res = unit(vadd(unit(vsub(a, piece)), unit(vsub(b, piece))));
+  return vadd(piece, unit(vlerp(unit(rest || [-0.35, -1]), res, clamp(w, 0, 1))), len);
+}
+
+const SCENES = {};
+
+// ---- Vorstieg ----
+SCENES.lead = (ctx) => {
+  const I = ctx.M.info, p = ctx.p, S = ctx.S, none = I.none, central = I.central, ground = I.ground;
+  const pk = Math.max(1, S.peakF), tc = S.tFree;
+  const hD = 1.45, hB = none ? hD : hD + I.Dp, h0 = hB + I.a;
+  const Y = h => h >= 0 ? compH(h) : (h >= -6 ? h : -6 + (h + 6) * 0.3);
+  const xb = ground ? -1.8 : -1.9, edgeX = -2.6;
+  const anchorPt = [-0.15, hD - 0.3];
+  const pc = [0, Y(hB)];
+  const kinks = [];
+  if (!none && I.zz < 1) { const n = I.zz < 0.7 ? 2 : 1; for (let i = 1; i <= n; i++) kinks.push(hD + 0.6 + (hB - hD - 0.9) * i / (n + 1)); }
+  const fx = h => (!none || ground) ? -0.42 : lerp(-0.42, -3.15, clamp((hD + 0.3 - h) / 1.4, 0, 1));
+  const frame = (sm, Hh) => {
+    const hip0 = 0.51 * Hh, w = clamp(sm.Ff / pk, 0, 1), dc = sm.t - tc;
+    let h = h0 - sm.x, pose, rot = 0, flail = 0;
+    const minH = (!none || ground) ? 0.3 : -1e9, floor = h < minH;
+    if (floor) h = minH;
+    const settle = sm.free ? 0 : smooth(dc / 0.3);
+    if (sm.pre) pose = 'climb';
+    else if (floor) pose = 'sit';
+    else if (sm.free) { pose = mixP('climb', 'fall', sm.t / 0.15); rot = -24 * clamp(sm.t / Math.max(tc, 0.25), 0, 1); flail = 14; }
+    else { pose = mixP('fall', 'hang', settle); rot = -24 * (1 - settle) + 9 * Math.exp(-dc / 0.55) * Math.sin(dc * 8); flail = 8 * (1 - settle); }
+    const fHip = [fx(h) + (none ? 0 : 0.13 * settle), Y(h)];
+    const l = sm.sl.stance || 0;
+    let hHip = [xb, hip0], hPose = central ? 'belay' : 'belayUp', hf = 0;
+    if (!central && none) { const k = clamp(l / 0.3, 0, 1); hHip = [xb - 0.35 * k, hip0 - 0.2 * k]; hPose = mixP('belay', 'brace', k); }
+    else if (!central && l > 0.005) { hHip = [xb + (ground ? 0.55 : 0.25) * clamp(l / 1.2, 0, 1), hip0 + l]; hPose = mixP('belayUp', l > 0.25 ? 'lifted' : 'lean', clamp(l / 0.12, 0, 1)); hf = l > 0.25 ? 6 : 0; }
+    else if (!central && !sm.pre && !sm.free) hPose = mixP('belayUp', 'lean', w);
+    const dev = central ? [anchorPt[0] - 0.02, anchorPt[1] - 0.14] : [hHip[0] + 0.13, hHip[1] + 0.03];
+    const rope = [fHip], draws = [];
+    let qd = null;
+    if (!none) {
+      const nxt = kinks.length ? [-0.16, Y(kinks[kinks.length - 1]) - 0.3] : dev;
+      qd = qdContact(pc, fHip, nxt, sm.free || sm.pre ? 0 : w * 1.5, 0.34);
+      rope.push(qd); draws.push([pc, qd]);
+      kinks.slice().reverse().forEach(hk => rope.push([-0.16, Y(hk) - 0.3]));
+    }
+    rope.push(dev);
+    const heat = [{ p: dev, k: clamp((sm.slv.device || 0) * sm.Fh / 4000, 0, 1) }];
+    const emit = [];
+    if (!central && !ground && none && l > 0.02) emit.push({ id: 'st', p: [xb, 0.02], v: [-0.6, 1.2], rate: 60 * clamp(sm.slv.stance || 0, 0, 3), kind: 'dust' });
+    if (!central && l > 0.005 && l < 0.2) emit.push({ id: 'lift', p: [xb, 0.02], v: [0.2, 1.0], rate: 90 * clamp(sm.slv.stance || 0, 0, 2), kind: 'dust' });
+    return {
+      figs: [{ hip: hHip, pose: hPose, role: 'H', flail: hf }, { hip: fHip, pose, rot, role: 'F', flail }],
+      rope, draws, heat, emit, fHip, det: none ? [dev, 'Sicherungsgerät'] : [vlerp(pc, qd, 0.5), 'Zwischensicherung'],
+      lan: ground ? [] : [[[hHip[0] + 0.05, hHip[1] + 0.03], anchorPt]],
+      brk: central ? [[dev, [hHip[0] + 0.28, hHip[1] + 0.12]]] : [],
+      marks: { A: [fHip, 'F'], B: [pc, [26, -4]], C: [hHip, 'H'], D: [[0, hD], [26, 12]] },
+    };
+  };
+  const terrain = (tf, Hh, k) => {
+    let s = '';
+    if (ground) {
+      s += polyS(tf, 's-rock', [[0, 300], [0, 0], [80, 0], [80, 300]]);
+      s += polyS(tf, 's-earth', [[-80, 0], [80, 0], [80, -60], [-80, -60]]);
+    } else {
+      s += polyS(tf, 's-rock', [[0, 300], [0, 0], [edgeX, 0], [edgeX, -300], [80, -300], [80, 300]]);
+      s += cracks(tf, [edgeX, -12], [edgeX, 0], [1, 0], 14, 7, 0.7);
+    }
+    s += cracks(tf, [0, 0], [0, compH(h0 + 6)], [1, 0], 26, 3, 1.1);
+    if (!ground) s += anchorSVG(tf, [[0, hD + 0.12], [0, hD - 0.12]], anchorPt, k);
+    if (!none) {
+      s += pieceSVG(tf, p.piece, pc, k);
+      kinks.forEach(hk => { s += drawSVG(tf, [0, Y(hk)], [-0.16, Y(hk) - 0.3], k) + bolt(tf, [0, Y(hk)], k); });
+    }
+    return s;
+  };
+  return {
+    frame, terrain, hx: 2.6, compressed: h0 > 10.2 || h0 - S.xMax < -6, ground: 'dust',
+    ext: [[edgeX - 0.8, -0.6], [0.9, 0], [0.9, Y(h0) + 0.9]],
+    strikePt: (!none || ground) ? [-0.42, 0] : null,
+  };
+};
+
+// ---- Toprope / Nachstieg ----
+SCENES.top = (ctx) => {
+  const I = ctx.M.info, S = ctx.S, pk = Math.max(1, S.peakF), tc = S.tFree;
+  if (I.variant === 'tr') {
+    const H = I.H, hc = I.hc, topY = compH(H), xb = -2.4;
+    const top = [0, topY + 0.02];
+    const frame = (sm, Hh) => {
+      const hip0 = 0.51 * Hh, w = clamp(sm.Ff / pk, 0, 1), dc = sm.t - tc;
+      let h = hc - sm.x, pose, rot = 0, flail = 0;
+      const floor = h < 0.3; if (floor) h = 0.3;
+      const settle = sm.free ? 0 : smooth(dc / 0.3);
+      if (sm.pre) pose = 'climb';
+      else if (floor) pose = 'sit';
+      else if (sm.free) { pose = mixP('climb', 'fall', sm.t / 0.12); flail = 10; }
+      else { pose = mixP('fall', 'hang', settle); rot = 6 * Math.exp(-dc / 0.5) * Math.sin(dc * 9); flail = 6 * (1 - settle); }
+      const fHip = [-0.42 + 0.1 * settle, compH(h)];
+      const l = sm.sl.stance || 0;
+      const hHip = [xb + 0.55 * clamp(l, 0, 1), hip0 + l];
+      const hPose = l > 0.005 ? mixP('belayUp', l > 0.3 ? 'lifted' : 'lean', clamp(l / 0.12, 0, 1)) : mixP('belayUp', 'lean', sm.pre || sm.free ? 0 : w * 0.8);
+      const dev = [hHip[0] + 0.13, hHip[1] + 0.03];
+      const topPt = qdContact(top, fHip, dev, 1, 0.3, [0, -1]);
+      const emit = [];
+      if (l > 0.003 && l < 0.2) emit.push({ id: 'lift', p: [xb, 0.02], v: [0.3, 1.0], rate: 90 * clamp(sm.slv.stance || 0, 0, 2), kind: 'dust' });
+      return {
+        figs: [{ hip: hHip, pose: hPose, role: 'H', flail: l > 0.3 ? 6 : 0 }, { hip: fHip, pose, rot, role: 'F', flail }],
+        rope: [fHip, topPt, dev], draws: [[top, topPt]], fHip, emit, det: [dev, 'Sicherungsgerät'],
+        heat: [{ p: dev, k: clamp((sm.slv.device || 0) * sm.Fh / 4000, 0, 1) }],
+        lan: I.free ? [] : [[[hHip[0] + 0.02, hHip[1] - 0.05], [xb + 0.4, 0.06]]],
+        marks: { A: [fHip, 'F'], B: [[0, topY], [26, -4]], C: [hHip, 'H'] },
+      };
+    };
+    const terrain = (tf, Hh, k) => {
+      let s = polyS(tf, 's-rock', [[0, 300], [0, 0], [80, 0], [80, 300]]);
+      s += cracks(tf, [0, 0], [0, topY + 3], [1, 0], 30, 5, 1.1);
+      s += polyS(tf, 's-earth', [[-80, 0], [80, 0], [80, -60], [-80, -60]]);
+      s += bolt(tf, [0, topY + 0.14], k) + bolt(tf, [0, topY - 0.1], k);
+      if (!I.free) s += bolt(tf, [xb + 0.4, 0.06], k);
+      return s;
+    };
+    return { frame, terrain, hx: 2.6, compressed: H > 10.2, ground: 'dust', ext: [[xb - 1, -0.5], [0.9, topY + 1]], strikePt: [-0.42, 0] };
+  }
+  const L = I.L, edge = I.edge, hD = 1.25, edgeX = -1.6;
+  const anchorPt = [-0.15, hD - 0.28];
+  const dev = [anchorPt[0] - 0.03, anchorPt[1] - 0.14];
+  const d0 = edge ? Math.max(0.5, L - 2.85) : L;
+  const frame = (sm, Hh) => {
+    const hip0 = 0.51 * Hh, w = clamp(sm.Ff / pk, 0, 1), dc = sm.t - tc;
+    const settle = sm.free ? 0 : smooth(dc / 0.3);
+    const pose = sm.pre ? 'climb' : sm.free ? mixP('climb', 'fall', sm.t / 0.12) : mixP('fall', 'hang', settle);
+    const rot = sm.free || sm.pre ? 0 : 7 * Math.exp(-dc / 0.5) * Math.sin(dc * 9);
+    const fHip = edge ? [edgeX - 0.4 + 0.15 * settle, -compD(d0 + sm.x)] : [-0.42, hD - compD(d0 + sm.x)];
+    const hHip = edge ? [-0.85, hip0] : [-0.6, 0.3];
+    const E = [edgeX + 0.02, 0.03];
+    return {
+      figs: [{ hip: hHip, pose: edge ? mixP('belay', 'brace', w * 0.7) : 'hang', mir: edge, role: 'H' }, { hip: fHip, pose, rot, role: 'F', flail: sm.free ? 10 : 6 * (1 - settle) }],
+      rope: edge ? [fHip, E, dev] : [fHip, dev], fHip, det: edge ? [[edgeX, 0], 'Felskante'] : [dev, 'Sicherungsgerät'],
+      heat: [{ p: dev, k: clamp((sm.slv.device || 0) * sm.Fh / 4000, 0, 1) }].concat(edge ? [{ p: [edgeX, 0], k: w * 0.8, edge: true }] : []),
+      lan: [[[hHip[0] + 0.04, hHip[1] + 0.03], anchorPt]],
+      brk: [[dev, [hHip[0] + (edge ? -0.25 : 0.2), hHip[1] + 0.15]]],
+      marks: { A: [fHip, 'F'], E: [[edgeX, 0], [-28, 16]], D: [[0, hD], [26, 8]] },
+    };
+  };
+  const terrain = (tf, Hh, k) => {
+    let s = edge ? polyS(tf, 's-rock', [[0, 300], [0, 0], [edgeX, 0], [edgeX, -300], [80, -300], [80, 300]])
+      : polyS(tf, 's-rock', [[0, 300], [0, -300], [80, -300], [80, 300]]);
+    s += cracks(tf, [0, -12], [0, hD + 4], [1, 0], 26, 9, 1);
+    if (edge) s += cracks(tf, [edgeX, -14], [edgeX, 0], [1, 0], 16, 11, 0.8);
+    return s + anchorSVG(tf, [[0, hD + 0.12], [0, hD - 0.12]], anchorPt, k);
+  };
+  return { frame, terrain, hx: 2.6, compressed: d0 + S.xMax > 8.2, ground: 'dust', ext: [[edge ? edgeX - 1.3 : -1.6, 0], [0.9, hD + 1.2]], strikePt: null };
+};
+
+// ---- Spaltensturz ----
+SCENES.glacier = (ctx) => {
+  const I = ctx.M.info, p = ctx.p, S = ctx.S, pk = Math.max(1, S.peakF), tc = S.tFree;
+  const al = I.alpha * Math.PI / 180, ca = Math.cos(al), sa = Math.sin(al), ta = Math.tan(al);
+  const W = 1.4, s0 = Math.max(1.5, I.Lr - I.slack - 0.7), n = I.n;
+  const nrm = [-sa, ca];
+  const snow = p.snow;
+  const gAmp = { soft: 0.3, firn: 0.12, hard: 0.02 }[snow], gBase = { soft: 0.06, firn: 0.03, hard: 0.005 }[snow];
+  const cut = { soft: 0.4, firn: 0.2, hard: 0.05 }[snow], maxD = { soft: 0.42, firn: 0.3, hard: 0.1 }[snow];
+  const pk2 = snow === 'hard' ? 'ice' : 'snow';
+  const surf = s => [s * ca, s * sa];
+  const holderAt = (s, sm, Hh, hs, i) => {
+    const hip0 = 0.51 * Hh;
+    if (s <= 0.45) return { hip: [-0.32 - 0.1 * i, -Math.min(2.6, (0.45 - s) * 1.1) + 0.25], pose: 'fall', rot: -30 * Math.min(1, (0.45 - s)), mir: false, flail: 14, pack: true };
+    const foot = surf(s), lieRot = 90 - I.alpha;
+    const w = clamp(sm.Ff / pk, 0, 1);
+    if (!sm.pre && I.react === 'arrest') { const k = clamp(sm.t / 0.25, 0, 1); return { hip: vlerp(vadd(foot, [0, hip0]), vadd(foot, nrm, 0.2), k), pose: mixP('stumble', 'prone', k), rot: lieRot * k, pack: true }; }
+    if (!sm.pre && hs > (I.react === 'ready' ? 0.35 : 0.08)) return { hip: vadd(foot, nrm, 0.2), pose: 'slide', rot: lieRot, pack: true, flail: 5 };
+    if (sm.pre || sm.free) return { hip: vadd(foot, [0, hip0]), pose: 'walk', mir: true, pack: true };
+    if (I.react === 'ready') return { hip: vadd(foot, [0.05, hip0 * 0.95]), pose: mixP('walk', 'lean', w * 2), mir: true, pack: true };
+    return { hip: vadd(foot, [0, hip0 * 0.9]), pose: hs > 0.02 ? 'stumble' : mixP('walk', 'lean', w * 2), mir: true, pack: true, flail: hs > 0.02 ? 6 : 0 };
+  };
+  const frame = (sm, Hh) => {
+    const hip0 = 0.51 * Hh, x = sm.x, w = clamp(sm.Ff / pk, 0, 1), dc = sm.t - tc;
+    const frac = clamp(x / Math.max(0.3, ctx.M.dFree), 0, 1);
+    const settle = sm.free ? 0 : smooth(dc / 0.35);
+    const fHip = sm.pre ? [-0.7, hip0] : [-0.7 + 0.42 * frac, hip0 - Math.min(9.5, compD(x))];
+    let pose, rot = 0, flail = 0;
+    if (sm.pre) pose = 'walk';
+    else if (sm.free || sm.post) { pose = mixP('walk', 'fall', sm.t / 0.12); rot = -45 * frac; flail = 16; }
+    else { pose = mixP('fall', 'hang', settle); rot = -45 * (1 - settle) + 10 * Math.exp(-dc / 0.6) * Math.sin(dc * 7); flail = 8 * (1 - settle); }
+    // Rinne im Spaltenrand: wächst mit der Last, bildet sich nicht zurück
+    const wMax = sm.pre || sm.free ? 0 : (sm.t >= S.tPeak ? 1 : w);
+    const groove = gBase + gAmp * wMax;
+    // Bremsknoten: bleiben am Rand hängen und schneiden in den Schnee
+    const lip0 = [0.05, 0];
+    const Lfl = vdist(fHip, [lip0[0], -groove]);
+    const knots = [];
+    let deepest = groove;
+    const LflT = vdist([-0.28, hip0 - compD(ctx.M.dFree)], [lip0[0], -gBase]);
+    const xE = sm.t >= S.tPeak ? Math.max(x, S.xMax) : x, fracE = clamp(xE / Math.max(0.3, ctx.M.dFree), 0, 1);
+    const LflE = sm.pre ? 0 : vdist([-0.7 + 0.42 * fracE, hip0 - Math.min(9.5, compD(xE))], [lip0[0], -groove]);
+    for (let i = 0; i < I.knots; i++) {
+      const q = Math.max(1.2, LflT - 0.1) + 1.5 * i, over = LflE - q;
+      if (over > 0) {
+        const depth = Math.min(maxD, groove + over * cut * 1.6 + 0.05);
+        knots.push({ jam: true, depth, x: lip0[0] + 0.14 * i, i });
+        if (i === 0) deepest = Math.max(deepest, depth);
+      } else knots.push({ jam: false, q, i });
+    }
+    const lipPt = [lip0[0], -deepest];
+    const hs = sm.sl.stance || 0;
+    const h1 = holderAt(s0 - hs, sm, Hh, hs, 0);
+    const figs = [{ ...h1, role: 'H' }];
+    // Ist der Sichernde über die Kante gerissen, hat das Seil keinen Umlenkpunkt mehr: es hängt frei zwischen beiden.
+    const inCrev = h1.hip[0] < lip0[0] - 0.05 && h1.hip[1] < -0.05;
+    const rope = [fHip];
+    if (!inCrev) {
+      rope.push(lipPt);
+      knots.filter(k => k.jam && k.i > 0).forEach(k => rope.push([k.x, -k.depth * 0.7]));
+    }
+    rope.push(h1.hip);
+    let h2 = null;
+    if (n === 2) { h2 = holderAt(s0 + 4.5 - hs, sm, Hh, hs, 1); figs.push({ ...h2, role: 'H' }); rope.push(h2.hip); }
+    figs.push({ hip: fHip, pose, rot, mir: sm.pre, role: 'F', flail, pack: true });
+    const kpos = knots.map(k => {
+      if (inCrev) return { p: vlerp(fHip, h1.hip, (k.i + 1) / (I.knots + 1)), jam: false, dir: vsub(h1.hip, fHip) };
+      if (k.jam) return { p: k.i === 0 ? [lip0[0] + 0.02, -k.depth + 0.04] : [k.x, -k.depth * 0.7 + 0.03], jam: true, dir: [0.15, 1] };
+      let rem = k.q;
+      for (let j = 0; j < rope.length - 1; j++) { const L = vdist(rope[j], rope[j + 1]); if (rem <= L) return { p: vlerp(rope[j], rope[j + 1], rem / L), jam: false, dir: vsub(rope[j + 1], rope[j]) }; rem -= L; }
+      return null;
+    }).filter(Boolean);
+    const emit = [];
+    if (!sm.free && !sm.pre && sm.t < S.tPeak + 0.25 && sm.v > 0.15) {
+      emit.push({ id: 'lip', p: [0.1, 0.02], v: [-0.7, 1.7], rate: (snow === 'hard' ? 35 : 120) * w + 10, kind: pk2, spread: 1.6 });
+      knots.filter(k => k.jam).forEach(k => emit.push({ id: 'k' + k.i, p: [k.x + 0.06, 0.03], v: [-0.4, 2.1], rate: (snow === 'hard' ? 40 : 150) * clamp(sm.v / 3, 0.2, 1), kind: pk2, spread: 1.8, life: 0.9 }));
+    }
+    const hv = sm.slv.stance || 0;
+    const tracks = [];
+    if (hs > 0.05) {
+      tracks.push([surf(s0), surf(Math.max(0.45, s0 - hs))]);
+      if (h2) tracks.push([surf(s0 + 4.5), surf(s0 + 4.5 - hs)]);
+      if (hv > 0.2 && s0 - hs > 0.45) {
+        emit.push({ id: 'h1', p: vadd(surf(s0 - hs), [-0.1, 0.1]), v: [1.2, 1.5], rate: 80 * clamp(hv / 3, 0.2, 1.5), kind: 'snow', spread: 1.4 });
+        if (h2) emit.push({ id: 'h2', p: vadd(surf(s0 + 4.5 - hs), [-0.1, 0.1]), v: [1.2, 1.5], rate: 60 * clamp(hv / 3, 0.2, 1.5), kind: 'snow', spread: 1.4 });
+      }
+    }
+    return {
+      figs, rope, fHip, knots: kpos, tracks, emit, tagSeg: [0, rope.length - 2 - (h2 ? 1 : 0)], det: [kpos[0] && kpos[0].jam ? vadd(kpos[0].p, [0, 0.08]) : [0.05, -0.12], I.knots ? 'Bremsknoten am Spaltenrand' : 'Spaltenrand'],
+      groove: { x: lip0[0], depth: groove, soft: snow !== 'hard', knots: knots.filter(k => k.jam).map(k => ({ x: k.x, depth: k.depth })) },
+      marks: { A: [fHip, 'F'], E: [[0, 0], [36, 30]], C: [h1.hip, 'H'] },
+    };
+  };
+  const terrain = (tf) => {
+    const far = x => ta * (x + W);
+    let s = poly(tf, 's-ice', [[-60, far(-60)], [-W, 0], [0, 0], [80, 80 * ta], [80, -60], [-60, -60]]);
+    s += poly(tf, 's-crev', [[-W, 0], [-W + 0.12, -0.45], [-1.18, -3], [-0.98, -7], [-0.8, -13.5], [-0.62, -13.5], [-0.45, -7], [-0.13, -3], [0, -0.45], [0, 0]]);
+    s += poly(tf, 's-crevlight', [[-W + 0.1, -0.4], [-1.05, -3.2], [-0.9, -7], [-1.1, -3.1]]);
+    s += poly(tf, 's-snow', [[-60, far(-60)], [-W, 0], [-W + 0.1, -0.42], [-60, far(-60) - 0.42]]);
+    s += poly(tf, 's-snow', [[0, -0.42], [0, 0], [80, 80 * ta], [80, 80 * ta - 0.42]]);
+    s += poly(tf, 'shade', [[-60, far(-60)], [-W, 0], [0, 0], [80, 80 * ta], [80, -60], [-60, -60]]);
+    s += poly(tf, 's-snow', [[-W, 0.02], [-W + 0.42, 0.03], [-W + 0.34, -0.14], [-W + 0.05, -0.3]]);
+    const r = rng32(21); let sg = '';
+    for (let i = 0; i < 5; i++) { const y = -1 - r() * 11, x0 = -12 + r() * 4; sg += `M${pt(tf.p(x0, y))}L${pt(tf.p(-W - 0.2, y + r() * 0.3))}M${pt(tf.p(0.2, y + 0.2))}L${pt(tf.p(9 + r() * 6, y + 0.3))}`; }
+    return s + `<path class="ice-str" d="${sg}"/>`;
+  };
+  const maxS = s0 + (n === 2 ? 4.5 : 0);
+  return {
+    frame, terrain, compressed: S.xMax > 8.2, ground: 'snow',
+    ext: [[-3.2, -1.2], [maxS * ca + 1.6, maxS * sa + 2.3], [-3.2, ta * (-3.2 + W) + 2]],
+    strikePt: null,
+    bursts: [{ t: 0.0, p: [-0.7, -0.15], n: 28, kind: 'chunk', v: [0, -0.3], spread: 1.1, jit: 0.6, life: 1.3 }, { t: 0.0, p: [-0.7, 0], n: 46, kind: 'powder', v: [0, 0.3], spread: 1.4, jit: 0.6, life: 1.1 }],
+  };
+};
+
+// ---- Grat ----
+SCENES.ridge = (ctx) => {
+  const I = ctx.M.info, p = ctx.p, S = ctx.S, act = I.action, pk = Math.max(1, S.peakF), tc = S.tFree;
+  const be = I.beta * Math.PI / 180, cb = Math.cos(be), sb = Math.sin(be), tb = Math.tan(be);
+  const wide = act === 'horn' || act === 'stand';
+  const xL = -0.25, xR = wide ? 1.75 : 0.25;
+  const u = [-cb, -sb], nL = [-sb, cb], v = [cb, -sb], nR = [sb, cb];
+  const cls = { rock: 's-rock', firn: 's-snow', ice: 's-ice' }[p.terrain];
+  const gk = { rock: 'rock', firn: 'snow', ice: 'ice' }[p.terrain];
+  const hornPts = [[0.02, 0], [0.14, 0.85], [0.33, 1.32], [0.52, 1.0], [0.64, 0]];
+  const Dpt = [0.5, 0.42], Ept = [xL + 0.01, 0.04];
+  const steep = I.beta > 72;
+  const edgeK = { round: 0.35, edge: 0.65, sharp: 1 }[p.edge];
+  const onFlankL = (d, off) => vadd(vadd([xL, 0], u, d), nL, steep ? 0.38 : off);
+  const frame = (sm, Hh) => {
+    const hip0 = 0.51 * Hh, w = clamp(sm.Ff / pk, 0, 1), dc = sm.t - tc;
+    let fHip, pose, rot = 0, mir = true, flail = 0;
+    const d = compD(sm.x);
+    if (sm.pre) { fHip = [xL + 0.1, hip0]; pose = 'walk'; }
+    else if (d < 0.3) { fHip = [xL + 0.1 - d * 0.6, hip0 - d * 1.4]; pose = mixP('walk', 'stumble', d / 0.2); flail = 8; }
+    else {
+      fHip = onFlankL(d, 0.22); mir = false; flail = sm.free ? 12 : 5;
+      if (steep) { pose = 'fall'; rot = -20 * Math.sin(sm.t * 3); }
+      else { pose = sm.free ? 'slide' : mixP('slide', 'prone', smooth(dc / 0.3)); rot = 90 - I.beta + (sm.free ? 10 * Math.sin(sm.t * 6) : 0); }
+    }
+    const hs = sm.sl.stance || 0;
+    let H, rope, lan = [], brk = [];
+    const heat = [], emit = [], tracks = [];
+    const noneH = () => {
+      if (hs <= 0.33) return { hip: [0.12 - hs, hip0 - hs * 0.4], pose: mixP('lean', 'stumble', hs / 0.2), mir: true, flail: 6 };
+      return { hip: onFlankL(compD(hs - 0.33) + 0.1, 0.22), pose: steep ? 'fall' : 'slide', rot: steep ? 0 : 90 - I.beta, mir: false, flail: 10 };
+    };
+    if (act === 'none') {
+      if (sm.pre || sm.free) H = { hip: [0.12, hip0], pose: sm.pre ? 'walk' : mixP('walk', 'lean', sm.t / 0.3), mir: true };
+      else H = noneH();
+      rope = [fHip, Ept, H.hip];
+      heat.push({ p: Ept, k: w * edgeK, edge: true });
+    } else if (act === 'jump') {
+      // Zeitablauf: Reaktion bis J.tR, Absprung bis J.tNeed, Seil straff bei tc
+      const J = I.jump, jd = 1.7, a0 = [0.12, hip0], land = vadd(vadd([xR, 0], v, jd), nR, 0.22);
+      const lieR = -(90 - I.beta);
+      const jumpAt = tt => {
+        const kk = clamp((tt - J.tR) / J.tJ, 0, 1);
+        if (kk <= 0) return { hip: a0, pose: mixP('walk', 'lean', clamp(tt / 0.3, 0, 1) * 0.5), mir: true };
+        if (kk < 1) return { hip: vadd(vlerp(a0, land, kk), [0, Math.sin(kk * Math.PI) * 0.7]), pose: mixP('lean', 'jump', kk * 3), rot: 25 * kk, mir: true, flail: 6 };
+        return { hip: land, pose: mixP('jump', 'slide', smooth((tt - J.tNeed) / 0.15)), rot: lieR, mir: false };
+      };
+      if (sm.pre) H = { hip: a0, pose: 'walk', mir: true };
+      else if (sm.free) H = jumpAt(sm.t);
+      else if (J.phase === 'ok') {
+        const dd = jd - hs;
+        if (dd >= 0.05) { const f = vadd([xR, 0], v, dd); H = { hip: vadd(f, nR, 0.22), pose: 'slide', rot: lieR, mir: false }; }
+        else if (dd > -0.3) H = { hip: [0.05, hip0 * 0.7], pose: 'stumble', mir: true, flail: 8 };
+        else H = { hip: onFlankL(compD(-dd - 0.3) + 0.1, 0.22), pose: steep ? 'fall' : 'slide', rot: steep ? 0 : 90 - I.beta, mir: false, flail: 10 };
+      } else {
+        // zu spät: Seilzug trifft den Partner vor oder während des Absprungs
+        const A = jumpAt(tc), N = noneH(), b = J.phase === 'air' ? smooth(dc / 0.2) : 1;
+        H = { hip: vlerp(A.hip, N.hip, b), pose: b < 1 ? mixP('jump', 'stumble', b) : N.pose, rot: (A.rot || 0) * (1 - b) + (N.rot || 0) * b, mir: b < 0.5 ? A.mir : N.mir, flail: 10 };
+      }
+      if (sm.t >= J.tNeed && sm.t < J.tNeed + 0.15 && J.phase === 'ok') emit.push({ id: 'land', p: vadd([xR, 0], v, jd), v: [0.6, 1.2], rate: 260, kind: gk, spread: 1.5 });
+      const late = J.phase !== 'ok' && !sm.free;
+      rope = [fHip, late || H.hip[0] < 0.05 ? Ept : [0, 0.04], H.hip];
+      heat.push({ p: late ? Ept : [0, 0.02], k: w * edgeK, edge: true });
+    } else if (act === 'horn') {
+      H = { hip: [1.35 - 0.5 * Math.min(hs, 1.2), hip0], pose: sm.pre ? 'stand' : mixP('stand', 'lean', sm.free ? sm.t / 0.3 : 1), mir: true };
+      rope = [fHip, Ept, [0.1, 0.72], [0.33, 1.26], [0.58, 0.72], H.hip];
+      heat.push({ p: Ept, k: w * edgeK, edge: true }, { p: [0.33, 1.26], k: w * 0.6, edge: true });
+      if ((sm.slv.stance || 0) > 0.2) emit.push({ id: 'hs', p: [H.hip[0] + 0.1, 0.02], v: [0.8, 1], rate: 60, kind: 'rock' });
+    } else {
+      H = { hip: [1.3, hip0], pose: mixP('belay', 'brace', w * 0.7), mir: true };
+      const dv = [Dpt[0] - 0.1, Dpt[1] - 0.12];
+      rope = [fHip, Ept, dv];
+      lan = [[[H.hip[0] - 0.04, H.hip[1] + 0.03], Dpt]];
+      brk = [[dv, [H.hip[0] - 0.28, H.hip[1] + 0.1]]];
+      heat.push({ p: Ept, k: w * edgeK, edge: true }, { p: dv, k: clamp((sm.slv.device || 0) * sm.Fh / 4000, 0, 1) });
+    }
+    if (!sm.pre && d >= 0.3 && sm.v > 0.4 && !steep) emit.push({ id: 'f', p: vadd([xL, 0], u, d + 0.3), v: vadd(vadd(u, [0, 0], -0.4), nL, 1.3), rate: 90 * clamp(sm.v / 4, 0.2, 1.3), kind: gk, spread: 1.5 });
+    if (steep && !sm.pre && sm.v > 0.5 && sm.t < tc + 0.3) emit.push({ id: 'f', p: vadd([xL, 0], u, d), v: [-0.3, 0.2], rate: 40, kind: gk, spread: 1.2 });
+    if (!sm.pre && d > 0.3 && gk !== 'rock') tracks.push([vadd([xL, 0], u, 0.25), vadd([xL, 0], u, d)]);
+    const marks = { A: [fHip, 'F'], E: act === 'horn' ? [[0.33, 1.32], [-18, -24]] : [[act === 'jump' && I.jump.phase === 'ok' ? 0 : xL, 0], [-24, -22]], C: [H.hip, 'H'], D: [Dpt, [22, 16]] };
+    const det = act === 'horn' ? [[0.33, 1.1], 'Seil am Zacken'] : act === 'stand' ? [[Dpt[0] - 0.1, Dpt[1] - 0.12], 'Sicherungsgerät'] : [act === 'jump' && I.jump.phase === 'ok' ? [0, 0] : Ept, 'Gratkante'];
+    return { figs: [{ ...H, role: 'H', pack: true }, { hip: fHip, pose, rot, mir, role: 'F', flail, pack: true }], rope, lan, brk, heat, emit, tracks, fHip, marks, det, tagSeg: [0, rope.length - 2] };
+  };
+  const terrain = (tf, Hh, k) => {
+    const B = 60;
+    let s = polyS(tf, cls, [[xL - B, -B * tb], [xL, 0], [xR, 0], [xR + B, -B * tb]]);
+    if (p.terrain === 'rock') s += cracks(tf, [xL, 0], [xL - 8 * cb, -8 * sb], [sb, -cb], 26, 13, 0.9) + cracks(tf, [xR, 0], [xR + 8 * cb, -8 * sb], [-sb, -cb], 26, 17, 0.9);
+    else s += layers(tf, [xL, 0], [xL - 10 * cb, -10 * sb], nL, 6, 47) + layers(tf, [xR, 0], [xR + 10 * cb, -10 * sb], nR, 6, 53);
+    if (act === 'horn') s += polyS(tf, 's-rock', hornPts) + cracks(tf, [0.14, 0.85], [0.33, 1.3], [0.5, -1], 4, 19, 0.3);
+    if (act === 'stand') {
+      s += polyS(tf, 's-rock', [[0.3, 0], [0.34, 0.62], [0.78, 0.66], [0.84, 0]]);
+      s += anchorSVG(tf, [[0.42, 0.66], [0.66, 0.66]], Dpt, k);
+    }
+    return s;
+  };
+  return { frame, terrain, compressed: S.xMax > 8.2, ground: gk, ext: [[-2.2, -0.6], [xR + 1.6, 2.2]], strikePt: null };
+};
+
+// ---- Steilgelände ----
+SCENES.steep = (ctx) => {
+  const I = ctx.M.info, p = ctx.p, S = ctx.S, pk = Math.max(1, S.peakF), tc = S.tFree;
+  const al = I.alpha * Math.PI / 180, ca = Math.cos(al), sa = Math.sin(al);
+  const cs = s => Math.sign(s) * (Math.abs(s) <= 10 ? Math.abs(s) : 10 + (Math.abs(s) - 10) * 0.3);
+  const Pw = s => [cs(s) * ca, cs(s) * sa];
+  const nrm = [-sa, ca], down = [-ca, -sa];
+  const prot = I.protect, pos = I.pos;
+  const cls = { firnSoft: 's-snow', firnHard: 's-snow', ice: 's-ice', grass: 's-grass', scree: 's-rock' }[p.terrain];
+  const gk = { firnSoft: 'snow', firnHard: 'snow', ice: 'ice', grass: 'grass', scree: 'rock' }[p.terrain];
+  const aEff = Math.min(I.a, I.Lr - 1);
+  let sF0, sB = null, sH = 0;
+  if (prot === 'running') { sB = I.Lr - aEff; sF0 = sB + aEff; }
+  else sF0 = pos === 'above' ? I.Lr - I.s : -(I.Lr - I.s);
+  if (prot === 'stand') sH = -0.9;
+  const lieRot = 90 - I.alpha;
+  const anc = vadd(Pw(0), nrm, 0.28);
+  const frame = (sm, Hh) => {
+    const hip0 = 0.51 * Hh, w = clamp(sm.Ff / pk, 0, 1), dc = sm.t - tc;
+    let fHip, pose, rot = 0, mir = false, flail = 0;
+    const up = sF0 > 0, sNow = sF0 - sm.x;
+    if (S.outcome === 'selfstop') { fHip = vadd(Pw(sF0 - Math.min(sm.x, 0.15)), nrm, 0.26); pose = sm.pre ? 'walk' : 'sit'; mir = true; }
+    else if (sm.pre) { fHip = vadd(Pw(sF0), [0, hip0]); pose = 'walk'; mir = up; }
+    else if (sm.x < 0.3) { fHip = vadd(Pw(sNow), [0, hip0 * (1 - sm.x * 1.5)]); pose = mixP('walk', 'stumble', sm.x / 0.2); mir = true; flail = 10; }
+    else { fHip = vadd(Pw(sNow), nrm, 0.17); pose = sm.free ? 'slide' : mixP('slide', 'prone', smooth(dc / 0.3)); rot = lieRot + (sm.free ? 8 * Math.sin(sm.t * 7) : 0); flail = sm.free ? 9 : 3; }
+    const hs = sm.sl.stance || 0;
+    const dev = prot === 'stand';
+    let H;
+    const ax = I.react === 'axe';
+    if (dev) H = { hip: vadd(Pw(sH), [0, hip0]), pose: mixP('belay', 'brace', w * 0.7), mir: !up };
+    else if (prot === 'running') H = { hip: vadd(Pw(hs), [0, hip0]), pose: sm.pre ? 'walk' : mixP('walk', ax ? 'brace' : 'lean', sm.free ? sm.t / 0.4 : 1), mir: false, flail: (sm.slv.stance || 0) > 0.5 ? 6 : 0 };
+    else {
+      const cap = ctx.M.stages[0].cap;
+      if (sm.pre) H = { hip: vadd(Pw(0), [0, hip0]), pose: 'walk', mir: !up };
+      else if (hs <= cap + 0.02) H = { hip: vadd(Pw(-hs), [0, hip0 * (hs > 0.05 ? 0.9 : 1)]), pose: hs > 0.05 ? 'stumble' : mixP('walk', ax ? 'brace' : 'lean', sm.free ? sm.t / 0.4 : 1), mir: true, flail: hs > 0.05 ? 8 : 0 };
+      else H = { hip: vadd(Pw(-hs), nrm, 0.17), pose: 'slide', rot: lieRot, flail: 8 };
+    }
+    let rope, lan = [], brk = [], draws = [];
+    const heat = [];
+    if (prot === 'running') {
+      const pc = Pw(sB), qd = qdContact(pc, fHip, H.hip, sm.free || sm.pre ? 0 : w * 1.5, 0.22, nrm);
+      rope = [fHip, qd, H.hip]; draws = [[pc, qd]];
+    } else if (dev) { rope = [fHip, anc]; lan = [[vadd(H.hip, [0.04, 0.03]), anc]]; brk = [[anc, vadd(H.hip, [up ? 0.25 : -0.25, 0.15])]]; heat.push({ p: anc, k: clamp((sm.slv.device || 0) * sm.Fh / 4000, 0, 1) }); }
+    else rope = [fHip, H.hip];
+    const emit = [], tracks = [];
+    if (!sm.pre && sm.x > 0.3 && sm.v > 0.3 && S.outcome !== 'selfstop') {
+      emit.push({ id: 'f', p: vadd(Pw(sNow - 0.4), nrm, 0.05), v: vadd(vadd(down, [0, 0], 0.6), nrm, 1.3), rate: 100 * clamp(sm.v / 4, 0.2, 1.4), kind: gk, spread: 1.4 });
+      if (gk !== 'rock') tracks.push([Pw(sF0 - 0.3), Pw(sNow)]);
+    }
+    const hv = sm.slv.stance || 0;
+    if (!dev && hv > 0.15) {
+      const hsN = prot === 'running' ? hs : -hs;
+      emit.push({ id: 'h', p: vadd(Pw(hsN), nrm, 0.05), v: vadd(prot === 'running' ? vadd(down, [0, 0], -0.4) : down, nrm, 1.2), rate: 70 * clamp(hv / 3, 0.2, 1.4), kind: gk, spread: 1.3 });
+      if (gk !== 'rock' && hs > 0.1) tracks.push([Pw(0), Pw(hsN)]);
+    }
+    return {
+      figs: [{ ...H, role: 'H', pack: true }, { hip: fHip, pose, rot, mir, role: 'F', flail, pack: true }], rope, lan, brk, draws, heat, emit, tracks, fHip, sagN: nrm,
+      det: prot === 'running' ? [Pw(sB), 'Zwischensicherung'] : dev ? [anc, 'Sicherungsgerät'] : [vadd(Pw(-hs), [0, 0.35]), 'Stand des Sichernden'],
+      marks: { A: [fHip, 'F'], B: [sB != null ? Pw(sB) : [0, 0], [26, 18]], C: [H.hip, 'H'], D: [Pw(0), [26, 20]] },
+    };
+  };
+  const terrain = (tf, Hh, k) => {
+    const body = [[-90 * ca, -90 * sa], [90 * ca, 90 * sa], [90 * ca, -90 * sa - 40], [-90 * ca, -90 * sa - 40]];
+    let s = polyS(tf, cls, body);
+    if (gk === 'rock') s += cracks(tf, [-20 * ca, -20 * sa], [20 * ca, 20 * sa], [sa, -ca], 60, 23, 0.6);
+    else s += layers(tf, [-30 * ca, -30 * sa], [30 * ca, 30 * sa], nrm, 9, 41);
+    if (sB != null) s += pieceSVG(tf, p.piece, Pw(sB), k);
+    if (prot === 'stand') { const w = Pw(0); s += anchorSVG(tf, [vadd(w, [-0.12, 0]), vadd(w, [0.18, 0.12])], anc, k); }
+    return s;
+  };
+  return { frame, terrain, compressed: Math.abs(sF0) + S.xMax > 10.2, ground: gk, ext: [vadd(Pw(-2), [0, -0.5]), vadd(Pw(1.5), [0, 2.2])], strikePt: null };
+};
+
+// ---- Kurzes Seil ----
+SCENES.short = (ctx) => {
+  const I = ctx.M.info, p = ctx.p, S = ctx.S, pk = Math.max(1, S.peakF);
+  const al = I.alpha * Math.PI / 180, ca = Math.cos(al), sa = Math.sin(al);
+  const Pw = s => [s * ca, s * sa];
+  const nrm = [-sa, ca], down = [-ca, -sa];
+  const cls = { firnSoft: 's-snow', firnHard: 's-snow', ice: 's-ice', grass: 's-grass', scree: 's-rock' }[p.terrain];
+  const gk = { firnSoft: 'snow', firnHard: 'snow', ice: 'ice', grass: 'grass', scree: 'rock' }[p.terrain];
+  const sF0 = -(I.Lr + 0.45);
+  const lieRot = 90 - I.alpha;
+  const react = p.react;
+  const frame = (sm, Hh) => {
+    const hip0 = 0.51 * Hh, w = clamp(sm.Ff / pk, 0, 1);
+    let fHip, pose, rot = 0, mir = true, flail = 0;
+    const sNow = sF0 - sm.x;
+    if (S.outcome === 'selfstop') { fHip = vadd(Pw(sF0 - 0.1), nrm, 0.26); pose = sm.pre ? 'walk' : 'sit'; }
+    else if (sm.pre) { fHip = vadd(Pw(sF0), [0, hip0]); pose = 'walk'; mir = false; }
+    else if (p.slip === 'stumble' && !sm.post) { const k = clamp(sm.x / 0.4, 0, 1); fHip = vadd(Pw(sNow), [0, hip0 * (1 - 0.45 * k)]); pose = mixP('walk', 'stumble', k * 2); flail = 8; }
+    else { fHip = vadd(Pw(sNow), nrm, 0.17); pose = 'slide'; rot = lieRot; mir = false; flail = 8; }
+    const arm = sm.sl.hand || 0, st = sm.sl.stance || 0;
+    let H;
+    if (st > 0.3) H = { hip: vadd(Pw(-st), nrm, 0.17), pose: 'slide', rot: lieRot, mir: false, flail: 8 };
+    else H = { hip: vadd(Pw(-st), [0, hip0 * (st > 0.12 ? 0.88 : 1)]), pose: st > 0.12 ? 'stumble' : mixP(react === 'surprised' && sm.pre ? 'walk' : 'lean', react === 'braced' ? 'brace' : 'lean', w), mir: true, flail: st > 0.05 ? 6 : 0 };
+    const dir = unit(vsub(fHip, H.hip));
+    const hand = vadd(vadd(H.hip, [-0.3, 0.12]), dir, arm);
+    const emit = [], tracks = [];
+    if (!sm.pre && sm.v > 0.25 && S.outcome !== 'selfstop') { emit.push({ id: 'f', p: vadd(Pw(sNow - 0.3), nrm, 0.05), v: vadd(vadd(down, [0, 0], 0.5), nrm, 1.2), rate: 90 * clamp(sm.v / 3, 0.2, 1.4), kind: gk, spread: 1.3 }); if (gk !== 'rock' && sm.x > 0.2) tracks.push([Pw(sF0 - 0.2), Pw(sNow)]); }
+    if ((sm.slv.stance || 0) > 0.1) emit.push({ id: 'h', p: vadd(Pw(-st), nrm, 0.05), v: vadd(down, nrm, 1.2), rate: 80, kind: gk, spread: 1.3 });
+    return {
+      figs: [{ ...H, role: 'H', reach: hand, pack: true }, { hip: fHip, pose, rot, mir, role: 'F', flail, pack: true }],
+      rope: [fHip, hand], coil: [hand, H.hip], fHip, sagN: nrm, emit, tracks, det: [hand, 'Seilschlaufen in der Hand'],
+      marks: { A: [fHip, 'F'], C: [H.hip, 'H'] },
+    };
+  };
+  const terrain = (tf) => {
+    const body = [[-60 * ca, -60 * sa], [60 * ca, 60 * sa], [60 * ca, -60 * sa - 30], [-60 * ca, -60 * sa - 30]];
+    return polyS(tf, cls, body) + (gk === 'rock' ? cracks(tf, [-15 * ca, -15 * sa], [15 * ca, 15 * sa], [sa, -ca], 50, 29, 0.5) : layers(tf, [-20 * ca, -20 * sa], [20 * ca, 20 * sa], nrm, 8, 43));
+  };
+  return { frame, terrain, compressed: false, ground: gk, ext: [vadd(Pw(sF0 - 1.5), [0, -0.3]), vadd(Pw(1.2), [0, 2.2])], strikePt: null };
+};
+
+// ===== App: Rechnung, Darstellung, Effekte =====
+const $ = id => document.getElementById(id);
+let CUR = null, REF = null, HL = null;
+const PB = { t: 0, playing: false, raf: 0, last: 0 };
+const T0 = -0.4;
+let UIK = 1, VBH = 500;
+const RISK_WORD = { ok: 'unkritisch', mid: 'beachten', hi: 'kritisch', bad: 'versagt' };
+let ROWDOM = [], GRPDOM = {};
+
+function interp(S, t) {
+  const keys = Object.keys(S.sl), sl = {};
+  if (t <= 0) { keys.forEach(k => { sl[k] = 0; }); return { x: 0, Ff: 0, Fh: 0, sl }; }
+  const T = S.t, n = T.length;
+  let lo = 0, hi = n - 1;
+  if (t >= T[hi]) lo = hi - 1;
+  else while (hi - lo > 1) { const m = (lo + hi) >> 1; if (T[m] <= t) lo = m; else hi = m; }
+  const f = T[hi] > T[lo] ? clamp((t - T[lo]) / (T[hi] - T[lo]), 0, 1) : 1;
+  const L = a => lerp(a[lo], a[hi], f);
+  keys.forEach(k => { sl[k] = L(S.sl[k]); });
+  return { x: L(S.x), Ff: L(S.Ff), Fh: L(S.Fh), sl };
+}
+function sampleAt(S, t) {
+  const a = interp(S, t), e = 0.004;
+  const b = interp(S, t + e), c = interp(S, Math.max(0, t - e)), dt = t + e - Math.max(0, t - e);
+  const slv = {};
+  Object.keys(a.sl).forEach(k => { slv[k] = t > 0 ? (b.sl[k] - c.sl[k]) / dt : 0; });
+  return { t, x: a.x, Ff: a.Ff, Fh: a.Fh, sl: a.sl, slv, v: t > 0 ? (b.x - c.x) / dt : 0, pre: t < 0, free: t < S.tFree, post: S.tFail != null && t > S.tFail };
+}
+
+function build() {
+  const sc = STATE.sc, p = { ...P[sc] }, c = { ...C[sc], mF: STATE.mF, mH: STATE.mH, basis: STATE.basis };
+  const M = BUILDERS[sc](p, c), S = simulate(M), R = evaluate(M, S);
+  const ctx = { sc, p, c, M, S, R, tEnd: S.t[S.t.length - 1] };
+  ctx.geo = SCENES[sc](ctx);
+  ctx.tStrike = null;
+  if (S.strike && M.strike != null) { const i = S.x.findIndex(x => x >= M.strike); if (i >= 0) ctx.tStrike = S.t[i]; }
+  // Zeitpunkt, an dem ein Glied bricht
+  ctx.tBreak = null;
+  R.rows.filter(r => r.kind === 'break' && r.util >= 1).forEach(r => {
+    for (let i = 0; i < S.t.length; i++) {
+      if (r.load(S.Ff[i], S.Fh[i]) / 1000 >= r.strength) { if (ctx.tBreak == null || S.t[i] < ctx.tBreak) { ctx.tBreak = S.t[i]; ctx.breakLoc = r.loc; } break; }
+    }
+  });
+  relayout(ctx);
+  return ctx;
+}
+function relayout(ctx) {
+  layout(ctx);
+  const S = ctx.S;
+  if (ctx.tBreak != null) { const fr = ctx.geo.frame(sampleAt(S, ctx.tBreak), ctx.Hh); ctx.breakPt = fr.marks[ctx.breakLoc] ? fr.marks[ctx.breakLoc][0] : fr.fHip; }
+  const fp = ctx.geo.frame(sampleAt(S, Math.max(0.001, S.tPeak)), ctx.Hh);
+  ctx.focusPx = ctx.tf.p(...vlerp(fp.fHip, fp.rope[1], 0.5));
+  // Lupe: Ecke mit dem größten Abstand zu Figuren, Seil und Detailpunkt
+  const k = UIK, W = ctx.tf.W, H = ctx.tf.H, r = (UIK > 1.6 ? 40 : 66) * k;
+  const pts = [];
+  [0.0001, S.tFree, S.tPeak, ctx.tEnd, -0.1].forEach(t => {
+    const fr = ctx.geo.frame(sampleAt(S, t), ctx.Hh);
+    fr.figs.forEach(f => pts.push(ctx.tf.p(...f.hip), ctx.tf.p(...vadd(f.hip, [0, 0.5 * ctx.Hh]))));
+    fr.rope.forEach(q => pts.push(ctx.tf.p(...q)));
+    if (fr.det) pts.push(ctx.tf.p(...fr.det[0]));
+  });
+  const cands = [[W - r - 14 * k, r + 52 * k], [W - r - 14 * k, H * 0.5], [W - r - 72 * k, H - r - 40 * k], [r + 14 * k, H - r - 48 * k], [r + 14 * k, H * 0.55]];
+  const dp = (() => { const fr = ctx.geo.frame(sampleAt(S, Math.max(0.001, S.tPeak)), ctx.Hh); return fr.det ? ctx.tf.p(...fr.det[0]) : [W / 2, H / 2]; })();
+  let best = cands[0], bs = -Infinity;
+  cands.forEach(c => {
+    const d = Math.min(...pts.map(q => Math.hypot(q[0] - c[0], q[1] - c[1])));
+    let sc = Math.min(d - r, 90 * k) - 0.15 * Math.hypot(dp[0] - c[0], dp[1] - c[1]);
+    if (ctx.sc === 'ridge' && ctx.M.info.jump) {
+      const b = jumpBarBox(W, H, k).rect, nx = clamp(c[0], b[0], b[2]), ny = clamp(c[1], b[1], b[3]);
+      if (Math.hypot(c[0] - nx, c[1] - ny) < r + 6 * k) sc -= 1000;
+    }
+    if (sc > bs) { bs = sc; best = c; }
+  });
+  ctx.mag = { c: best, r, z: clamp(150 / Math.max(20, ctx.tf.s), 2.2, 4.5) };
+  buildFX(ctx);
+}
+
+function layout(ctx) {
+  const W = 800, H = VBH;
+  const n = ctx.S.t.length, step = Math.max(1, Math.floor(n / 60));
+  const tl = [-0.1];
+  for (let i = 0; i < n; i += step) tl.push(ctx.S.t[i]);
+  tl.push(ctx.tEnd);
+  const pad = 34 * UIK;
+  let Hh = 1.75, hpx = 0;
+  for (let pass = 0; pass < 2; pass++) {
+    const pts = [...ctx.geo.ext];
+    tl.forEach(t => {
+      const fr = ctx.geo.frame(sampleAt(ctx.S, t), Hh);
+      fr.figs.forEach(f => { pts.push(vadd(f.hip, [-0.55 * Hh, -0.55 * Hh]), vadd(f.hip, [0.55 * Hh, 0.62 * Hh])); });
+      fr.rope.forEach(q => pts.push(q));
+    });
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    pts.forEach(([x, y]) => { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); });
+    const fitX = (W - 2 * pad) / (x1 - x0), fitY = (H - 2 * pad - 22 * UIK) / (y1 - y0);
+    const sy = Math.min(fitX, fitY, 58);
+    const sx = ctx.geo.hx ? Math.min(fitX, sy * ctx.geo.hx) : sy;
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    ctx.tf = { s: sy, sx, W, H, p: (x, y) => [W / 2 + (x - cx) * sx, H / 2 - 11 * UIK - (y - cy) * sy] };
+    if (pass === 0) hpx = clamp(2.1 * sy, 52 * Math.min(UIK, 1.5), 112);
+    Hh = hpx / sy;
+  }
+  ctx.hpx = hpx; ctx.Hh = Hh;
+  const frT = ctx.geo.frame(sampleAt(ctx.S, Math.max(0.0001, ctx.S.tFree - 1e-4)), ctx.Hh);
+  ctx.avail = vdist(frT.rope[0], frT.rope[1]);
+}
+
+// ---------- Partikel (deterministisch, damit Vor- und Zurückspulen stimmt) ----------
+const KMUL = { snow: 1.6, ice: 1.2, grass: 1.2 };
+const PG = { snow: [4, 1.6], powder: [0.35, 3], chunk: [9.81, 0], ice: [7, 0.8], dust: [0.5, 2.5], rock: [9.81, 0.2], grass: [5, 1.6], spark: [9.81, 0.4], metal: [9.81, 0] };
+function buildFX(ctx) {
+  const S = ctx.S, r = rng32(777 + SC_ORDER.indexOf(ctx.sc) * 31), parts = [];
+  const spawn = (te, p, v, kind, life, size, jit, spread) => parts.push({
+    te, kind, life: life * (0.6 + r() * 0.8), size: size * (0.6 + r() * 0.8), rot: r() * 360, spin: (r() - 0.5) * 900,
+    p: [p[0] + (r() - 0.5) * jit, p[1] + (r() - 0.5) * jit], v: [v[0] + (r() - 0.5) * spread, v[1] + (r() - 0.35) * spread],
+  });
+  if (!RM) {
+    const acc = {}, dt = 1 / 70;
+    for (let t = 0.0001; t <= ctx.tEnd; t += dt) {
+      const fr = ctx.geo.frame(sampleAt(S, t), ctx.Hh);
+      (fr.emit || []).forEach(e => {
+        acc[e.id] = (acc[e.id] || 0) + e.rate * dt * (KMUL[e.kind] || 1);
+        while (acc[e.id] >= 1 && parts.length < 1600) {
+          acc[e.id] -= 1;
+          spawn(t + r() * dt, e.p, e.v, e.kind, e.life || 0.7, e.size || 1, e.jit || 0.15, e.spread || 1);
+          if (e.kind === 'snow' && r() < 0.3) spawn(t, e.p, [e.v[0] * 0.4, e.v[1] * 0.5], 'powder', 0.9, 1, 0.2, 0.6);
+          if (e.kind === 'rock' && r() < 0.5) spawn(t, e.p, [e.v[0] * 0.4, e.v[1] * 0.4], 'dust', 0.8, 1, 0.2, 0.6);
+        }
+      });
+    }
+    (ctx.geo.bursts || []).forEach(b => { for (let i = 0; i < b.n; i++) spawn(b.t + r() * 0.06, b.p, b.v, b.kind, b.life || 1, 1, b.jit || 0.3, b.spread || 1); });
+    const gk = ctx.geo.ground || 'dust';
+    if (ctx.tStrike != null && ctx.geo.strikePt) {
+      for (let i = 0; i < 36; i++) spawn(ctx.tStrike, ctx.geo.strikePt, [0, 1.3], gk === 'snow' ? 'snow' : 'dust', 1.0, 1.3, 0.5, 2.6);
+      for (let i = 0; i < 12; i++) spawn(ctx.tStrike, ctx.geo.strikePt, [0, 2], 'rock', 0.8, 1, 0.3, 3);
+    }
+    if (ctx.tBreak != null && ctx.breakPt) {
+      for (let i = 0; i < 30; i++) spawn(ctx.tBreak, ctx.breakPt, [-0.5, 0.6], 'spark', 0.45, 1, 0.05, 6);
+      for (let i = 0; i < 4; i++) spawn(ctx.tBreak, ctx.breakPt, [-1.6, 1.4], 'metal', 1.4, 1.4, 0.05, 1.6);
+      for (let i = 0; i < 16; i++) spawn(ctx.tBreak, ctx.breakPt, [-0.6, 0.4], 'rock', 1.0, 0.9, 0.1, 2);
+    }
+    if (S.tFail != null) {
+      const fr = ctx.geo.frame(sampleAt(S, S.tFail), ctx.Hh), h = fr.figs.find(f => f.role === 'H');
+      if (h) for (let i = 0; i < 28; i++) spawn(S.tFail, vadd(h.hip, [0, -0.4]), [0, 1.2], gk === 'rock' ? 'dust' : gk, 0.9, 1.1, 0.4, 2.2);
+    }
+  }
+  ctx.parts = parts;
+}
+function particlesSVG(ctx, t, P2, k) {
+  let s = '';
+  for (const q of ctx.parts) {
+    const age = t - q.te;
+    if (age < 0 || age > q.life) continue;
+    const [g, drag] = PG[q.kind];
+    const f = drag ? (1 - Math.exp(-drag * age)) / drag : age;
+    const w = [q.p[0] + q.v[0] * f, q.p[1] + q.v[1] * f - 0.5 * g * age * age];
+    const p = P2(w), o = 1 - age / q.life, sz = q.size * k;
+    const rot = R1(q.rot + q.spin * age);
+    switch (q.kind) {
+      case 'snow': s += `<circle class="p-snow" cx="${R1(p[0])}" cy="${R1(p[1])}" r="${R1(sz * 2.1)}" opacity="${R1(o * 10) / 10}"/>`; break;
+      case 'powder': s += `<circle class="p-powder" cx="${R1(p[0])}" cy="${R1(p[1])}" r="${R1(sz * (3 + age * 10))}" opacity="${R1(o * 2.5) / 10}"/>`; break;
+      case 'dust': s += `<circle class="p-dust" cx="${R1(p[0])}" cy="${R1(p[1])}" r="${R1(sz * (2 + age * 9))}" opacity="${R1(o * 5) / 10}"/>`; break;
+      case 'chunk': s += `<rect class="p-chunk" x="${R1(p[0] - sz * 4)}" y="${R1(p[1] - sz * 2.5)}" width="${R1(sz * 8)}" height="${R1(sz * 5)}" rx="${R1(sz)}" transform="rotate(${rot} ${R1(p[0])} ${R1(p[1])})" opacity="${R1(Math.min(1, o * 2) * 10) / 10}"/>`; break;
+      case 'ice': s += `<rect class="p-ice" x="${R1(p[0] - sz * 2)}" y="${R1(p[1] - sz * 1.2)}" width="${R1(sz * 4)}" height="${R1(sz * 2.4)}" transform="rotate(${rot} ${R1(p[0])} ${R1(p[1])})" opacity="${R1(o * 10) / 10}"/>`; break;
+      case 'rock': s += `<rect class="p-rock" x="${R1(p[0] - sz * 1.8)}" y="${R1(p[1] - sz * 1.4)}" width="${R1(sz * 3.6)}" height="${R1(sz * 2.8)}" transform="rotate(${rot} ${R1(p[0])} ${R1(p[1])})" opacity="${R1(Math.min(1, o * 2) * 10) / 10}"/>`; break;
+      case 'grass': s += `<path class="p-grass" d="M${pt(p)}l${R1(sz * 3)},${R1(-sz * 4)}" opacity="${R1(o * 10) / 10}"/>`; break;
+      case 'metal': s += `<rect class="p-metal" x="${R1(p[0] - sz * 2.5)}" y="${R1(p[1] - sz * 1.5)}" width="${R1(sz * 5)}" height="${R1(sz * 3)}" rx="${R1(sz * 0.8)}" transform="rotate(${rot} ${R1(p[0])} ${R1(p[1])})"/>`; break;
+      case 'spark': {
+        const vt = [q.v[0] * Math.exp(-drag * age), q.v[1] * Math.exp(-drag * age) - g * age], tail = P2(vadd(w, vt, -0.035));
+        s += `<path class="p-spark" d="M${pt(p)}L${pt(tail)}" opacity="${R1(o * 10) / 10}"/>`; break;
+      }
+    }
+  }
+  return s;
+}
+
+// ---------- Hintergrund und Gelände ----------
+function ridge(r, x0, x1, y0, amp, lv) {
+  let pts = [[x0, y0 + (r() - 0.5) * amp], [x1, y0 + (r() - 0.5) * amp]];
+  let a = amp;
+  for (let l = 0; l < lv; l++) {
+    const np = [pts[0]];
+    for (let i = 0; i < pts.length - 1; i++) { const m = [(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2 + (r() - 0.5) * a]; np.push(m, pts[i + 1]); }
+    pts = np; a *= 0.55;
+  }
+  return pts;
+}
+function renderBg(sc, W, H) {
+  const r = rng32(101 + SC_ORDER.indexOf(sc) * 13);
+  let s = `<rect class="sky" x="-40" y="-40" width="${W + 80}" height="${H + 80}"/>`;
+  const far = ridge(r, -40, W + 40, H * 0.4, 150, 7), near = ridge(r, -40, W + 40, H * 0.52, 110, 7);
+  const polyOf = pts => [...pts, [W + 40, H + 40], [-40, H + 40]].map(pt).join(' ');
+  const snowLine = Math.min(...far.map(q => q[1])) + 34;
+  s += `<clipPath id="cpFar"><polygon points="${polyOf(far)}"/></clipPath>`;
+  s += `<polygon class="mtn1" points="${polyOf(far)}"/><rect class="mtnsnow" x="-40" y="-40" width="${W + 80}" height="${R1(snowLine + 40)}" clip-path="url(#cpFar)"/>`;
+  s += `<polygon class="mtn2" points="${polyOf(near)}"/>`;
+  s += `<rect class="haze" x="-40" y="${R1(H * 0.3)}" width="${W + 80}" height="${R1(H * 0.75)}"/>`;
+  return s;
+}
+function renderStatic(ctx) {
+  const tf = ctx.tf, k = UIK, W = tf.W, H = tf.H;
+  ['gLight', 'gSky', 'gHaze'].forEach(id => { const g = $(id); if (g) g.setAttribute('y2', H); });
+  const vg = $('vig'); vg.setAttribute('height', H + 80);
+  $('lyBg').innerHTML = renderBg(ctx.sc, W, H);
+  ctx.kg = k * clamp(tf.s / 45, 0.8, 1.35);
+  $('lyStatic').innerHTML = ctx.geo.terrain(tf, ctx.Hh, ctx.kg);
+  let s = '';
+  const cand = [0.5, 1, 2, 5, 10, 20, 50];
+  const L = cand.find(c => c * tf.s >= 60 * k) || 50, lp = L * tf.s;
+  const x2 = W - 16 * k, yb = H - 12 * k;
+  if (tf.sx > tf.s * 1.05) {
+    s += `<g class="scalebar"><line x1="${R1(x2)}" y1="${R1(yb)}" x2="${R1(x2)}" y2="${R1(yb - lp)}"/><line x1="${R1(x2 - 5 * k)}" y1="${R1(yb)}" x2="${R1(x2 + 1)}" y2="${R1(yb)}"/><line x1="${R1(x2 - 5 * k)}" y1="${R1(yb - lp)}" x2="${R1(x2 + 1)}" y2="${R1(yb - lp)}"/>` +
+      `<text x="${R1(x2 - 8 * k)}" y="${R1(yb - lp / 2 + 4 * k)}" text-anchor="end" font-size="${R1(12 * k)}">${fmt(L, L < 1 ? 1 : 0)} m</text></g>`;
+  } else {
+    const x1 = x2 - lp, y = yb - 2 * k;
+    s += `<g class="scalebar"><line x1="${R1(x1)}" y1="${R1(y)}" x2="${R1(x2)}" y2="${R1(y)}"/><line x1="${R1(x1)}" y1="${R1(y - 5 * k)}" x2="${R1(x1)}" y2="${R1(y + 1)}"/><line x1="${R1(x2)}" y1="${R1(y - 5 * k)}" x2="${R1(x2)}" y2="${R1(y + 1)}"/>` +
+      `<text x="${R1((x1 + x2) / 2)}" y="${R1(y - 6 * k)}" text-anchor="middle" font-size="${R1(12 * k)}">${fmt(L, L < 1 ? 1 : 0)} m</text></g>`;
+  }
+  const notes = [];
+  if (tf.sx > tf.s * 1.05) notes.push('Waagrechte Abstände gedehnt');
+  if (ctx.geo.compressed) notes.push('große Höhen und Wege gestaucht');
+  if (notes.length) { const t = notes.join(', '); s += `<text class="note" x="${R1(12 * k)}" y="${R1(H - 10 * k)}" font-size="${R1(11.5 * k)}">${t[0].toUpperCase() + t.slice(1)}</text>`; }
+  $('lyHudS').innerHTML = s;
+}
+
+// ---------- Texte und Markierungen ----------
+function valueText(r) {
+  if (r.kind === 'hold') {
+    if (r.state === 'fail') return r.msg + (r.slip > 0.01 ? ` (${fmt(r.slip, 1)} m)` : '');
+    const used = (r.stages || []).filter(s => s.used > 0.005);
+    if (used.length) return used.map(s => `${s.label} ${fmt(s.used, 2)} m`).join(', ');
+    if (r.thr >= 90) return 'verankert';
+    return `${fmt(r.loadKN, 2)} von ${fmt(r.thr, 2)} kN Haltekraft`;
+  }
+  return `${fmt(r.loadKN, 1)} von ${fmt(r.strength, 1)} kN (${Math.round(r.util * 100)} %)`;
+}
+const weakTitle = r => r.risk >= 0.5 ? 'Schwächstes Glied' : 'Höchste Auslastung';
+
+function rowLive(ctx, r, sm, end) {
+  if (end) return { load: r.loadKN, risk: r.risk, util: r.util };
+  if (sm.pre) return { load: 0, risk: 0, util: 0 };
+  const load = r.load(sm.Ff, sm.Fh) / 1000;
+  if (r.kind === 'hold') {
+    const sl = sm.sl[r.id] || 0, S = ctx.S;
+    if (r.state === 'fail' && S.tFail != null && sm.t >= S.tFail) return { load, risk: r.risk, util: 1 };
+    const prog = r.slip > 0.005 ? clamp(sl / r.slip, 0, 1) : clamp(load / Math.max(0.01, r.loadKN), 0, 1);
+    return { load, risk: Math.min(r.risk * prog, r.state === 'fail' ? 0.99 : r.risk), util: load / Math.max(0.01, r.thr) };
+  }
+  const util = load / r.strength;
+  return { load, risk: util, util };
+}
+const locLive = (ctx, L, sm, end) => Math.max(...ctx.R.rows.filter(r => r.loc === L).map(r => rowLive(ctx, r, sm, end).risk));
+
+function tagSVG(q, txt, cls, k, sub) {
+  const fs = 12 * k, fs2 = 10.5 * k;
+  const w = Math.max(txt.length * fs * 0.58, sub ? sub.length * fs2 * 0.55 : 0) + 14 * k, h = fs + 8 * k + (sub ? fs2 + 2 * k : 0);
+  const y0 = q[1] - h / 2;
+  return `<g class="tag ${cls}"><rect x="${R1(q[0] - w / 2)}" y="${R1(y0)}" width="${R1(w)}" height="${R1(h)}" rx="${R1(Math.min(h / 2, 10 * k))}"/>` +
+    `<text x="${R1(q[0])}" y="${R1(y0 + 4 * k + fs * 0.86)}" text-anchor="middle" font-size="${R1(fs)}">${txt}</text>` +
+    (sub ? `<text class="sub" x="${R1(q[0])}" y="${R1(y0 + 6 * k + fs + fs2 * 0.86)}" text-anchor="middle" font-size="${R1(fs2)}">${sub}</text>` : '') + '</g>';
+}
+function calloutSVG(q, r, W, H, k) {
+  const st = RL(r.risk);
+  const l1 = weakTitle(r), l2 = r.name, l3 = valueText(r);
+  const f1 = 11 * k, f2 = 14 * k, f3 = 12.5 * k;
+  const w = Math.min(W * 0.6, Math.max(l1.length * f1 * 0.55, l2.length * f2 * 0.56, l3.length * f3 * 0.53) + 26 * k);
+  const h = f1 + f2 + f3 + 26 * k;
+  let x = 10 * k;
+  const y = 10 * k;
+  if (q[0] < x + w + 20 * k && q[1] < y + h + 20 * k) x = W - w - 10 * k;
+  const ax = q[0] < x ? x : q[0] > x + w ? x + w : q[0], ay = q[0] >= x && q[0] <= x + w ? y + h : y + h / 2;
+  return `<g class="co"><line x1="${R1(q[0])}" y1="${R1(q[1])}" x2="${R1(ax)}" y2="${R1(ay)}"/>` +
+    `<rect class="bx" x="${R1(x)}" y="${R1(y)}" width="${R1(w)}" height="${R1(h)}" rx="${R1(5 * k)}"/>` +
+    `<rect x="${R1(x)}" y="${R1(y)}" width="${R1(5 * k)}" height="${R1(h)}" rx="${R1(2 * k)}" style="fill:var(--${st})"/>` +
+    `<text class="k" x="${R1(x + 14 * k)}" y="${R1(y + 8 * k + f1)}" font-size="${R1(f1)}">${l1}</text>` +
+    `<text class="n" x="${R1(x + 14 * k)}" y="${R1(y + 12 * k + f1 + f2)}" font-size="${R1(f2)}">${esc(l2)}</text>` +
+    `<text x="${R1(x + 14 * k)}" y="${R1(y + 16 * k + f1 + f2 + f3)}" font-size="${R1(f3)}">${esc(l3)}</text></g>`;
+}
+function pointOnPoly(pts, q) {
+  for (let i = 0; i < pts.length - 1; i++) {
+    const L = vdist(pts[i], pts[i + 1]);
+    if (q <= L) return vlerp(pts[i], pts[i + 1], q / (L || 1));
+    q -= L;
+  }
+  return pts[pts.length - 1];
+}
+const polyLen = pts => pts.reduce((a, q, i) => a + (i ? vdist(pts[i - 1], q) : 0), 0);
+
+// ---------- Kamera ----------
+function camera(ctx, t, end) {
+  const none = { tr: '', z: 1, sx: 0, sy: 0, f: [0, 0] };
+  if (RM || end || t <= 0) return none;
+  const S = ctx.S, k = UIK;
+  let sx = 0, sy = 0;
+  const kick = (t0, amp) => { const d = t - t0; if (d > 0 && d < 0.7) { const e = Math.exp(-d / 0.11); sx += amp * e * Math.sin(d * 95); sy += amp * 0.8 * e * Math.cos(d * 73); } };
+  const g = S.peakF / (ctx.M.m * G);
+  if (S.peakF > 200) kick(S.tFree, clamp(g * 1.1, 0.6, 7) * k);
+  if (ctx.tStrike != null) kick(ctx.tStrike, 8 * k);
+  if (ctx.tBreak != null) kick(ctx.tBreak, 5 * k);
+  if (S.tFail != null) kick(S.tFail, 4 * k);
+  const z = S.peakF > 200 ? 1 + 0.06 * Math.exp(-(((t - S.tPeak) / 0.45) ** 2)) : 1;
+  const f = ctx.focusPx;
+  return { tr: `translate(${R1(f[0] + sx)},${R1(f[1] + sy)}) scale(${z.toFixed(4)}) translate(${R1(-f[0])},${R1(-f[1])})`, z, sx, sy, f };
+}
+
+// ---------- Zeitleiste Gegensprung ----------
+function jumpBarBox(W, Hs, k) {
+  const fs = 12 * k, h = 9 * k, bh = fs * 2 + h + 26 * k, w = Math.min(260 * k, W * 0.5), x0 = W - 24 * k - w, y0 = Hs - 48 * k - bh + 6 * k;
+  return { fs, h, bh, w, x0, y0, rect: [x0 - 8 * k, y0 - 6 * k, x0 + w + 8 * k, y0 - 6 * k + bh] };
+}
+function jumpBarSVG(ctx, t, W, Hs, k) {
+  const j = ctx.M.info.jump, ok = j.phase === 'ok';
+  const { fs, h, bh, w, x0, y0 } = jumpBarBox(W, Hs, k), yb = y0 + fs + 7 * k;
+  const tm = Math.max(j.tAvail, j.tNeed) * 1.08, X = v => x0 + clamp(v, 0, tm) / tm * w;
+  const tc = clamp(t, 0, tm);
+  let g = `<g class="jbar"><rect class="jb-bg" x="${R1(x0 - 8 * k)}" y="${R1(y0 - 6 * k)}" width="${R1(w + 16 * k)}" height="${R1(bh)}" rx="${R1(5 * k)}"/>`;
+  g += `<text x="${R1(x0)}" y="${R1(y0 + fs * 0.9)}" font-size="${R1(fs)}" class="jb-t">Gegensprung: ${ok ? 'Reserve ' + fmt(j.tAvail - j.tNeed, 2) : 'fehlen ' + fmt(j.tNeed - j.tAvail, 2)} s</text>`;
+  g += `<rect class="jb-tr" x="${R1(x0)}" y="${R1(yb)}" width="${R1(w)}" height="${R1(h)}" rx="${R1(2 * k)}"/>`;
+  g += `<rect class="jb-re" x="${R1(x0)}" y="${R1(yb)}" width="${R1(X(j.tR) - x0)}" height="${R1(h)}"/>`;
+  g += `<rect class="jb-ju" x="${R1(X(j.tR))}" y="${R1(yb)}" width="${R1(X(j.tNeed) - X(j.tR))}" height="${R1(h)}"/>`;
+  g += `<rect class="jb-now" x="${R1(x0)}" y="${R1(yb + h * 0.3)}" width="${R1(X(tc) - x0)}" height="${R1(h * 0.4)}"/>`;
+  g += `<line class="jb-lim ${ok ? 'ok' : 'bad'}" x1="${R1(X(j.tAvail))}" x2="${R1(X(j.tAvail))}" y1="${R1(yb - 4 * k)}" y2="${R1(yb + h + 4 * k)}" stroke-width="${R1(2.5 * k)}"/>`;
+  const ly = yb + h + fs + 4 * k, lA = X(j.tAvail), lN = X(j.tNeed);
+  const lw = 92 * k * 0.9;
+  let lx = lA, an = 'middle';
+  if (lA + lw / 2 > x0 + w) { lx = x0 + w; an = 'end'; } else if (lA - lw / 2 < x0 + 60 * k) { lx = Math.max(lA, x0 + 60 * k); an = 'start'; }
+  g += `<text class="jb-l" x="${R1(x0)}" y="${R1(ly)}" font-size="${R1(fs * 0.9)}">Reaktion</text>`;
+  g += `<text class="jb-l ${ok ? 'c-ok' : 'c-bad'}" x="${R1(lx)}" y="${R1(ly)}" font-size="${R1(fs * 0.9)}" text-anchor="${an}">Seil straff ${fmt(j.tAvail, 2)} s</text>`;
+  return g + '</g>';
+}
+
+// ---------- Seil ----------
+function ropeSVG(ctx, fr, sm, end, P2, rw, k) {
+  const S = ctx.S, pts = fr.rope, rp = pts.map(P2), n = rp.length;
+  const eps = sm.pre ? 0 : sm.Ff / Math.max(1, ctx.M.k);
+  const epsV = Math.min(0.8, eps * 2.5);
+  let d0, mid0;
+  const slack = (sm.pre || sm.free) ? Math.max(0, ctx.avail - vdist(pts[0], pts[1])) : 0;
+  if (slack > 0.03) {
+    const a = pts[0], b = pts[1], L = vdist(a, b);
+    const sag = Math.min(3, Math.sqrt(3 * Math.max(L, 0.3) * slack / 8));
+    let c;
+    if (fr.sagN) c = vadd(vlerp(a, b, 0.5), fr.sagN, sag * 0.7);
+    else {
+      const vert = Math.abs(b[1] - a[1]) / (L || 1), low = a[1] < b[1] ? a : b, mid = vlerp(a, b, 0.5);
+      c = vadd(vlerp(mid, low, vert), [-sag * vert * 0.8, -2 * sag * (1 - vert) - 1.3 * sag * vert]);
+    }
+    const pc = P2(c);
+    d0 = `M${pt(rp[0])}Q${pt(pc)} ${pt(rp[1])}`;
+    mid0 = [0.25 * rp[0][0] + 0.5 * pc[0] + 0.25 * rp[1][0], 0.25 * rp[0][1] + 0.5 * pc[1] + 0.25 * rp[1][1]];
+  } else d0 = `M${pt(rp[0])}L${pt(rp[1])}`;
+  let d1 = '';
+  if (n > 2) { d1 = `M${pt(rp[n - 1])}`; for (let i = n - 2; i >= 1; i--) d1 += `L${pt(rp[i])}`; }
+  const wF = rw * (1 - 0.35 * epsV), wH = rw * (1 - 0.35 * Math.min(0.8, epsV * 0.7));
+  const load = sm.pre || end ? 0 : clamp(sm.Ff / Math.max(1, S.peakF), 0, 1);
+  let s = '';
+  if (load > 0.05) s += `<path class="rglow" d="${d0}${d1}" stroke-width="${R1(rw * 3.4)}" opacity="${R1(load * 75) / 100}"/>`;
+  s += `<path class="rope" d="${d0}" stroke-width="${R1(wF)}"/>`;
+  if (d1) s += `<path class="rope" d="${d1}" stroke-width="${R1(wH)}"/>`;
+  const sp = Math.max(7 * k, 0.28 * ctx.tf.s), tick = Math.max(1.4, rw * 0.5);
+  s += `<path class="rtick" d="${d0}" stroke-width="${R1(wF * 0.62)}" stroke-dasharray="${R1(tick)} ${R1(sp * (1 + epsV) - tick)}"/>`;
+  if (d1) s += `<path class="rtick" d="${d1}" stroke-width="${R1(wH * 0.62)}" stroke-dasharray="${R1(tick)} ${R1(sp * (1 + epsV * 0.6) - tick)}" stroke-dashoffset="${R1(-(sm.sl.device || 0) * ctx.tf.s)}"/>`;
+  return { s, mid0, rp, eps };
+}
+function grooveSVG(g, P2, k) {
+  const x = g.x, d = g.depth;
+  let s = `<polygon class="groove" points="${[[x - 0.18, 0.01], [x + 0.2, 0.01], [x + 0.06, -d], [x - 0.03, -d]].map(q => pt(P2(q))).join(' ')}"/>`;
+  if (g.soft && d > 0.08) s += `<polygon class="snowbulge" points="${[[x - 0.18, 0.01], [x - 0.3, 0.04 + d * 0.25], [x - 0.06, 0.03 + d * 0.3], [x + 0.02, 0.01]].map(q => pt(P2(q))).join(' ')}"/>`;
+  g.knots.forEach(kn => { s += `<polygon class="groove" points="${[[kn.x - 0.09, 0.01], [kn.x + 0.11, 0.01], [kn.x + 0.04, -kn.depth], [kn.x - 0.02, -kn.depth]].map(q => pt(P2(q))).join(' ')}"/>`; });
+  return s;
+}
+
+// ---------- Einzelbild ----------
+function drawFrame(t, end) {
+  const ctx = CUR, tf = ctx.tf, k = UIK, S = ctx.S, W = tf.W, H = tf.H;
+  const sm = sampleAt(S, t);
+  const fr = ctx.geo.frame(sm, ctx.Hh);
+  const P2 = w => tf.p(w[0], w[1]);
+  const toPx = f => ({ ...f, hip: P2(f.hip), reach: f.reach ? P2(f.reach) : null });
+  const hpx = ctx.hpx, rw = clamp(hpx * 0.05, 2.4, 4.8), live = !end && !sm.pre;
+  const dc = t - S.tFree, gF = S.peakF / (ctx.M.m * G);
+  let s = '';
+  (fr.tracks || []).forEach(([a, b]) => { s += `<path class="track" d="M${pt(P2(a))}L${pt(P2(b))}" stroke-width="${R1(clamp(hpx * 0.1, 3, 10))}"/>`; });
+  if (end && S.xMax > 0.05) {
+    const pts = [], n = S.t.length, step = Math.max(1, Math.floor(n / 90));
+    for (let i = 0; i < n; i += step) pts.push(P2(ctx.geo.frame(sampleAt(S, S.t[i]), ctx.Hh).fHip));
+    pts.push(P2(fr.fHip));
+    s += `<polyline class="traj" points="${pts.map(pt).join(' ')}"/>`;
+    const g0 = ctx.geo.frame(sampleAt(S, -0.01), ctx.Hh);
+    g0.figs.forEach((f, i) => { if (fr.figs[i] && vdist(f.hip, fr.figs[i].hip) > 0.3) s += figSVG(toPx(f), hpx, 0, 'gh'); });
+    const gp = P2(g0.fHip), off = hpx * 0.42 + 8 * k, left = gp[0] > 170 * k;
+    s += `<text class="tr-lbl" x="${R1(gp[0] + (left ? -off : off))}" y="${R1(gp[1] - hpx * 0.15)}" text-anchor="${left ? 'end' : 'start'}" font-size="${R1(12 * k)}">Sturzstrecke ${fmt(S.xMax, 1)} m</text>`;
+  }
+  (fr.lan || []).forEach(([a, b]) => { s += `<path class="rope lan" d="M${pt(P2(a))}L${pt(P2(b))}" stroke-width="${R1(rw * 0.7)}"/>`; });
+  (fr.brk || []).forEach(([a, b]) => { const pa = P2(a), pb = P2(b); s += `<path class="rope" d="M${pt(pa)}Q${pt([pa[0], pb[1]])} ${pt(pb)}" stroke-width="${R1(rw)}"/>`; });
+  if (fr.coil) {
+    const a = P2(fr.coil[0]), b = P2(fr.coil[1]), r = hpx * 0.07;
+    s += `<path class="rope" d="M${pt(a)}Q${pt([(a[0] + b[0]) / 2, Math.max(a[1], b[1]) + r * 2.4])} ${pt(b)}M${pt(a)}Q${pt([(a[0] + b[0]) / 2 - r, Math.max(a[1], b[1]) + r * 3.6])} ${pt(b)}" stroke-width="${R1(rw * 0.85)}"/>`;
+  }
+  if (fr.groove) s += grooveSVG(fr.groove, P2, k);
+  if (live) (fr.heat || []).forEach(h => { if (h.k > 0.04) { const q = P2(h.p), r = (h.edge ? 15 : 19) * k * (0.6 + h.k); s += `<circle class="heat" cx="${R1(q[0])}" cy="${R1(q[1])}" r="${R1(r)}" opacity="${R1(clamp(h.k, 0, 1) * 95) / 100}"/>`; } });
+  const RO = ropeSVG(ctx, fr, sm, end, P2, rw, k);
+  s += RO.s;
+  (fr.draws || []).forEach(([a, b]) => { s += drawSVG(tf, a, b, ctx.kg); });
+  (fr.knots || []).forEach(kn => {
+    const a = P2(kn.p), d2 = P2(vadd(kn.p, unit(kn.dir || [1, 0]), 0.1)), ang = R1(Math.atan2(d2[1] - a[1], d2[0] - a[0]) * 180 / Math.PI);
+    const rx = rw * 2.1, ry = rw * 1.45;
+    s += `<g class="knot${kn.jam ? ' jam' : ''}" transform="translate(${R1(a[0])},${R1(a[1])}) rotate(${ang})"><ellipse rx="${R1(rx)}" ry="${R1(ry)}"/><path d="M${R1(-rx * 0.7)},${R1(-ry * 0.2)}Q0,${R1(ry * 1.1)} ${R1(rx * 0.7)},${R1(-ry * 0.2)}M${R1(-rx * 0.2)},${R1(-ry * 0.8)}Q${R1(rx * 0.3)},0 ${R1(-rx * 0.1)},${R1(ry * 0.8)}"/></g>`;
+  });
+  fr.figs.forEach(f => { s += figSVG(toPx(f), hpx, t, ''); });
+  let fx = '';
+  // Bewegungsspuren
+  if (live && Math.abs(sm.v) > 2.2) {
+    for (let i = 4; i >= 1; i--) {
+      const ti = t - i * 0.03; if (ti <= 0) continue;
+      const fi = ctx.geo.frame(sampleAt(S, ti), ctx.Hh).figs.find(f => f.role === 'F');
+      if (fi) fx += figSVG(toPx(fi), hpx, ti, 'trail', `opacity:${R1((0.3 - i * 0.06) * 100) / 100}`);
+    }
+  }
+  if (live && sm.v > 3) {
+    const a = P2(fr.fHip), b = P2(ctx.geo.frame(sampleAt(S, t - 0.04), ctx.Hh).fHip), dv = unit(vsub(a, b)), pp = [-dv[1], dv[0]];
+    const L = clamp(sm.v * 5, 10, 60) * k;
+    [-1, -0.4, 0.3, 0.9].forEach((j, i) => { const o = vadd(vadd(a, pp, j * hpx * 0.24), dv, -hpx * (0.45 + (i % 2) * 0.12)); fx += `<path class="spd" d="M${pt(o)}L${pt(vadd(o, dv, -L))}" stroke-width="${R1(1.6 * k)}"/>`; });
+  }
+  s += particlesSVG(ctx, t, P2, k);
+  // Fangstoß: Ruck am Gurt, Stoßwelle im Seil, Ring an der Umlenkung
+  if (live && S.peakF > 200 && dc > 0) {
+    if (dc < 0.2) {
+      const a = P2(fr.fHip), L = (1 - dc / 0.2) * clamp(gF * 4, 10, 30) * k;
+      let jl = '';
+      for (let i = 0; i < 10; i++) { const an = i * Math.PI / 5 + 0.3, u = [Math.cos(an), Math.sin(an)]; jl += `M${pt(vadd(a, u, hpx * 0.18))}L${pt(vadd(a, u, hpx * 0.18 + L))}`; }
+      fx += `<path class="jolt" d="${jl}" stroke-width="${R1(2 * k)}" opacity="${R1((1 - dc / 0.2) * 100) / 100}"/>`;
+    }
+    if (dc < 0.3) { const q = P2(fr.rope[1]); fx += `<circle class="shock" cx="${R1(q[0])}" cy="${R1(q[1])}" r="${R1(6 * k + dc / 0.3 * 34 * k)}" stroke-width="${R1(3 * k * (1 - dc / 0.3))}" opacity="${R1((1 - dc / 0.3) * 100) / 100}"/>`; }
+    if (dc < 0.12) { const q = P2(pointOnPoly(fr.rope, polyLen(fr.rope) * dc / 0.12)); fx += `<circle class="pdot" cx="${R1(q[0])}" cy="${R1(q[1])}" r="${R1(rw * 2.2)}"/>`; }
+  }
+  if (ctx.tBreak != null && t >= ctx.tBreak) {
+    const d = t - ctx.tBreak, q = P2(ctx.breakPt);
+    if (d < 0.4 && !end) fx += `<circle class="flash" cx="${R1(q[0])}" cy="${R1(q[1])}" r="${R1(8 * k + d / 0.4 * 44 * k)}" stroke-width="${R1(4 * k * (1 - d / 0.4))}"/>`;
+    s += `<path class="fail-x" d="M${pt(vadd(q, [-7 * k, -7 * k]))}L${pt(vadd(q, [7 * k, 7 * k]))}M${pt(vadd(q, [7 * k, -7 * k]))}L${pt(vadd(q, [-7 * k, 7 * k]))}"/>`;
+  }
+  if (S.tFail != null && t >= S.tFail && !end) {
+    const d = t - S.tFail, h = fr.figs.find(f => f.role === 'H');
+    if (h && d < 0.45) { const q = P2(h.hip); fx += `<circle class="flash" cx="${R1(q[0])}" cy="${R1(q[1])}" r="${R1(10 * k + d / 0.45 * 50 * k)}" stroke-width="${R1(4 * k * (1 - d / 0.45))}"/>`; }
+  }
+  if (ctx.geo.strikePt && ctx.tStrike != null && t >= ctx.tStrike) {
+    const q = P2(ctx.geo.strikePt), r = 11 * k;
+    let st = '';
+    for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8, rr = i % 2 ? r * 0.45 : r; st += (i ? 'L' : 'M') + pt([q[0] + Math.cos(a) * rr, q[1] + Math.sin(a) * rr]); }
+    s += `<g class="strike"><path d="${st}Z"/><text x="${R1(q[0] - 16 * k)}" y="${R1(q[1] + 22 * k)}" text-anchor="end" font-size="${R1(12.5 * k)}">${ctx.M.strikeMsg || 'Aufprall'}</text></g>`;
+  }
+  // Marker (live eingefärbt)
+  const weak = ctx.R.weak, weakLive = weak ? rowLive(ctx, weak, sm, end).risk : 0;
+  let wq = null, ms = '';
+  const mpos = [];
+  LOC_ORDER.forEach(L => {
+    if (!ctx.R.rows.some(r => r.loc === L) || !fr.marks[L]) return;
+    const [w, off] = fr.marks[L];
+    const b = P2(w);
+    let q, lead = true;
+    if (typeof off === 'string') {
+      const f = fr.figs.find(g => g.role === off);
+      const hd = headPos(toPx(f), hpx);
+      q = [hd[0], hd[1] - hpx * 0.075 - 16 * k]; lead = false;
+    } else q = [b[0] + off[0] * k, b[1] + off[1] * k];
+    q = [clamp(q[0], 16 * k, W - 16 * k), clamp(q[1], 16 * k, H - 16 * k)];
+    mpos.push(q);
+    const st = RL(locLive(ctx, L, sm, end)), r = 11 * k;
+    const isW = weak && weak.loc === L;
+    if (isW) wq = q;
+    ms += `<g class="mk${HL === L ? ' hl' : ''}" data-loc="${L}">${lead ? `<line x1="${R1(b[0])}" y1="${R1(b[1])}" x2="${R1(q[0])}" y2="${R1(q[1])}"/>` : ''}` +
+      (isW && (end || weakLive >= weak.risk * 0.95) ? `<circle class="pulse" cx="${R1(q[0])}" cy="${R1(q[1])}" r="${R1(r)}" style="stroke:var(--${st})"/>` : '') +
+      `<circle class="c st-${st}" cx="${R1(q[0])}" cy="${R1(q[1])}" r="${R1(r)}"/><text x="${R1(q[0])}" y="${R1(q[1] + 0.5)}" font-size="${R1(12 * k)}">${L}</text><title>${esc(SCEN[ctx.sc].locNames[L] || L)}</title></g>`;
+  });
+  // Kraftanzeigen mit Seildehnung
+  let lab = '';
+  if (!sm.pre && S.outcome !== 'selfstop') {
+    const rp = RO.rp, [i0, i1] = fr.tagSeg || [0, rp.length - 2];
+    const vF = end ? S.peakF : sm.Ff, vH = end ? S.peakFh : sm.Fh;
+    const pre = end ? 'max. ' : '';
+    const epsShow = end ? S.peakF / Math.max(1, ctx.M.k) : RO.eps;
+    const sub = epsShow > 0.01 ? `Dehnung ${Math.round(epsShow * 100)} %` : null;
+    const place = (a, b2, f, mid, tw, th) => {
+      const m = mid || vlerp(a, b2, f);
+      const dx = b2[0] - a[0], dy = b2[1] - a[1], L = Math.hypot(dx, dy) || 1;
+      let nx = -dy / L, ny = dx / L;
+      if (ny > 0 || (Math.abs(ny) < 0.2 && nx > 0)) { nx = -nx; ny = -ny; }
+      let q = [m[0] + nx * 17 * k, m[1] + ny * 17 * k];
+      const hit = qq => mpos.some(c => Math.abs(c[0] - qq[0]) < tw / 2 + 13 * k && Math.abs(c[1] - qq[1]) < th / 2 + 13 * k);
+      for (let i = 0; i < 4 && hit(q); i++) q = [q[0] + nx * 20 * k, q[1] + ny * 20 * k];
+      return q;
+    };
+    const t0 = pre + fmt(vF / 1000, 2) + ' kN';
+    const w0 = Math.max(t0.length * 12 * k * 0.58, sub ? sub.length * 10.5 * k * 0.55 : 0) + 14 * k, hh = (sub ? 34 : 22) * k;
+    const q0 = place(rp[i0], rp[i0 + 1], 0.5, RO.mid0, w0, hh);
+    lab += tagSVG(q0, t0, 'f', k, sub);
+    if (i1 !== i0 && rp[i1 + 1]) {
+      const t1 = pre + fmt(vH / 1000, 2) + ' kN', w1 = t1.length * 12 * k * 0.58 + 14 * k;
+      let q1 = place(rp[i1], rp[i1 + 1], 0.62, null, w1, 22 * k);
+      if (Math.abs(q1[0] - q0[0]) < (w0 + w1) / 2 + 4 && Math.abs(q1[1] - q0[1]) < hh + 4) q1 = [q1[0], q0[1] + (q1[1] >= q0[1] ? 1 : -1) * (hh + 6 * k)];
+      lab += tagSVG(q1, t1, 'h', k);
+    }
+  }
+  $('lyDyn').innerHTML = s;
+  $('lyFx').innerHTML = fx;
+  $('lyLab').innerHTML = lab + ms;
+  // Kamera
+  const cam = camera(ctx, t, end);
+  $('cam').setAttribute('transform', cam.tr);
+  $('lyBg').setAttribute('transform', cam.tr ? `translate(${R1(cam.sx * 0.25)},${R1(cam.sy * 0.25)})` : '');
+  let hud = '';
+  if (end && wq && weak && UIK < 1.6) {
+    const qs = cam.tr ? [cam.f[0] + cam.z * (wq[0] - cam.f[0]) + cam.sx, cam.f[1] + cam.z * (wq[1] - cam.f[1]) + cam.sy] : wq;
+    hud += calloutSVG(qs, weak, W, H, k);
+  }
+  if (fr.det && ctx.mag) {
+    const m = ctx.mag, fq = P2(fr.det[0]), c = m.c, r = m.r;
+    const qs = cam.tr ? [cam.f[0] + cam.z * (fq[0] - cam.f[0]) + cam.sx, cam.f[1] + cam.z * (fq[1] - cam.f[1]) + cam.sy] : fq;
+    const d = unit(vsub(qs, c)), e = vadd(c, d, r);
+    hud += `<g class="mag"><line class="mag-ln" x1="${R1(e[0])}" y1="${R1(e[1])}" x2="${R1(qs[0])}" y2="${R1(qs[1])}"/><circle class="mag-pt" cx="${R1(qs[0])}" cy="${R1(qs[1])}" r="${R1(4 * k)}"/>` +
+      `<clipPath id="cpMag"><circle cx="${R1(c[0])}" cy="${R1(c[1])}" r="${R1(r)}"/></clipPath><circle class="mag-bg" cx="${R1(c[0])}" cy="${R1(c[1])}" r="${R1(r)}"/>` +
+      `<g clip-path="url(#cpMag)"><use href="#scn" transform="translate(${R1(c[0])},${R1(c[1])}) scale(${m.z.toFixed(3)}) translate(${R1(-fq[0])},${R1(-fq[1])})"/></g>` +
+      `<circle class="mag-ring" cx="${R1(c[0])}" cy="${R1(c[1])}" r="${R1(r)}" stroke-width="${R1(2.5 * k)}"/>` +
+      (() => { const lt = `${fr.det[1]}, ${fmt(m.z, 1)}-fach`, lw = lt.length * 11.5 * k * 0.55; let lx = c[0], an = 'middle'; if (lx + lw / 2 > W - 6 * k) { lx = W - 6 * k; an = 'end'; } else if (lx - lw / 2 < 6 * k) { lx = 6 * k; an = 'start'; }
+        return `<text class="mag-lbl" x="${R1(lx)}" y="${R1(c[1] - r - 8 * k)}" text-anchor="${an}" font-size="${R1(11.5 * k)}">${lt}</text></g>`; })();
+  }
+  if (ctx.sc === 'ridge' && ctx.M.info.jump) hud += jumpBarSVG(ctx, t, W, H, k);
+  if (PB.playing && inCatch(t)) {
+    const fs = 12 * k, w = 92 * k, x = W - w - 12 * k, y = 12 * k;
+    hud += `<g class="slowmo"><rect x="${R1(x)}" y="${R1(y)}" width="${R1(w)}" height="${R1(fs + 12 * k)}" rx="${R1(4 * k)}"/><path d="M${R1(x + 10 * k)},${R1(y + 7 * k)}l${R1(6 * k)},${R1(5 * k)}l${R1(-6 * k)},${R1(5 * k)}zM${R1(x + 17 * k)},${R1(y + 7 * k)}l${R1(6 * k)},${R1(5 * k)}l${R1(-6 * k)},${R1(5 * k)}z"/><text x="${R1(x + 29 * k)}" y="${R1(y + 6 * k + fs * 0.9)}" font-size="${R1(fs)}">Zeitlupe</text></g>`;
+  }
+  $('lyHud').innerHTML = hud;
+}
+const inCatch = t => CUR && CUR.S.peakF > 1.3 * CUR.M.m * G && t > CUR.S.tFree - 0.02 && t < CUR.S.tPeak + 0.22;
+
+// ---------- Urteil, Kette ----------
+function renderVerdict(ctx) {
+  const v = ctx.R.verdict, w = ctx.R.weak, S = ctx.S, el = $('verdict');
+  el.style.setProperty('--st', { ok: 'var(--ok)', warn: 'var(--hi)', fail: 'var(--bad)' }[v.level]);
+  el.classList.remove('live');
+  let tx = v.text;
+  if (!tx && S.outcome !== 'selfstop') tx = `Fangstoß ${fmt(S.peakF / 1000, 2)} kN, auf der Sicherungsseite ${fmt(S.peakFh / 1000, 2)} kN.`;
+  const I = ctx.M.info;
+  if (ctx.sc === 'ridge' && I.jump) {
+    const j = I.jump, res = j.tAvail - j.tNeed;
+    tx = (tx ? tx + ' ' : '') + `Zeitfenster bis Seilzug ${fmt(j.tAvail, 2)} s (Rutschweg ${fmt(ctx.M.dFree, 1)} m). Benötigt: Reaktion ${fmt(j.tR, 2)} s + Absprung ${fmt(j.tJ, 2)} s = ${fmt(j.tNeed, 2)} s. ` +
+      (res >= 0 ? `Reserve ${fmt(res, 2)} s.` : `Es fehlen ${fmt(-res, 2)} s.`);
+  } else if (ctx.sc === 'ridge' && I.action === 'none') tx = (tx ? tx + ' ' : '') + `Seilzug nach ${fmt(I.tAvail, 2)} s (Rutschweg ${fmt(ctx.M.dFree, 1)} m).`;
+  el.innerHTML = `<div class="vt">${esc(v.title)}</div><div class="vx">${esc(tx || '')}</div>` +
+    `<div class="vw">${w ? `${weakTitle(w)}: <b>${esc(w.name)}</b> (${esc(w.detail)}), ${esc(valueText(w))}.` : ''}</div>`;
+}
+function renderVerdictLive(ctx, sm) {
+  const S = ctx.S, el = $('verdict'), sc = ctx.sc;
+  const slide = sc === 'steep' || sc === 'short' || (sc === 'ridge' && ctx.M.info.beta <= 72);
+  let title;
+  if (sm.pre) title = 'Gleich geht es los';
+  else if (ctx.tStrike != null && sm.t >= ctx.tStrike) title = 'Aufprall';
+  else if (ctx.tBreak != null && sm.t >= ctx.tBreak) title = 'Sicherung versagt';
+  else if (sm.post) title = 'Mitgerissen';
+  else if (sm.free && sc === 'ridge' && ctx.M.info.jump) { const j = ctx.M.info.jump; title = sm.t < j.tR ? 'Partner erkennt den Sturz' : sm.t < j.tNeed ? 'Gegensprung' : 'Gegengewicht auf der anderen Seite'; }
+  else if (sm.free) title = slide ? 'Rutschen, Seil noch locker' : 'Freier Fall';
+  else if (sm.t <= S.tPeak) title = 'Seil fängt den Sturz';
+  else if ((sm.slv.stance || 0) > 0.15) title = ['glacier', 'steep', 'short', 'ridge'].includes(sc) ? 'Sichernder wird mitgezogen' : 'Sichernder wird angehoben';
+  else if ((sm.slv.device || 0) > 0.15) title = 'Seil läuft durch das Gerät';
+  else if ((sm.slv.hand || 0) > 0.1) title = 'Arm gibt nach';
+  else title = 'Ausschwingen';
+  el.style.setProperty('--st', 'var(--muted)');
+  el.classList.add('live');
+  el.innerHTML = `<div class="vt">${title}</div><div class="vx">${sc === 'ridge' && ctx.M.info.jump && !sm.pre ? `t = ${fmt(sm.t, 2)} s, Seil straff bei ${fmt(ctx.M.info.jump.tAvail, 2)} s, ` : ''}Weg ${fmt(sm.x, 1)} m, ${fmt(Math.abs(sm.v), 1)} m/s, Last am ${esc(SCEN[sc].roleF)} ${fmt(sm.Ff / 1000, 2)} kN, Sicherungsseite ${fmt(sm.Fh / 1000, 2)} kN</div><div class="vw">Ergebnis nach dem Sturz</div>`;
+}
+function rowHTML(r, weak) {
+  const st = RL(r.risk), hold = r.kind === 'hold';
+  let right, pct, barW, chips = '';
+  if (hold) {
+    right = `<b>${fmt(r.loadKN, 2)}</b> kN<small>${r.thr >= 90 ? 'verankert' : 'hält bis ' + fmt(r.thr, 2) + ' kN'}</small>`;
+    barW = clamp(r.risk / 1.5 * 100, 2, 100);
+    pct = r.state === 'fail' ? 'versagt' : r.state === 'ok' ? 'hält' : 'gibt nach';
+    const used = (r.stages || []).filter(s => s.used > 0.005);
+    chips = used.map(s => `<span class="chip${s.exhausted && s.warn ? ' warn' : ''}">${s.label} ${fmt(s.used, 2)} m</span>`).join('');
+    if (r.state === 'fail') chips += `<span class="chip bad">${esc(r.msg)}</span>`;
+    else if (r.msg) chips += `<span class="chip warn">${esc(r.msg)}</span>`;
+  } else {
+    right = `<b>${fmt(r.loadKN, 1)}</b> kN<small>${r.kind === 'limit' ? 'Grenzwert' : 'Bruchlast'} ${fmt(r.strength, 1)} kN</small>`;
+    barW = clamp(r.util / 1.5 * 100, 1, 100);
+    pct = Math.round(r.util * 100) + ' %';
+    if (r.util >= 1) chips = `<span class="chip bad">${r.kind === 'limit' ? 'Grenzwert überschritten' : 'bricht bzw. reißt aus'}</span>`;
+  }
+  return `<div class="row${HL === r.loc ? ' hl' : ''}" data-loc="${r.loc}"><div><span class="nm">${esc(r.name)}${weak ? `<span class="weak-lbl">${weakTitle(r).toLowerCase()}</span>` : ''}</span><span class="dt">${esc(r.detail)}</span></div>` +
+    `<div class="rv">${right}</div><div class="br"><div class="bar"><i class="bg-${st}" style="width:${R1(barW)}%"></i><em></em></div><span class="pc c-${st}">${pct}</span></div>` +
+    (chips ? `<div class="chips">${chips}</div>` : '') + '</div>';
+}
+function renderChain(ctx) {
+  const names = SCEN[ctx.sc].locNames;
+  let h = '';
+  const order = [];
+  LOC_ORDER.forEach(L => {
+    const rows = ctx.R.rows.filter(r => r.loc === L);
+    if (!rows.length) return;
+    const st = RL(Math.max(...rows.map(r => r.risk)));
+    h += `<div class="grp" data-loc="${L}"><div class="grp-h"><span class="badge bg-${st}">${L}</span>${esc(names[L] || L)}<span class="gs c-${st}">${RISK_WORD[st]}</span></div>`;
+    rows.forEach(r => { h += rowHTML(r, r === ctx.R.weak); order.push(r); });
+    h += '</div>';
+  });
+  $('chainList').innerHTML = h;
+  const els = $('chainList').querySelectorAll('.row');
+  ROWDOM = order.map((r, i) => ({ r, b: els[i].querySelector('.rv b'), bar: els[i].querySelector('.bar i'), pc: els[i].querySelector('.pc') }));
+  GRPDOM = {};
+  $('chainList').querySelectorAll('.grp').forEach(g => { GRPDOM[g.dataset.loc] = { badge: g.querySelector('.badge'), gs: g.querySelector('.gs') }; });
+}
+function updateChainLive(ctx, sm, end) {
+  $('chainList').classList.toggle('playing', !end);
+  ROWDOM.forEach(o => {
+    const r = o.r, lv = rowLive(ctx, r, sm, end), st = RL(lv.risk);
+    o.b.textContent = fmt(lv.load, r.kind === 'hold' ? 2 : 1);
+    if (r.kind === 'hold') {
+      o.bar.style.width = clamp(lv.risk / 1.5 * 100, 2, 100) + '%';
+      o.pc.textContent = end ? (r.state === 'fail' ? 'versagt' : r.state === 'ok' ? 'hält' : 'gibt nach') : ((sm.sl[r.id] || 0) > 0.005 ? 'gibt nach' : 'hält');
+    } else {
+      o.bar.style.width = clamp(lv.util / 1.5 * 100, 1, 100) + '%';
+      o.pc.textContent = Math.round(lv.util * 100) + ' %';
+    }
+    o.bar.className = 'bg-' + st; o.pc.className = 'pc c-' + st;
+  });
+  Object.entries(GRPDOM).forEach(([L, g]) => { const st = RL(locLive(ctx, L, sm, end)); g.badge.className = 'badge bg-' + st; g.gs.className = 'gs c-' + st; g.gs.textContent = RISK_WORD[st]; });
+}
+
+const MET = [
+  ['ff', 'Sturzfaktor', '', 2], ['dFree', 'Fallweg bis Seilzug', 'm', 1], ['xMax', 'Sturzstrecke gesamt', 'm', 1], ['Ff', 'Fangstoß am Gestürzten', 'kN', 2],
+  ['Fh', 'Kraft Sicherungsseite', 'kN', 2], ['slip', 'Seildurchlauf, Rutschweg', 'm', 2], ['g', 'Spitzenlast Körper', 'g', 1], ['E', 'Sturzenergie', 'kJ', 1],
+];
+function metricVals(ctx) {
+  const S = ctx.S, M = ctx.M;
+  return { ff: M.ff, dFree: M.dFree, xMax: S.xMax, Ff: S.peakF / 1000, Fh: S.peakFh / 1000, slip: S.slipTot, g: S.peakF / (M.m * G), E: M.m * Math.max(M.gDrive, 0) * S.xMax / 1000 };
+}
+function renderMetrics(ctx) {
+  const v = metricVals(ctx), slope = ctx.sc !== 'lead' && ctx.sc !== 'top';
+  $('metrics').innerHTML = MET.map(([key, lbl, unit, dec]) => {
+    let cmp = '';
+    if (REF) { const dv = v[key] - REF.v[key]; cmp = `<div class="mc">Vergleich ${fmt(REF.v[key], dec)} (${dv >= 0 ? '+' : '−'}${fmt(Math.abs(dv), dec)})</div>`; }
+    const l = key === 'ff' && slope ? 'Sturzfaktor, formal' : lbl;
+    return `<div class="met"><div class="ml">${l}</div><div class="mv">${fmt(v[key], dec)}${unit ? `<small>${unit}</small>` : ''}</div>${cmp}</div>`;
+  }).join('');
+  $('refBtn').textContent = REF ? 'Vergleich löschen' : 'Als Vergleich merken';
+}
+
+function renderChart(ctx) {
+  const S = ctx.S, M = ctx.M, W = clamp(Math.round($('chart').getBoundingClientRect().width || 800), 320, 800), H = W < 560 ? 250 : 230, L = 42, Rr = 12, T = 18, B = 28;
+  $('chart').setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const tEnd = ctx.tEnd;
+  const w0 = M.m * Math.max(0, M.gDrive) / 1000;
+  let ym = Math.max(S.peakF, S.peakFh) / 1000;
+  if (REF) ym = Math.max(ym, REF.v.Ff);
+  ym = Math.max(ym, w0 * 1.1, 0.2) * 1.12;
+  const steps = [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10];
+  const st = steps.find(x => ym / x <= 5) || 10;
+  ym = Math.ceil(ym / st) * st;
+  const X = t => L + clamp(t, 0, tEnd) / tEnd * (W - L - Rr), Y = v => H - B - v / ym * (H - T - B);
+  let s = '';
+  if (S.tFree > 0) s += `<rect class="ch-free" x="${R1(X(0))}" y="${T}" width="${R1(X(S.tFree) - X(0))}" height="${H - T - B}"/><text class="ch-tx" x="${R1(X(0) + 6)}" y="${T + 13}">freier Fall</text>`;
+  if (S.tFail != null) s += `<rect class="ch-post" x="${R1(X(S.tFail))}" y="${T}" width="${R1(X(tEnd) - X(S.tFail))}" height="${H - T - B}"/><text class="ch-tx" x="${R1(X(S.tFail) + 6)}" y="${T + 13}">mitgerissen</text>`;
+  const dv = st < 0.1 ? 2 : st < 1 ? (st === 0.25 ? 2 : 1) : (st === 2.5 ? 1 : 0);
+  for (let v = 0; v <= ym + 1e-9; v += st) s += `<line class="ch-ax" x1="${L}" x2="${W - Rr}" y1="${R1(Y(v))}" y2="${R1(Y(v))}"/><text class="ch-tx" x="${L - 6}" y="${R1(Y(v) + 4)}" text-anchor="end">${fmt(v, dv)}</text>`;
+  const ts = [0.1, 0.2, 0.25, 0.5, 1, 2].find(x => tEnd / x <= 8) || 2;
+  const dt = ts === 0.25 ? 2 : ts < 1 ? 1 : 0;
+  for (let t = 0; t <= tEnd + 1e-9; t += ts) s += `<text class="ch-tx" x="${R1(X(t))}" y="${H - B + 16}" text-anchor="middle">${fmt(t, dt)}</text>`;
+  s += `<text class="ch-tx" x="${L - 6}" y="${T - 5}" text-anchor="end">kN</text><text class="ch-tx" x="${W - Rr}" y="${H - 1}" text-anchor="end">Zeit in s</text>`;
+  if (w0 > 0.01) s += `<line class="ch-w" x1="${L}" x2="${W - Rr}" y1="${R1(Y(w0))}" y2="${R1(Y(w0))}"/>`;
+  const path = (tt, vv, scale) => { let d = '', n = tt.length, stp = Math.max(1, Math.floor(n / 700)); for (let i = 0; i < n; i += stp) { if (tt[i] > tEnd) break; d += (d ? 'L' : 'M') + R1(X(tt[i])) + ',' + R1(Y(vv[i] * scale)); } return d; };
+  if (REF) s += `<path class="ch-ref" d="${path(REF.t, REF.Ff, 1)}"/>`;
+  const same = S.Ff.every((v, i) => Math.abs(v - S.Fh[i]) < 1);
+  if (!same) s += `<path class="ch-fh" d="${path(S.t, S.Fh, 0.001)}"/>`;
+  s += `<path class="ch-ff" d="${path(S.t, S.Ff, 0.001)}"/>`;
+  const iP = S.Ff.indexOf(Math.max(...S.Ff));
+  if (S.peakF > 1) {
+    const x = X(S.t[iP]), y = Y(S.peakF / 1000);
+    s += `<circle cx="${R1(x)}" cy="${R1(y)}" r="3.5" style="fill:var(--rope)"/><text class="ch-pk" x="${R1(x + 7)}" y="${R1(Math.max(T + 10, y - 5))}" style="fill:var(--rope)">${fmt(S.peakF / 1000, 2)} kN</text>`;
+    if (!same && S.peakFh > 1) {
+      const iH = S.Fh.indexOf(Math.max(...S.Fh)), xh = X(S.t[iH]), yh = Y(S.peakFh / 1000);
+      s += `<circle cx="${R1(xh)}" cy="${R1(yh)}" r="3" style="fill:var(--ropeH)"/><text class="ch-pk" x="${R1(xh + 7)}" y="${R1(yh + 14)}" style="fill:var(--ropeH)">${fmt(S.peakFh / 1000, 2)} kN</text>`;
+    }
+  }
+  s += `<line id="chCur" class="ch-cur" x1="${L}" x2="${L}" y1="${T}" y2="${H - B}"/>`;
+  $('chart').innerHTML = s;
+  ctx.chartX = X;
+  $('chartLeg').innerHTML = `<span><i style="border-color:var(--rope)"></i>Last am Gestürzten${same ? ' = Sicherungsseite' : ''}</span>` +
+    (same ? '' : `<span><i style="border-color:var(--ropeH)"></i>Last Sicherungsseite</span>`) +
+    `<span><i style="border-color:var(--muted);border-top-style:dotted"></i>Gewichtskraft ${fmt(w0, 2)} kN</span>` +
+    (REF ? `<span><i style="border-color:var(--muted);border-top-style:dashed"></i>Vergleich: ${esc(REF.label)}</span>` : '');
+}
+
+
+// ---------- Wiedergabe ----------
+const ICON_PLAY = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z" fill="currentColor"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z" fill="currentColor"/></svg>';
+let VEND = false;
+function setPlayBtn() { $('play').innerHTML = PB.playing ? ICON_PAUSE + 'Pause' : ICON_PLAY + 'Sturz abspielen'; }
+function stopPB() { PB.playing = false; cancelAnimationFrame(PB.raf); setPlayBtn(); }
+function renderAt(t) {
+  const end = t >= CUR.tEnd - 1e-9;
+  drawFrame(t, end);
+  const sm = sampleAt(CUR.S, Math.min(t, CUR.tEnd));
+  updateChainLive(CUR, sm, end);
+  if (end) { if (!VEND) { renderVerdict(CUR); VEND = true; } }
+  else { renderVerdictLive(CUR, sm); VEND = false; }
+  const c = $('chCur');
+  if (c) { const x = R1(CUR.chartX(t)); c.setAttribute('x1', x); c.setAttribute('x2', x); c.style.opacity = t < 0 ? 0 : 1; }
+  $('scrub').value = Math.round((t - T0) / (CUR.tEnd - T0) * 1000);
+  $('tread').textContent = t < 0 ? 'vor dem Sturz' : `t = ${fmt(Math.max(0, t), 2)} s`;
+}
+function play() {
+  if (PB.playing) { stopPB(); return; }
+  if (PB.t >= CUR.tEnd - 1e-6) PB.t = T0;
+  PB.playing = true; PB.last = performance.now(); setPlayBtn();
+  const step = now => {
+    const dt = Math.min(0.05, (now - PB.last) / 1000); PB.last = now;
+    PB.t += dt * (PB.t < 0 ? 1 : STATE.speed * (inCatch(PB.t) ? 0.3 : 1));
+    if (PB.t >= CUR.tEnd) { PB.t = CUR.tEnd; PB.playing = false; setPlayBtn(); renderAt(PB.t); return; }
+    renderAt(PB.t);
+    PB.raf = requestAnimationFrame(step);
+  };
+  PB.raf = requestAnimationFrame(step);
+}
+
+let rq = 0, rqAuto = false;
+function recompute(auto) {
+  rqAuto = rqAuto || !!auto;
+  if (rq) return;
+  rq = requestAnimationFrame(() => { rq = 0; const a = rqAuto; rqAuto = false; doRecompute(a); });
+}
+function doRecompute(auto) {
+  stopPB();
+  CUR = build();
+  VEND = false;
+  renderStatic(CUR); renderChain(CUR); renderMetrics(CUR); renderChart(CUR);
+  if (auto && !RM) { PB.t = T0; play(); }
+  else { PB.t = CUR.tEnd; renderAt(PB.t); }
+}
+
+
+// ---------- Bedienelemente ----------
+const FIELD = {};
+const getObj = scope => scope === 'p' ? P[STATE.sc] : scope === 'c' ? C[STATE.sc] : STATE;
+function fmtV(v, it) { return it.unit === '°' ? fmt(v, it.dec) + '°' : fmt(v, it.dec) + (it.unit ? ' ' + it.unit : ''); }
+function fieldHTML(it, scope, obj) {
+  const key = scope + ':' + it.id; FIELD[key] = { it, scope };
+  const id = 'f-' + scope + '-' + it.id, v = obj[it.id];
+  const label = typeof it.label === 'function' ? it.label(SCEN[STATE.sc]) : it.label;
+  if (it.type === 'range') {
+    const mn = it.minFn ? it.minFn(obj) : it.min, mx = it.maxFn ? it.maxFn(obj) : it.max;
+    return `<div class="fld"><label for="${id}"><span>${label}</span><output id="${id}-o" for="${id}">${fmtV(v, it)}</output></label><input type="range" id="${id}" data-k="${key}" min="${mn}" max="${mx}" step="${it.step}" value="${v}">${it.hint ? `<small class="hint">${it.hint}</small>` : ''}</div>`;
+  }
+  if (it.type === 'select') return `<div class="fld"><label for="${id}">${label}</label><select id="${id}" data-k="${key}">${it.options.map(([k2, l]) => `<option value="${k2}"${String(v) === String(k2) ? ' selected' : ''}>${l}</option>`).join('')}</select></div>`;
+  return `<label class="tgl"><input type="checkbox" role="switch" id="${id}" data-k="${key}"${v ? ' checked' : ''}><span>${label}</span></label>`;
+}
+function renderControls() {
+  const sc = STATE.sc, Sd = SCEN[sc], p = P[sc], c = C[sc];
+  let h = `<p class="blurb">${Sd.blurb}</p><h2>Beispiele</h2><div class="presets">` +
+    Sd.presets.map((pr, i) => `<button type="button" class="preset" data-i="${i}" aria-pressed="${STATE.preset === i}">${pr[0]}</button>`).join('') + '</div>';
+  Sd.groups.forEach(([title, its]) => {
+    const vis = its.filter(it => !it.show || it.show(p));
+    if (vis.length) h += `<fieldset><legend>${title}</legend>${vis.map(it => fieldHTML(it, 'p', p)).join('')}</fieldset>`;
+  });
+  COMMON_GROUPS.forEach(([title, its]) => {
+    const vis = its.filter(it => !it.show || it.show(c));
+    h += `<fieldset><legend>${title}</legend>${vis.map(it => fieldHTML(it, it.glob ? 'g' : 'c', it.glob ? STATE : c)).join('')}</fieldset>`;
+  });
+  const box = $('ctrl').parentElement, sT = box.scrollTop, fid = document.activeElement && document.activeElement.id;
+  $('ctrl').innerHTML = h;
+  box.scrollTop = sT;
+  if (fid && $(fid)) $(fid).focus({ preventScroll: true });
+}
+function syncRanges() {
+  $('ctrl').querySelectorAll('input[type=range]').forEach(inp => {
+    const f = FIELD[inp.dataset.k], obj = getObj(f.scope), it = f.it;
+    const mn = it.minFn ? it.minFn(obj) : it.min, mx = it.maxFn ? it.maxFn(obj) : it.max;
+    inp.min = mn; inp.max = mx;
+    const v = obj[it.id], cv = clamp(v, mn, mx);
+    if (cv !== v) { obj[it.id] = cv; inp.value = cv; $(inp.id + '-o').textContent = fmtV(cv, it); }
+  });
+  const p = P[STATE.sc];
+  if (STATE.sc === 'top') p.hc = Math.min(p.hc, p.H - 1);
+  if (STATE.sc === 'steep') p.above = Math.min(p.above, p.Lr - 1);
+}
+function clearPreset() {
+  if (STATE.preset == null) return;
+  STATE.preset = null;
+  $('ctrl').querySelectorAll('.preset').forEach(b => b.setAttribute('aria-pressed', 'false'));
+}
+function applyPreset(i) {
+  const sc = STATE.sc, pr = SCEN[sc].presets[i][1];
+  P[sc] = defaultsP(sc);
+  Object.entries(pr).forEach(([k, v]) => { if (k[0] !== '_') P[sc][k] = v; });
+  STATE.mF = pr._mF != null ? pr._mF : 80;
+  STATE.mH = pr._mH != null ? pr._mH : 75;
+  STATE.preset = i;
+  renderControls(); syncRanges(); recompute(true);
+}
+function setScenario(sc) {
+  if (sc === STATE.sc) return;
+  STATE.sc = sc; STATE.preset = null;
+  $('tabs').querySelectorAll('.tab').forEach(b => { const on = b.dataset.sc === sc; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+  renderControls(); recompute(true);
+}
+function setHL(L) {
+  if (HL === L) return;
+  HL = L;
+  $('chainList').querySelectorAll('.row').forEach(r => r.classList.toggle('hl', r.dataset.loc === L));
+  if (!PB.playing && CUR) drawFrame(PB.t, PB.t >= CUR.tEnd - 1e-9);
+}
+
+const TAB_ICONS = {
+  lead: '<path d="M21 1v18"/><circle cx="15" cy="4" r="2"/><path d="M15 6.5l4.5 4L8 18"/>',
+  top: '<path d="M21 1v18M2 19h19"/><path d="M20 2l-6 10M20 2L6 18"/><circle cx="13.5" cy="13" r="1.8"/>',
+  glacier: '<path d="M1 7h8l2 11 2-11h12"/><circle cx="11" cy="12.5" r="1.8"/><circle cx="21" cy="4.5" r="1.8"/><path d="M11 10.5V7M13 7h6.5"/>',
+  ridge: '<path d="M1 19L13 3l12 16"/><circle cx="8" cy="12" r="1.8"/><circle cx="14.5" cy="3.5" r="1.8"/>',
+  steep: '<path d="M1 19L25 4"/><circle cx="7" cy="12.5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><path d="M9 11.5l8-5"/>',
+  short: '<path d="M1 19L25 6"/><circle cx="12" cy="10.2" r="1.8"/><circle cx="19" cy="5.8" r="1.8"/><path d="M13.6 9.2q2.4 0 3.8-2.4"/>',
+};
+function initUI() {
+  $('tabs').innerHTML = SC_ORDER.map(sc => `<button class="tab" role="tab" type="button" data-sc="${sc}" aria-selected="${sc === STATE.sc}" tabindex="${sc === STATE.sc ? 0 : -1}"><svg viewBox="0 0 26 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TAB_ICONS[sc]}</svg>${SCEN[sc].label}</button>`).join('');
+  $('tabs').addEventListener('click', e => { const b = e.target.closest('.tab'); if (b) setScenario(b.dataset.sc); });
+  $('tabs').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const i = SC_ORDER.indexOf(STATE.sc), j = (i + (e.key === 'ArrowRight' ? 1 : SC_ORDER.length - 1)) % SC_ORDER.length;
+    setScenario(SC_ORDER[j]); $('tabs').querySelector(`[data-sc="${SC_ORDER[j]}"]`).focus();
+  });
+  const ctrl = $('ctrl');
+  ctrl.addEventListener('input', e => {
+    const el = e.target, f = FIELD[el.dataset.k];
+    if (!f || f.it.type !== 'range') return;
+    const v = parseFloat(el.value);
+    getObj(f.scope)[f.it.id] = v;
+    $(el.id + '-o').textContent = fmtV(v, f.it);
+    syncRanges(); clearPreset(); recompute(false);
+  });
+  ctrl.addEventListener('change', e => {
+    const el = e.target, f = FIELD[el.dataset.k];
+    if (!f || f.it.type === 'range') return;
+    const v = f.it.type === 'toggle' ? el.checked : el.value;
+    getObj(f.scope)[f.it.id] = v;
+    if (f.it.id === 'ropeType') { const R = ROPES[v]; C[STATE.sc].ropeD = R.d[2]; C[STATE.sc].impact = R.imp ? R.imp[2] : 0; }
+    STATE.preset = null;
+    renderControls(); syncRanges(); recompute(false);
+  });
+  ctrl.addEventListener('click', e => { const b = e.target.closest('.preset'); if (b) applyPreset(+b.dataset.i); });
+  $('play').addEventListener('click', play);
+  $('scrub').addEventListener('input', e => { stopPB(); PB.t = T0 + (+e.target.value / 1000) * (CUR.tEnd - T0); renderAt(PB.t); });
+  $('speed').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    STATE.speed = +b.dataset.v;
+    $('speed').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  });
+  $('speed').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', +x.dataset.v === STATE.speed));
+  $('refBtn').addEventListener('click', () => {
+    if (REF) REF = null;
+    else REF = { v: metricVals(CUR), label: SCEN[CUR.sc].label + ', ' + CUR.R.verdict.title.toLowerCase(), t: CUR.S.t.slice(), Ff: CUR.S.Ff.map(v => v / 1000) };
+    renderMetrics(CUR); renderChart(CUR); renderAt(PB.t);
+  });
+  const hov = e => { const r = e.target.closest('[data-loc]'); setHL(r ? r.dataset.loc : null); };
+  $('chainList').addEventListener('mouseover', hov);
+  $('chainList').addEventListener('mouseleave', () => setHL(null));
+  $('lyLab').addEventListener('mouseover', hov);
+  $('lyLab').addEventListener('mouseleave', () => setHL(null));
+  setPlayBtn();
+  const measure = () => {
+    const w = $('scene').getBoundingClientRect().width || 800;
+    const nk = clamp(800 / w * 0.92, 1, 2.3), nh = w < 560 ? 640 : 500;
+    if (Math.abs(nk - UIK) > 0.04 || nh !== VBH) {
+      UIK = nk; VBH = nh;
+      $('scene').setAttribute('viewBox', `0 0 800 ${VBH}`);
+      if (CUR) { relayout(CUR); renderStatic(CUR); renderAt(PB.t); }
+    }
+    const cw = Math.round($('chart').getBoundingClientRect().width);
+    if (CUR && cw && Math.abs(cw - (measure.cw || 0)) > 8) { measure.cw = cw; renderChart(CUR); renderAt(PB.t); }
+  };
+  measure();
+  if (window.ResizeObserver) new ResizeObserver(measure).observe($('scene').parentElement);
+  renderControls();
+  recompute(true);
+}
+initUI();
+
+})();
+</script>
+</body>
+</html>
