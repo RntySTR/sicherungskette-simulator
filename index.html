@@ -215,7 +215,7 @@ p { margin: 0; }
 .tip button { border: 0; background: transparent; min-width: 36px; min-height: 36px; font-size: 20px; line-height: 1; border-radius: 6px; }
 
 /* Seitenleiste */
-.side { display: grid; gap: 14px; min-width: 0; }
+.side { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; min-width: 0; }
 .befund { padding: 14px 16px 15px; border-left: 7px solid var(--lv); }
 .befund.lv-ok { --lv: var(--ok); } .befund.lv-warn { --lv: var(--hi); } .befund.lv-fail { --lv: var(--bad); }
 .befund.stale .bf-r { opacity: .45; }
@@ -355,6 +355,113 @@ footer { margin-top: 18px; color: var(--muted); font-size: 13px; max-width: 90ch
   .jbar { width: min(230px, 66%); right: 8px; bottom: 30px; }
   .jb-l span:nth-child(2) { display: none; }
 }
+
+/* Startmenü */
+.menu { position: fixed; inset: 0; z-index: 40; overflow-y: auto; background: var(--sky1); color: var(--ink); }
+.menu canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+.menu::before { content: ""; position: fixed; inset: 0; z-index: 1; background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 8%, transparent) 0%, color-mix(in srgb, var(--paper) 46%, transparent) 50%, color-mix(in srgb, var(--paper) 86%, transparent) 100%); }
+.m-in { position: relative; z-index: 2; max-width: 1380px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; justify-content: center; padding: calc(clamp(28px, 7vh, 80px) + env(safe-area-inset-top, 0px)) clamp(16px, 4vw, 40px) 40px; }
+.m-in h1 { margin: 0; font-size: clamp(44px, 9vw, 116px); font-weight: 800; font-stretch: 125%; letter-spacing: -.025em; line-height: .9; }
+.m-lead { margin-top: 16px; font-size: clamp(16px, 1.6vw, 20px); font-stretch: 94%; max-width: 54ch; font-weight: 500; }
+.m-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: clamp(26px, 5vh, 52px); }
+.mcard { position: relative; text-align: left; display: flex; flex-direction: column; gap: 6px; min-height: 250px; padding: 22px 22px 20px; border-radius: 18px; border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); background: color-mix(in srgb, var(--paper2) 86%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 24px 48px -28px rgba(4,14,24,.6); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.mcard:hover, .mcard:focus-visible { transform: translateY(-4px); border-color: var(--ink); box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 30px 56px -26px rgba(4,14,24,.75); }
+.mcard svg { width: 76px; height: 58px; }
+.mcard svg .a { stroke: var(--rope); } .mcard svg .b { stroke: var(--ropeH); } .mcard svg .f { fill: var(--jF); stroke: none; }
+.mcard b { font-size: 25px; font-weight: 780; font-stretch: 104%; line-height: 1.1; margin-top: 22px; }
+.mcard span { font-size: 15px; color: var(--muted); }
+.mcard em { font-style: normal; font-weight: 700; font-size: 14px; margin-top: auto; padding-top: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.mcard em::after { content: ""; width: 8px; height: 8px; border: solid currentColor; border-width: 2px 2px 0 0; transform: rotate(45deg); transition: transform .18s ease; }
+.mcard:hover em::after { transform: translateX(4px) rotate(45deg); }
+.mcard.main { background: var(--ink); color: var(--paper2); }
+.mcard.main span { color: color-mix(in srgb, var(--paper2) 78%, transparent); }
+.m-saved { margin-top: 26px; }
+.m-saved h2 { font-size: 15px; font-stretch: 90%; }
+.m-saved ul { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.m-saved li { display: flex; border: 1.5px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--paper2) 90%, transparent); overflow: hidden; }
+.m-saved li:hover { border-color: var(--ink); }
+.sv-open { border: 0; background: transparent; text-align: left; padding: 6px 10px 7px 12px; min-height: 44px; line-height: 1.2; }
+.sv-open b { display: block; font-size: 14px; } .sv-open span { font-size: 12.5px; color: var(--muted); }
+.sv-del { border: 0; border-left: 1px solid var(--line); background: transparent; min-width: 40px; font-size: 19px; color: var(--muted); }
+.sv-del:hover { color: var(--bad); }
+.m-foot { margin-top: 30px; font-size: 13px; color: var(--muted); max-width: 80ch; }
+.modebar { display: flex; align-items: center; gap: 10px; }
+.modebar strong { font-size: 13px; font-stretch: 90%; border: 1.5px solid var(--ink); border-radius: 999px; padding: 2px 11px; }
+.case.own { border-style: dashed; }
+/* Tutorial */
+.coach { position: fixed; z-index: 30; right: max(18px, env(safe-area-inset-right)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: min(440px, calc(100vw - 24px)); background: var(--ink); color: var(--paper2); border-radius: 16px; padding: 14px 18px 16px; box-shadow: 0 24px 60px -16px rgba(0,0,0,.6); }
+@media (min-width: 1100px) { .coach.left { right: auto; left: max(18px, env(safe-area-inset-left)); } }
+.coach h2 { font-size: 22px; font-weight: 780; margin-top: 10px; outline: none; }
+.coach p { font-size: 15px; margin-top: 6px; }
+.co-n { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; font-weight: 600; opacity: .85; }
+.co-n button { border: 0; background: transparent; color: inherit; font-size: 22px; min-width: 36px; min-height: 36px; margin: -6px -8px -6px 0; border-radius: 6px; }
+.co-p { height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--paper2) 25%, transparent); margin-top: 6px; }
+.co-p i { display: block; height: 100%; border-radius: 2px; background: var(--paper2); transition: width .25s ease; }
+.co-a { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.coach .btn { background: var(--paper2); color: var(--ink); border-color: var(--paper2); }
+.coach .btn.ghost { background: transparent; color: var(--paper2); border-color: color-mix(in srgb, var(--paper2) 45%, transparent); }
+.coach :focus-visible { outline-color: var(--paper2); box-shadow: none; }
+.tut-hl { outline: 3px solid var(--rope) !important; outline-offset: 3px; border-radius: 14px; animation: tut 1.6s ease-in-out infinite; }
+@keyframes tut { 50% { outline-offset: 7px; } }
+body.coaching .app { padding-bottom: 250px; }
+/* Szenarioeditor */
+.wizard { padding: 14px 16px 16px; }
+.wizard:empty { display: none; }
+.wizard h2 { font-size: 23px; font-weight: 780; margin-top: 14px; outline: none; }
+.wz-x { font-size: 14.5px; color: var(--muted); margin: 5px 0 12px; }
+.wz-steps { list-style: none; display: flex; gap: 4px; margin: 0; padding: 0; }
+.wz-steps li { flex: 1 1 0; min-width: 0; }
+.wz-steps button { width: 100%; border: 0; background: transparent; padding: 0 0 4px; text-align: left; border-top: 4px solid var(--line); min-height: 44px; }
+.wz-steps span { display: block; font-size: 12.5px; font-weight: 750; color: var(--muted); margin-top: 5px; }
+.wz-steps em { display: block; font-style: normal; font-size: 11.5px; font-stretch: 84%; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wz-steps .done button { border-top-color: var(--ok); }
+.wz-steps .on button { border-top-color: var(--ink); } .wz-steps .on span, .wz-steps .on em { color: var(--ink); }
+.wz-sc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.wz-sc button { text-align: left; border: 1.5px solid var(--line); background: var(--paper); border-radius: 12px; padding: 10px 12px 11px; display: grid; gap: 2px; line-height: 1.25; }
+.wz-sc button:hover { border-color: var(--ink); }
+.wz-sc svg { width: 40px; height: 31px; }
+.wz-sc b { font-size: 15px; } .wz-sc span { font-size: 12.5px; color: var(--muted); }
+.wz-sc [aria-checked="true"] { background: var(--ink); color: var(--paper2); border-color: var(--ink); }
+.wz-sc [aria-checked="true"] span { color: color-mix(in srgb, var(--paper2) 78%, transparent); }
+.wz-nav, .wz-end { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; }
+.wz-nav { border-top: 1px solid var(--line); padding-top: 14px; }
+.wz-nav .btn:only-child { margin-left: 0; } .wz-nav .btn:not(.ghost) { margin-left: auto; min-width: 120px; }
+.wz-end .btn { flex: 1; }
+.wz-sum { margin: 0 0 12px; font-size: 14px; }
+.wz-sum div { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.wz-sum dt { color: var(--muted); } .wz-sum dd { margin: 0; font-weight: 700; text-align: right; }
+input[type=text] { width: 100%; min-height: 42px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--paper); padding: 7px 10px; color: var(--ink); }
+body[data-mode="editor"] #tabs, body[data-mode="editor"] #cases, body[data-mode="editor"] #pcard, body[data-mode="editor"] #tip, body[data-mode="editor"] #cmpBtn { display: none; }
+body[data-mode="editor"] .side { grid-template-areas: "w" "b"; } body[data-mode="editor"] .wizard { grid-area: w; } body[data-mode="editor"] .befund { grid-area: b; }
+body[data-mode="tutorial"] #tip { display: none; }
+@media (max-width: 860px) { .m-cards { grid-template-columns: minmax(0, 1fr); } .mcard { min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2px 14px; padding: 16px; } .mcard svg { width: 56px; height: 43px; margin: 0; } .mcard b { margin: 0; flex: 1 1 60%; font-size: 21px; } .mcard span { flex: 1 1 100%; } .mcard em { margin-top: 6px; } .m-in { justify-content: flex-start; } }
+@media (max-width: 1099px) { .coach { left: 12px; right: 12px; width: auto; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); } body[data-mode="editor"] .side { display: grid; } }
+
+.lim { font-size: 12.5px; margin-top: 2px; min-height: 0; } .lim:empty { display: none; } .lim b { font-weight: 700; }
+.rng { position: relative; }
+.limtick { position: absolute; top: -17px; width: 4px; height: 16px; margin-left: -2px; border-radius: 2px; background: var(--bad); box-shadow: 0 0 0 2px var(--paper2); pointer-events: none; }
+.scat:empty { display: none; } .scat { margin-top: 8px; font-size: 14px; }
+.sc-bar { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--bad) 35%, var(--panel)); overflow: hidden; margin-bottom: 5px; } .sc-bar i { display: block; height: 100%; }
+.ch-band { fill: var(--rope); opacity: .16; }
+.chart-leg .lg-b { border-top-width: 8px; opacity: .3; }
+.sharebox { position: absolute; right: 0; top: calc(100% + 8px); z-index: 20; width: min(420px, calc(100vw - 24px)); padding: 12px 14px 12px; }
+.sharebox label { font-size: 13px; font-weight: 650; display: block; margin-bottom: 4px; }
+.sharebox div { display: flex; gap: 6px; } .sharebox .sub { margin-top: 6px; }
+.modebar { position: relative; }
+.quiz { padding: 14px 16px 16px; } .quiz:empty { display: none; }
+.quiz h2 { font-size: 23px; font-weight: 780; margin-top: 8px; outline: none; }
+.quiz h3 { font-size: 15px; font-weight: 700; margin: 14px 0 6px; }
+.qz-top { display: flex; justify-content: space-between; font-size: 13px; font-weight: 650; color: var(--muted); }
+.qz-o { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.qz-o button { text-align: left; min-height: 44px; border: 1.5px solid var(--line); background: var(--paper); border-radius: 10px; padding: 7px 11px; font-size: 14px; color: var(--ink); }
+.qz-o button:hover:not([disabled]) { border-color: var(--ink); }
+.qz-o [aria-checked="true"] { background: var(--ink); color: var(--paper2); border-color: var(--ink); }
+.qz-o .ok { border-color: var(--ok); box-shadow: inset 0 0 0 2px var(--ok); } .qz-o .ok::after { content: " ✓"; font-weight: 800; }
+.qz-o .no { border-color: var(--bad); box-shadow: inset 0 0 0 2px var(--bad); } .qz-o .no::after { content: " ×"; font-weight: 800; }
+.qz-res { margin-top: 14px; padding: 10px 12px; background: var(--panel); border-radius: 10px; font-size: 14.5px; } .qz-res p + p { margin-top: 4px; }
+body[data-mode="quiz"] #tabs, body[data-mode="quiz"] #cases, body[data-mode="quiz"] #pcard, body[data-mode="quiz"] #tip, body[data-mode="quiz"] #cmpBtn, body[data-mode="quiz"] #shareBtn, body[data-mode="editor"] #shareBtn, body[data-mode="tutorial"] #shareBtn { display: none; }
+body.qz-hide #befund, body.qz-hide .tl, body.qz-hide .transport, body.qz-hide .guide { display: none; }
+@media (min-width: 861px) and (max-width: 1240px) { .m-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mcard { min-height: 200px; } }
 html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 html[data-motion="reduced"] .mk.weak::before { opacity: .7; transform: scale(1.25); }
 @media (forced-colors: active) { .mk, .hdl, .tag, .btn { border: 2px solid CanvasText; } }
@@ -362,12 +469,40 @@ html[data-motion="reduced"] .mk.weak::before { opacity: .7; transform: scale(1.2
 </head>
 <body>
 <a class="skip" href="#befund">Zum Ergebnis springen</a>
-<div class="app">
+<div class="menu" id="menu">
+  <canvas id="hero" aria-hidden="true"></canvas>
+  <div class="m-in">
+    <h1>Sicherungs&shy;kette</h1>
+    <p class="m-lead">Wo reißt es zuerst? Ein Simulator für Stürze in Fels, Eis und Firn: wie die Kraft vom Gestürzten bis zum Fixpunkt läuft und welches Glied nachgibt.</p>
+    <nav class="m-cards" aria-label="Einstieg">
+      <button type="button" class="mcard" data-mode="tutorial">
+        <svg viewBox="0 0 76 58" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 50h64"/><path class="a" d="M10 44c10-2 14-30 26-30s14 22 30 26"/><circle class="f" cx="36" cy="14" r="5"/><path d="M14 50v-4M36 50V22M58 50v-8"/></svg>
+        <b>Tutorial</b><span>Neun kurze Schritte durch Szene, Kraftkurve, Befund und Regler. Etwa drei Minuten.</span><em>Tutorial starten</em>
+      </button>
+      <button type="button" class="mcard main" data-mode="sandbox">
+        <svg viewBox="0 0 76 58" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M52 4v50M6 54h46"/><path class="a" d="M50 12L34 30M50 12L18 46"/><circle class="f" cx="33" cy="32" r="5"/><circle cx="16" cy="44" r="4"/><path class="b" d="M60 20h10M60 30h10M60 40h10"/></svg>
+        <b>Sandbox</b><span>Sechs Situationen mit Beispielen. Frei verstellen, abspielen, zwei Varianten vergleichen.</span><em>Sandbox öffnen</em>
+      </button>
+      <button type="button" class="mcard" data-mode="editor">
+        <svg viewBox="0 0 76 58" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12h10M8 29h10M8 46h10"/><circle cx="13" cy="12" r="0.1"/><path class="b" d="M26 12h40"/><path class="a" d="M26 29h28"/><path d="M26 46h34"/><circle class="f" cx="60" cy="29" r="5"/></svg>
+        <b>Szenarioeditor</b><span>Ein eigenes Szenario anlegen, Frage für Frage. Die Szene rechnet bei jedem Schritt mit.</span><em>Szenario anlegen</em>
+      </button>
+      <button type="button" class="mcard" data-mode="quiz">
+        <svg viewBox="0 0 76 58" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="a" d="M26 20c0-8 6-13 13-13s13 5 13 12c0 9-13 9-13 20"/><circle class="f" cx="39" cy="50" r="4"/><path class="b" d="M8 14l5 5 8-9M8 40l5 5 8-9"/></svg>
+        <b>Quiz</b><span>Ausgangslage ansehen, einschätzen, auflösen: Hält die Kette, und wo ist sie am höchsten belastet?</span><em>Quiz starten</em>
+      </button>
+    </nav>
+    <section class="m-saved" id="savedBox" aria-label="Eigene Szenarien" hidden><h2>Eigene Szenarien</h2><ul id="savedList"></ul></section>
+    <p class="m-foot">Lehrmodell. Die Werte zeigen Größenordnungen und Tendenzen. Sie ersetzen weder Ausbildung noch Herstellerangaben.</p>
+  </div>
+</div>
+<div class="app" id="app">
   <header class="top">
     <div class="brand">
       <h1>Sicherungskette</h1>
-      <p>Wo reißt es zuerst? Wie die Kraft eines Sturzes vom Gestürzten bis zum Fixpunkt läuft.</p>
+      <p>Wo reißt es zuerst?</p>
     </div>
+    <div class="modebar"><strong id="modeName"></strong><button class="btn ghost" id="shareBtn" type="button"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M5.5 8.5l3-3M6 3.5l1-1a2.5 2.5 0 0 1 3.5 3.5l-1 1M8 10.5l-1 1A2.5 2.5 0 0 1 3.5 8l1-1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>Link teilen</span></button><div class="sharebox card" id="shareBox" hidden><label for="shareUrl">Link zu dieser Einstellung</label><div><input type="text" id="shareUrl" readonly><button type="button" class="btn ghost" id="shareX" aria-label="Schließen">×</button></div><p class="sub" id="shareMsg" role="status"></p></div><button class="btn ghost" id="menuBtn" type="button"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Menü</span></button></div>
   </header>
   <div class="tabs" role="tablist" aria-label="Szenario" id="tabs"></div>
   <div class="cases" id="cases" role="group" aria-label="Beispielfälle"></div>
@@ -397,9 +532,11 @@ html[data-motion="reduced"] .mk.weak::before { opacity: .7; transform: scale(1.2
       <div class="tip" id="tip"><p>Die runden Griffe in der Szene lassen sich ziehen. Die Kraftkurve ist zugleich die Zeitachse: darauf ziehen spult den Sturz.</p><button type="button" id="tipX" aria-label="Hinweis schließen">×</button></div>
     </section>
 
-    <aside class="side" aria-label="Ergebnis und Einstellungen">
+    <aside class="side" id="side" aria-label="Ergebnis und Einstellungen">
+      <section class="wizard card" id="wizard" aria-label="Szenarioeditor"></section>
+      <section class="quiz card" id="quiz" aria-label="Quiz"></section>
       <section class="befund card" id="befund" aria-label="Ergebnis" tabindex="-1"></section>
-      <div class="card">
+      <div class="card" id="pcard">
         <div class="ptabs" role="tablist" aria-label="Bereiche" id="ptabs">
           <button role="tab" type="button" id="t-ctrl" data-t="ctrl" aria-controls="p-ctrl">Einstellen</button>
           <button role="tab" type="button" id="t-chain" data-t="chain" aria-controls="p-chain">Kette</button>
@@ -426,10 +563,11 @@ html[data-motion="reduced"] .mk.weak::before { opacity: .7; transform: scale(1.2
               <li><b>Seil:</b> lineare Feder ohne Vorspannung. Die Steifigkeit wird aus dem Norm-Fangstoß nach EN 892 zurückgerechnet (80 kg, bei Halbseil 55 kg, Sturzfaktor 1,77). Fangstoß ohne Seildurchlauf: F = mg + √((mg)² + 2·mg·k·f). Reale Seile dämpfen zusätzlich; der Ausschwingvorgang ist mit der Eigenfrequenz von Seil und Masse und einem angenommenen Dämpfungsgrad von 0,6 dargestellt.</li>
               <li><b>Umlenkung:</b> Seilreibung nach Euler-Eytelwein, μ ≈ 0,16 am Karabiner. Bei 180° erreicht die Sicherungsseite rund 60 % der Last am Gestürzten, die Zwischensicherung trägt die Summe (etwa das 1,6-Fache). Seilverlauf im Zickzack erhöht die Reibung und verkürzt die wirksame Seillänge.</li>
               <li><b>Sicherungsgeräte:</b> Bremskraft als Schwelle, darüber läuft Seil durch. Richtwerte bei 9,8 mm: Tube 2,3 kN, HMS 3,0 kN, Halbautomat 6,5 kN, Plate im Guide-Modus 9 kN. Skaliert mit Durchmesser, Nässe und Strangzahl. Tube bei Zug nach unten mit halber Bremskraft. Handkraft und Handschuhe streuen in der Praxis stark.</li>
-              <li><b>Sichernder und Partner:</b> Haltekraft aus Masse, Reibung, Hangneigung und Reaktion als Stufenmodell: mitgehen, angehoben werden, rutschen, mitgerissen werden. Die Trägheit des Sichernden ist nicht als eigene Bewegung gerechnet.</li>
+              <li><b>Sichernder und Partner:</b> Haltekraft aus Masse, Reibung, Hangneigung und Reaktion als Stufenmodell: mitgehen, angehoben werden, rutschen, mitgerissen werden. Wird der Sichernde angehoben (Vorstieg, Toprope), rechnet das Modell ihn als eigene Masse: Er beschleunigt, sobald die Seilkraft sein Gewicht übersteigt, bis zur Selbstsicherung oder zur ersten Zwischensicherung. Rutschen und Mitgezogenwerden im geneigten Gelände bleiben Stufen mit fester Haltekraft.</li>
               <li><b>Gelände:</b> Kanten, Spaltenrand und Felszacken als Umlenkung mit Reibung. Festigkeitsminderung des Seils über Kanten und in Knoten nach Erfahrungswerten (Achterknoten etwa 75 %, Kante 15–60 %). Bremsknoten bremsen je nach Schnee mit 0,1–0,9 kN je Knoten. Der erste liegt beim Seilzug am Spaltenrand, jeder weitere greift nach 1,5 m Seilweg.</li>
               <li><b>Bruchlasten:</b> Normwerte nach EN 12277 (Gurt), EN 12275 (Karabiner), EN 566 (Schlingen), EN 959 (Bohrhaken), EN 892 (Seil) oder typische Herstellerangaben. Körpergrenze 12 kN entsprechend der Obergrenze für den Norm-Fangstoß.</li>
               <li><b>Grat, gleichzeitiges Gehen:</b> Das Seil liegt entlang der Schneide, der Gestürzte rutscht quer dazu in die Flanke. Straff wird es nach dem Rutschweg d = √((L + s)² − L²) (L Seilabstand, s Schlappseil). Zeitfenster: t = √(2d/a) mit a = g·(sin β − μ·cos β). Der Absprung bis zum Gewicht auf der Gegenseite ist mit 0,47 s angesetzt (Abdruck 0,15 s, Schwerpunkt 0,5 m tiefer). Kommt der Seilzug früher, hält der Partner nur mit Standreibung, im Absprung praktisch nicht. Das Pendeln nach dem Seilzug ist nicht gerechnet.</li>
+              <li><b>Streuung:</b> Auf Wunsch werden 60 Rechnungen mit zufällig veränderten Richtwerten durchgeführt (Reibung, Bremskraft, Haltekraft, Seilsteifigkeit, Festigkeit von Fixpunkten und Kanten; gleichverteilt, Vorgabe ±25 %). Angezeigt werden der Anteil gehaltener Stürze und das Band des Fangstoßes. Die Bandbreite ist eine Annahme, keine Messung.</li>
               <li><b>Genauigkeit:</b> Kräfte sind auf 0,1 kN gerundet. Reibwerte, Bremskräfte und Haltekräfte sind Richtwerte mit großer Streuung. Aussagekräftig sind die Größenordnung und die Richtung, in die eine Änderung wirkt.</li>
               <li><b>Darstellung:</b> Seildehnung (Abstand der Mantelmarkierungen), Einschneiden von Seil und Bremsknoten sowie die Lupe sind zur Anschauung überhöht. Schneestaub, Wolken, Kamerabewegung, Nachbilder und die Zeitlupe beim Fangstoß sind Gestaltungsmittel. Zeitverlauf, Wege und Kräfte stammen aus der Rechnung. Mit „Bewegung reduziert“ entfallen die Gestaltungsmittel, der Informationsgehalt bleibt gleich.</li>
               <li><b>Nicht abgebildet:</b> Pendelsturz, Anprall am Fels, Seilschnitt an scharfen Kanten als Bruchvorgang, Folgesturz nach Ausbruch einer Zwischensicherung, Streuung von Material und Platzierung.</li>
@@ -441,6 +579,7 @@ html[data-motion="reduced"] .mk.weak::before { opacity: .7; transform: scale(1.2
   </main>
   <footer>Lehrmodell. Die Werte zeigen Größenordnungen und Tendenzen. Sie ersetzen weder Ausbildung noch Herstellerangaben und sind keine Freigabe einer Technik oder eines Produkts.</footer>
 </div>
+<div class="coach" id="coach" role="region" aria-label="Tutorial" hidden></div>
 <div class="sr" id="live" aria-live="polite"></div>
 <script>
 (() => {
@@ -551,7 +690,7 @@ function buildLead(p, c) {
   if (!central) {
     if (!none) {
       if (p.dynamic) stages.push({ id: 'dyn', el: 'stance', thr: 0.5 * mH * G, cap: 0.4, label: 'aktives Mitgehen', sev: 0.2 });
-      stages.push({ id: 'lift', el: 'stance', thr: 1.15 * mH * G, cap: ground ? 1.2 : 0.3, label: 'angehoben', sev: ground ? 0.7 : 0.35,
+      stages.push({ id: 'lift', el: 'stance', inert: true, mass: mH, thr: mH * G, cap: ground ? 1.2 : 0.3, label: 'angehoben', sev: ground ? 0.7 : 0.35,
         warn: ground ? 'Sichernder prallt an Wand/erste Zwischensicherung' : 'Selbstsicherung gestrafft' });
     } else {
       stages.push({ id: 'pull', el: 'stance', thr: 0.2 * mH * G, cap: 0.3, label: 'nach unten gerissen', sev: 0.75, warn: 'Sichernder in die Selbstsicherung gerissen' });
@@ -602,7 +741,7 @@ function buildTop(p, c) {
     const T = TC, dFree = s, Ltot = (H - hc) + H + s, Leff = (H - hc + s) + H * TC;
     const free = p.belayPos === 'ground_free';
     const stages = [];
-    if (free) stages.push({ id: 'lift', el: 'stance', thr: 1.15 * mH * G, cap: 1.0, label: 'angehoben', sev: 0.6, warn: 'Sichernder prallt an die Wand' });
+    if (free) stages.push({ id: 'lift', el: 'stance', inert: true, mass: mH, thr: mH * G, cap: 1.0, label: 'angehoben', sev: 0.6, warn: 'Sichernder prallt an die Wand' });
     const thr = devThr(p.device, R, c);
     stages.push({ id: 'dev', el: 'device', thr, cap: Infinity, label: 'Seildurchlauf' });
     const res = (Ff) => Ff * (1 + TC);
@@ -613,7 +752,7 @@ function buildTop(p, c) {
     els.push({ id: 'device', loc: 'C', name: 'Sicherungsgerät', detail: DEVICES[p.device].label, kind: 'hold', thr: thr / 1000, load: fH });
     els.push({ id: 'hmsB', loc: 'C', name: 'Sicherungskarabiner', detail: 'HMS, längs', strength: STR.hms.major[b], load: (Ff, Fh) => Fh * 1.05 });
     els.push({ id: 'loop', loc: 'C', name: 'Sicherungsring', detail: 'Gurt ' + c.harnessCond, strength: STR.belayLoop[b] * HARN[c.harnessCond], load: fH });
-    els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail: free ? 'am Boden, unverankert' : 'Bodenanker', kind: 'hold', thr: free ? 1.15 * mH * G / 1000 : 99, load: fH });
+    els.push({ id: 'stance', loc: 'C', name: 'Stand des Sichernden', detail: free ? 'am Boden, unverankert' : 'Bodenanker', kind: 'hold', thr: free ? mH * G / 1000 : 99, load: fH });
     return { m: mF, gPre: G, gDrive: G, dFree, Ltot, Leff, k: R.k, T, K: 0, stages, els, strike: hc - 0.3, strikeMsg: 'Bodensturz', R,
       ff: dFree / Ltot, info: { variant: 'tr', H, hc, s, free } };
   }
@@ -837,26 +976,39 @@ function simulate(M) {
   // Bremsknoten: der erste liegt beim Seilzug am Rand, jeder weitere greift nach Kstep Metern Seilweg
   const Kof = () => M.Kstep ? M.Kper * Math.min(M.Kn, 1 + Math.floor(slipTot / M.Kstep)) : M.K;
   const Fh = F => Math.max(0, (F - Kof())) * M.T;
+  // Zwei-Massen-Modell: der Sichernde als eigene Masse, sobald die Seilkraft sein Gewicht übersteigt
+  const IN = st.find(s => s.inert);
+  let yH = 0, vH = 0, yMax = 0;
   while (iter++ < 150000) {
-    let act = st.find(s => s.used < s.cap);
+    let act = st.find(s => !s.inert && s.used < s.cap);
     const capF = act ? act.thr / M.T + Kof() : Infinity;
     let F = kL * stretch;
     const a = gD - F / m;
     v += a * dt;
     const dx = v * dt;
-    if (dx > 0) {
-      if (kL * (stretch + dx) <= capF) stretch += dx;
+    let dyH = 0;
+    if (IN) {
+      const aH = (Fh(F) - IN.mass * G) / IN.mass;
+      if (yH > 0 || vH > 0 || aH > 0) {
+        vH += aH * dt; dyH = vH * dt;
+        if (yH + dyH <= 0) { dyH = -yH; vH = 0; } else if (yH + dyH >= IN.cap) { dyH = IN.cap - yH; vH = 0; }
+        yH += dyH; yMax = Math.max(yMax, yH); IN.used = yH;
+      }
+    }
+    const dxN = dx - dyH;
+    if (dxN > 0) {
+      if (kL * (stretch + dxN) <= capF) stretch += dxN;
       else {
         const room = Math.max(0, capF / kL - stretch);
         stretch += room;
-        let rest = dx - room;
+        let rest = dxN - room;
         while (rest > 0 && act) {
           const can = act.cap - act.used;
           if (rest <= can) { act.used += rest; slipTot += rest; rest = 0; }
           else {
             act.used = act.cap; slipTot += can; rest -= can;
             if (act.fail) { out.outcome = 'dragged'; out.failStage = act; break; }
-            act = st.find(s => s.used < s.cap);
+            act = st.find(s => !s.inert && s.used < s.cap);
             if (act) {
               const cf = act.thr / M.T + Kof(), r2 = Math.max(0, cf / kL - stretch);
               const use = Math.min(rest, r2); stretch += use; rest -= use;
@@ -866,17 +1018,18 @@ function simulate(M) {
       }
       x += dx;
     } else {
-      stretch = Math.max(0, stretch + dx); x += dx;
+      stretch = Math.max(0, stretch + dxN); x += dx;
     }
     t += dt;
     F = kL * stretch;
     if (F > out.peakF) { out.peakF = F; out.tPeak = t; }
     const fh = Fh(F); if (fh > out.peakFh) out.peakFh = fh;
-    if (t - lastRec >= 0.004 || out.outcome === 'dragged' || v <= 0) {
-      out.t.push(t); out.Ff.push(F); out.Fh.push(fh); out.x.push(x); out.slip.push(slipTot); rec(); lastRec = t;
+    const done = (v <= 0 && (!IN || vH <= 0.02)) || t > tFree + 4;
+    if (t - lastRec >= 0.004 || out.outcome === 'dragged' || done) {
+      out.t.push(t); out.Ff.push(F); out.Fh.push(fh); out.x.push(x); out.slip.push(slipTot + yH); rec(); lastRec = t;
     }
     if (out.outcome === 'dragged') break;
-    if (v <= 0) break;
+    if (done) break;
   }
   if (iter >= 150000 && v > 0) { out.outcome = 'runaway'; }
   // Nachlauf: Ausschwingen zur statischen Last
@@ -890,7 +1043,8 @@ function simulate(M) {
       const tt = i * Ttail / N, e = Math.exp(-zeta * om * tt), osc = Math.cos(omd * tt);
       const F = Fs + (F0 - Fs) * e * osc;
       out.t.push(t + tt); out.Ff.push(Math.max(0, F)); out.Fh.push(Fh(Math.max(0, F)));
-      out.x.push(xs + (x0 - xs) * e * osc); out.slip.push(slipTot); rec();
+      if (IN) IN.used = M.T * Fs < IN.mass * G ? yH * e : yH;
+      out.x.push(xs + (x0 - xs) * e * osc); out.slip.push(slipTot + (IN ? IN.used : 0)); rec();
     }
   }
   // Nach Versagen: beide gleiten/fallen weiter (nur für die Darstellung)
@@ -905,7 +1059,8 @@ function simulate(M) {
       elIds.forEach(e => out.sl[e].push(st.reduce((a, s) => a + (s.el === e ? s.used : 0), 0) + (e === fe ? hsExtra : 0)));
     }
   }
-  out.stretch = stretch; out.slipTot = slipTot; out.xMax = Math.max(...out.x.slice(0, out.tFail != null ? out.t.findIndex(tt => tt > out.tFail) : out.x.length));
+  if (IN) IN.used = yMax;
+  out.stretch = stretch; out.slipTot = slipTot + yMax; out.xMax = Math.max(...out.x.slice(0, out.tFail != null ? out.t.findIndex(tt => tt > out.tFail) : out.x.length));
   out.stageUsed = st.map(s => ({ id: s.id, el: s.el, used: s.used, cap: s.cap, exhausted: s.used >= s.cap - 1e-9, label: s.label, warn: s.warn, fail: s.fail, failMsg: s.failMsg, thr: s.thr, sev: s.sev }));
   if (M.strike != null && out.xMax >= M.strike) { out.strike = true; }
   return out;
@@ -2568,7 +2723,7 @@ function updateOverlay(V, fr, sm, t, end, RO, cam, slow, magOn) {
   const m = ctx.mag;
   if (magOn) add(m.c[0], m.c[1], m.r * 2 + 6, m.r * 2 + 6);
   // Griffe: an der Ausgangslage, nur im Stand
-  const hOn = !PB.playing && (end || sm.pre) && !ST.guide;
+  const hOn = !PB.playing && (end || sm.pre) && !ST.guide && ST.mode !== 'quiz';
   V.handles.forEach((hd, i) => {
     const el = n['hd' + i]; show(el, hOn || V.drag === i);
     if (!hOn && V.drag !== i) return;
@@ -2677,10 +2832,322 @@ function updateOverlay(V, fr, sm, t, end, RO, cam, slow, magOn) {
   }
 }
 
-// ===== App: Zustand, Rechnung, Bedienung =====
+// ===== Startmenü, Tutorial, Szenarioeditor =====
 const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ohne Speicher weiter */ } } };
+const SAVED = (() => { try { return JSON.parse(LS.get('sk-saved') || '[]') || []; } catch (e) { return []; } })();
+const saveSaved = () => LS.set('sk-saved', JSON.stringify(SAVED));
+const HERO = { W: 0, H: 0, bg: null, dark: null };
+function drawHero(now) {
+  const cv = $('hero'), W = cv.clientWidth, H = cv.clientHeight;
+  if (!W || !H) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (W !== HERO.W || H !== HERO.H || HERO.dark !== TH.dark) {
+    HERO.W = W; HERO.H = H; HERO.dark = TH.dark; cv.width = W * dpr; cv.height = H * dpr;
+    HERO.bg = document.createElement('canvas'); HERO.bg.width = W * dpr; HERO.bg.height = H * dpr;
+    const bg = HERO.bg.getContext('2d'); bg.setTransform(dpr, 0, 0, dpr, 0, 0); paintBg(bg, 'ridge', W, H, 0);
+  } else if (RM()) return;
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.drawImage(HERO.bg, 0, 0, W, H);
+  if (!SPR || SPR.dark !== TH.dark) SPR = { dark: TH.dark, powder: sprite(TH.dark ? '#C9D8E6' : '#FFFFFF'), dust: sprite(TH.dust) };
+  const t = RM() ? 0 : now;
+  g.globalAlpha = TH.dark ? 0.18 : 0.55;
+  for (let i = 0; i < 7; i++) { const sp = 6 + hash2(i, 3, 5) * 12, w = 320 + hash2(i, 2, 5) * 380, x = ((hash2(i, 1, 5) * (W + 700) + t * sp) % (W + 700)) - 350, y = H * (0.08 + 0.09 * i); g.drawImage(SPR.powder, x, y, w, w * 0.2); g.drawImage(SPR.powder, x + w * 0.3, y - w * 0.03, w * 0.7, w * 0.16); }
+  g.globalAlpha = 1; g.fillStyle = TH.dark ? '#DCE8F2' : '#FFFFFF';
+  if (t) for (let i = 0; i < 70; i++) { const sp = 20 + hash2(i, 5, 6) * 50; g.globalAlpha = 0.2 + hash2(i, 8, 6) * 0.5; g.fillRect((hash2(i, 6, 6) * W + t * sp) % W, (hash2(i, 7, 6) * H + t * sp * 0.3 + Math.sin(t + i) * 8) % H, 1.6, 1.4); }
+  g.globalAlpha = 1;
+}
+const fieldLabel = it => typeof it.label === 'function' ? it.label(SCEN[ST.sc]) : it.label;
+function valLabel(it, v) { return it.type === 'range' ? fmtV(v, it) : it.type === 'select' ? (it.options.find(o => String(o[0]) === String(v)) || [0, v])[1] : v ? 'ja' : 'nein'; }
+function renderMenu() {
+  $('savedBox').hidden = !SAVED.length;
+  $('savedList').innerHTML = SAVED.map((s, i) => `<li><button type="button" class="sv-open" data-s="${i}"><b>${esc(s.name)}</b><span>${esc(SCEN[s.sc].label)}</span></button><button type="button" class="sv-del" data-d="${i}" aria-label="${esc(s.name)} löschen">×</button></li>`).join('');
+}
+function loadState(sc, v, preset, opt) {
+  ST.sc = sc; ST.preset = preset; ST.vars = [v]; ST.vi = 0; ST.cmp = false;
+  $('tabs').querySelectorAll('.tab').forEach(b => { const on = b.dataset.sc === sc; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && b.scrollIntoView && ST.mode !== 'menu') b.scrollIntoView({ block: 'nearest', inline: 'center' }); });
+  regFields(); renderCases(); renderControls(); syncRanges(); renderInfo(); syncCmp(); refresh(opt || { auto: true, fade: true });
+}
+function setMode(m) {
+  if (ST.mode === 'tutorial') tutEnd();
+  document.body.classList.remove('qz-hide'); $('shareBox').hidden = true;
+  ST.mode = m; document.body.dataset.mode = m;
+  const menu = m === 'menu';
+  $('menu').hidden = !menu; $('app').inert = menu;
+  setPlaying(false); ST.guide = null; renderGuide();
+  $('modeName').textContent = { sandbox: 'Sandbox', tutorial: 'Tutorial', editor: 'Szenarioeditor', quiz: 'Quiz', menu: '' }[m];
+  if (menu) { renderMenu(); HERO.W = 0; const c = $('menu').querySelector('.mcard'); if (c) c.focus({ preventScroll: true }); window.scrollTo(0, 0); return; }
+  window.scrollTo(0, 0);
+  if (m === 'editor') { WZ.i = 0; WZ.name = ''; WZ.msg = ''; loadState(ST.sc, mkVar(ST.sc, null), null, {}); }
+  else if (m === 'quiz') { QZ.right = 0; QZ.done = 0; QZ.order = []; quizNext(); }
+  else if (m === 'tutorial') { loadState('lead', mkVar('lead', 0), 0, {}); setTab('ctrl'); tutGo(0); }
+  else { renderCases(); renderControls(); syncRanges(); refresh({ auto: true }); }
+  $('menuBtn').focus({ preventScroll: true });
+}
+
+// ---------- Tutorial ----------
+const TUT = [
+  { t: 'Die Szene', x: 'Ein Vorsteiger stürzt zwei Meter über der letzten Zwischensicherung. Die Szene zeigt den Sturz im Schnitt. „Sturz abspielen“ startet ihn, die Leertaste ebenfalls.', sel: '#views', run: () => { PB.t = T0; PB.stopAt = null; if (!RM()) setPlaying(true); else seek(TEND); } },
+  { t: 'Kräfte ablesen', x: 'Die Schilder am Seil nennen die Kraft: am Gestürzten und auf der Sicherungsseite. Die Marker A bis E stehen für die Orte der Kette. Ihre Farbe zeigt die Auslastung, ein Klick öffnet die Glieder dieses Ortes.', sel: '#views', run: () => seek(actCtx().S.tPeak) },
+  { t: 'Die Kraftkurve ist die Zeitachse', x: 'Auf der Kurve ziehen spult den Sturz vor und zurück. Die Schaltflächen darunter springen zu den Schlüsselmomenten: Seil straff, Kraftspitze, Ergebnis.', sel: '.tl', run: () => seek(actCtx().S.tFree) },
+  { t: 'Der Befund', x: 'Rechts steht das Ergebnis: gehalten oder nicht, und welches Glied am höchsten belastet ist. Hier ist die Zwischensicherung jetzt ein alter Normalhaken. Er hält die Last nicht.', sel: '#befund', run: () => { applyPreset(1); setPlaying(false); seek(TEND); } },
+  { t: 'Was hilft', x: 'Unter dem Befund stehen Maßnahmen, die durchgerechnet sind und das Ergebnis verbessern. Ein Klick stellt die Änderung als Variante B neben die Ausgangslage. „Vergleich beenden“ führt zurück.', sel: '#befund', run: () => seek(TEND) },
+  { t: 'Einstellen', x: 'Jeder Regler nennt Einheit und Richtwert. Die runden Griffe in der Szene verstellen dieselben Werte direkt: ziehen oder mit den Pfeiltasten.', sel: '#pcard', run: () => { if (ST.cmp) setCompare(false); setTab('ctrl'); seek(TEND); } },
+  { t: 'Die Kette', x: 'Der Reiter „Kette“ listet jedes Glied mit Last und Bruchlast. „Zahlen“ zeigt die Kennwerte, „Ablauf“ den Sturz in Worten, „Erklärung“ den fachlichen Hintergrund und die Modellannahmen.', sel: '#pcard', run: () => { setTab('chain'); seek(TEND); } },
+  { t: 'Schritt für Schritt', x: '„Schritt für Schritt“ hält an jedem Schlüsselmoment an und erklärt ihn. Das Wellensymbol reduziert Bewegung und Effekte, der Inhalt bleibt gleich.', sel: '.transport', run: () => { setTab('ctrl'); seek(TEND); } },
+  { t: 'Bereit', x: 'In der Sandbox stehen sechs Situationen mit Beispielen bereit. Der Szenarioeditor führt in wenigen Schritten zu einem eigenen Szenario.', sel: null, run: () => {}, end: true },
+];
+let TUTI = -1;
+function tutEnd() { document.querySelectorAll('.tut-hl').forEach(e => e.classList.remove('tut-hl')); $('coach').hidden = true; TUTI = -1; document.body.classList.remove('coaching'); }
+function tutGo(i) {
+  if (i < 0) return;
+  document.querySelectorAll('.tut-hl').forEach(e => e.classList.remove('tut-hl'));
+  TUTI = i; const s = TUT[i], c = $('coach');
+  s.run();
+  c.hidden = false; document.body.classList.add('coaching');
+  c.classList.toggle('left', s.sel === '#befund' || s.sel === '#pcard');
+  c.innerHTML = `<div class="co-n"><span>Tutorial, Schritt ${i + 1} von ${TUT.length}</span><button type="button" data-t="x" aria-label="Tutorial beenden">×</button></div><div class="co-p"><i style="width:${(i + 1) / TUT.length * 100}%"></i></div>` +
+    `<h2 tabindex="-1">${s.t}</h2><p>${s.x}</p><div class="co-a">` +
+    (s.end ? `<button type="button" class="btn ghost" data-t="ed">Szenario anlegen</button><button type="button" class="btn" data-t="sb">Zur Sandbox</button>`
+      : `<button type="button" class="btn ghost" data-t="${i - 1}"${i ? '' : ' disabled'}>Zurück</button><button type="button" class="btn" data-t="${i + 1}">Weiter</button>`) + '</div>';
+  const el = s.sel && document.querySelector(s.sel);
+  if (el) { el.classList.add('tut-hl'); el.scrollIntoView({ block: 'nearest', behavior: RM() ? 'auto' : 'smooth' }); }
+  c.querySelector('h2').focus({ preventScroll: true });
+}
+
+// ---------- Szenarioeditor ----------
+const WZ = { i: 0, name: '', msg: '' };
+const WZ_TXT = {
+  Sturz: 'Wie hoch steht der Vorsteiger über der letzten Sicherung, und wie viel Seil ist ausgegeben?',
+  Zwischensicherung: 'Woran hängt das Seil, und wie läuft es?',
+  Sicherung: 'Wie wird gesichert, womit und woran?',
+  Situation: 'Toprope vom Boden oder Nachstieg zum Stand? Dazu Höhe und Schlappseil.',
+  Seilschaft: 'Abstand, Schlappseil und Größe der Seilschaft.',
+  Gelände: 'Neigung und Untergrund bestimmen, wie schnell der Gestürzte wird und wie gut der Partner steht.',
+  Reaktion: 'Wie vorbereitet ist die haltende Person?',
+  Seil: 'Abstand zum Gast und Seilspannung.',
+  Ereignis: 'Was passiert, und wie steht der Führer?',
+};
+function wzSteps() {
+  const p = actVar().p, s = [{ k: 'sc', t: 'Situation wählen' }];
+  SCEN[ST.sc].groups.forEach(([title, its], gi) => { if (its.some(it => !it.show || it.show(p))) s.push({ k: 'g', gi, t: title }); });
+  s.push({ k: 'c', t: 'Personen und Seil' }, { k: 'end', t: 'Prüfen und speichern' });
+  return s;
+}
+function renderWizard(focus) {
+  const steps = wzSteps(); WZ.i = clamp(WZ.i, 0, steps.length - 1);
+  const st = steps[WZ.i], v = actVar(), p = v.p, c = v.c, Sd = SCEN[ST.sc];
+  let h = `<ol class="wz-steps" aria-label="Schritte">${steps.map((s, i) => `<li class="${i === WZ.i ? 'on' : i < WZ.i ? 'done' : ''}"><button type="button" data-wz="${i}"${i === WZ.i ? ' aria-current="step"' : ''}><span>${i + 1}</span><em>${s.t}</em></button></li>`).join('')}</ol>`;
+  h += `<h2 id="wzH" tabindex="-1">${WZ.i + 1}. ${st.t}</h2>`;
+  if (st.k === 'sc') {
+    h += `<p class="wz-x">Welche Situation soll das Szenario zeigen? Die Szene links wechselt sofort mit.</p><div class="wz-sc" role="radiogroup" aria-label="Situation">` +
+      SC_ORDER.map(sc => `<button type="button" role="radio" aria-checked="${sc === ST.sc}" data-wsc="${sc}"><svg viewBox="0 0 26 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TAB_ICONS[sc]}</svg><b>${SCEN[sc].label}</b><span>${SCEN[sc].blurb}</span></button>`).join('') + '</div>';
+  } else if (st.k === 'g') {
+    const its = Sd.groups[st.gi][1].filter(it => !it.show || it.show(p));
+    h += `<p class="wz-x">${WZ_TXT[st.t] || ''} Jede Änderung wird sofort gerechnet.</p>` + its.map(it => fieldHTML(it, 'p', p)).join('');
+  } else if (st.k === 'c') {
+    h += `<p class="wz-x">Massen mit Ausrüstung, dazu Seil und Material. Die Vorgaben passen für die meisten Fälle.</p>`;
+    COMMON_GROUPS.forEach(([title, its]) => { h += `<fieldset><legend>${title}</legend>${its.filter(it => !it.show || it.show(c)).map(it => fieldHTML(it, it.glob ? 'g' : 'c', it.glob ? v : c)).join('')}</fieldset>`; });
+  } else {
+    const rows = [];
+    Sd.groups.forEach(([, its]) => its.filter(it => !it.show || it.show(p)).forEach(it => rows.push([fieldLabel(it), valLabel(it, p[it.id])])));
+    rows.push(['Masse ' + Sd.roleF, v.mF + ' kg'], ['Masse ' + Sd.roleH, v.mH + ' kg'], ['Seil', ROPES[c.ropeType].label + ', ' + fmt(c.ropeD, 1) + ' mm']);
+    const ctx = actCtx();
+    h += `<p class="wz-x">${esc(Sd.label)}. Ergebnis: <b class="c-${{ ok: 'ok', warn: 'hi', fail: 'bad' }[ctx.R.verdict.level]}">${esc(ctx.R.verdict.title)}</b>. ${esc(verdictText(ctx))}</p>` +
+      `<dl class="wz-sum">${rows.map(r => `<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd></div>`).join('')}</dl>` +
+      `<div class="fld"><label for="wzName"><span>Name des Szenarios</span></label><input type="text" id="wzName" maxlength="40" value="${esc(WZ.name)}" placeholder="${esc(Sd.label)}, eigenes Szenario" autocomplete="off"></div>` +
+      `<div class="wz-end"><button type="button" class="btn ghost" data-wa="save">Speichern</button><button type="button" class="btn" data-wa="open">In der Sandbox öffnen</button></div><p class="sub" role="status">${esc(WZ.msg)}</p><p class="sub">Gespeicherte Szenarien liegen nur in diesem Browser. Sie erscheinen im Menü und in der Sandbox bei den Beispielen.</p>`;
+  }
+  h += `<div class="wz-nav"><button type="button" class="btn ghost" data-wz="${WZ.i - 1}"${WZ.i ? '' : ' disabled'}>Zurück</button>` + (st.k === 'end' ? '' : `<button type="button" class="btn" data-wz="${WZ.i + 1}">Weiter</button>`) + '</div>';
+  const fid = document.activeElement && document.activeElement.id;
+  $('wizard').innerHTML = h;
+  if (focus) $('wzH').focus({ preventScroll: true }); else if (fid && $(fid) && $('wizard').contains($(fid))) $(fid).focus({ preventScroll: true });
+}
+function initModes() {
+  $('menu').addEventListener('click', e => {
+    const m = e.target.closest('.mcard'); if (m) { setMode(m.dataset.mode); return; }
+    const d = e.target.closest('[data-d]'); if (d) { SAVED.splice(+d.dataset.d, 1); saveSaved(); renderMenu(); return; }
+    const s = e.target.closest('[data-s]'); if (s) { const it = SAVED[+s.dataset.s]; ST.mode = 'sandbox'; document.body.dataset.mode = 'sandbox'; $('menu').hidden = true; $('app').inert = false; $('modeName').textContent = 'Sandbox'; loadState(it.sc, cloneVar(it.v), null); }
+  });
+  $('menuBtn').addEventListener('click', () => setMode('menu'));
+  $('coach').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; const t = b.dataset.t; if (t === 'x') setMode('menu'); else if (t === 'sb') setMode('sandbox'); else if (t === 'ed') setMode('editor'); else tutGo(+t); });
+  const wz = $('wizard');
+  wz.addEventListener('click', e => {
+    const g = e.target.closest('[data-wz]'); if (g && !g.disabled) { WZ.i = +g.dataset.wz; WZ.msg = ''; renderWizard(true); refresh({ keepT: false }); return; }
+    const sc = e.target.closest('[data-wsc]'); if (sc) { loadState(sc.dataset.wsc, mkVar(sc.dataset.wsc, null), null, { fade: true }); const b = wz.querySelector('[aria-checked="true"]'); if (b) b.focus({ preventScroll: true }); return; }
+    const a = e.target.closest('[data-wa]'); if (!a) return;
+    const name = (WZ.name || '').trim() || SCEN[ST.sc].label + ', eigenes Szenario';
+    if (a.dataset.wa === 'save' || !SAVED.some(s => s.name === name && JSON.stringify(s.v) === JSON.stringify(actVar()))) { SAVED.push({ name, sc: ST.sc, v: cloneVar(actVar()) }); if (SAVED.length > 12) SAVED.shift(); saveSaved(); }
+    if (a.dataset.wa === 'save') { WZ.msg = `„${name}“ gespeichert.`; renderWizard(); } else setMode('sandbox');
+  });
+  wz.addEventListener('input', e => { if (e.target.id === 'wzName') WZ.name = e.target.value; });
+  rovingTabs(wz, '[data-wsc]', b => b.click());
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && ST.mode === 'tutorial') setMode('menu'); });
+}
+
+// ===== Grenzwerte, Streuung, Teilen, Quiz =====
+const holdsR = r => r.R.verdict.level !== 'fail';
+// ---------- 1) Grenzwert je Regler: wo kippt das Ergebnis? ----------
+let limTok = 0;
+function computeLimits() {
+  const tok = ++limTok, sc = ST.sc, base = cloneVar(actVar());
+  const inputs = [...$('side').querySelectorAll('input[type=range][data-k]')].filter(i => { const f = FIELD[i.dataset.k]; return !!f; });
+  inputs.forEach(i => { const el = $(i.id + '-lim'); if (el) el.textContent = ''; const tk = $(i.id + '-lt'); if (tk) tk.hidden = true; });
+  const resAt = (f, x) => { const v = cloneVar(base); (f.scope === 'p' ? v.p : f.scope === 'c' ? v.c : v)[f.it.id] = x; return simFor(sc, v).R.verdict.title; };
+  const next = k => {
+    if (tok !== limTok || k >= inputs.length) return;
+    const inp = inputs[k], f = FIELD[inp.dataset.k], it = f.it, mn = +inp.min, mx = +inp.max, cur = +inp.value, el = $(inp.id + '-lim'), tk = $(inp.id + '-lt');
+    if (el && mx > mn) {
+      const N = Math.min(24, Math.round((mx - mn) / it.step)), xs = [];
+      for (let i = 0; i <= N; i++) xs.push(Math.round((mn + (mx - mn) * i / N) / it.step) * it.step);
+      const hs = xs.map(x => resAt(f, x));
+      let best = null;
+      for (let i = 0; i < N; i++) if (hs[i] !== hs[i + 1]) { const d = Math.min(Math.abs(xs[i] - cur), Math.abs(xs[i + 1] - cur)); if (!best || d < best.d) best = { d, i }; }
+      if (!best) el.textContent = 'Im ganzen Bereich dieses Reglers: „' + hs[0] + '“.';
+      else {
+        let a = xs[best.i], b = xs[best.i + 1]; const ha = hs[best.i], hb = hs[best.i + 1];
+        while (b - a > it.step * 1.01) { const mid = Math.round((a + b) / 2 / it.step) * it.step; if (mid <= a || mid >= b) break; if (resAt(f, mid) === ha) a = mid; else b = mid; }
+        el.innerHTML = `<b>Kippt bei ${fmtV(a, it)}:</b> bis dahin „${esc(ha)}“, darüber „${esc(resAt(f, b))}“.`;
+        if (tk) { tk.hidden = false; tk.style.left = `calc(12px + ${(a - mn) / (mx - mn)} * (100% - 24px))`; }
+      }
+    }
+    setTimeout(() => next(k + 1), 0);
+  };
+  setTimeout(() => next(0), 60);
+}
+
+// ---------- 3) Streuung der Richtwerte ----------
+const VAR_EL = new Set(['piece', 'edge', 'lip', 'horn', 'stand', 'bend', 'bknot']);
+const SCATC = new Map();
+let SCAT = null, scatTok = 0;
+function scatter(sc, v, band) {
+  const key = band + sc + JSON.stringify(v);
+  if (SCATC.has(key)) return SCATC.get(key);
+  const nom = simFor(sc, v), M = nom.M, r = rng32(4242), N = 60, peaks = [], NT = 90, tE = nom.S.t[nom.S.t.length - 1];
+  const lo = new Array(NT + 1).fill(Infinity), hi = new Array(NT + 1).fill(0);
+  let held = 0;
+  for (let n = 0; n < N; n++) {
+    const f = () => 1 + band * (2 * r() - 1), fs = {}, fK = f();
+    const M2 = { ...M, k: M.k * f(), T: Math.pow(M.T, f()), K: M.K * fK, Kper: (M.Kper || 0) * fK,
+      stages: M.stages.map(s => ({ ...s, thr: s.inert ? s.thr : s.thr * (fs[s.el] || (fs[s.el] = f())) })),
+      els: M.els.map(e => VAR_EL.has(e.id) ? { ...e, strength: e.strength * f() } : e) };
+    const S = simulate(M2), R = evaluate(M2, S);
+    if (R.verdict.level !== 'fail') held++;
+    peaks.push(S.peakF);
+    for (let i = 0; i <= NT; i++) { const F = interp(S, Math.min(tE * i / NT, S.t[S.t.length - 1])).Ff; if (F < lo[i]) lo[i] = F; if (F > hi[i]) hi[i] = F; }
+  }
+  peaks.sort((a, b) => a - b);
+  const res = { key, N, held, p10: peaks[Math.floor(N * 0.1)], p90: peaks[Math.floor(N * 0.9)], lo, hi, tE, band };
+  SCATC.set(key, res); if (SCATC.size > 30) SCATC.delete(SCATC.keys().next().value);
+  return res;
+}
+function scatLine() {
+  const el = $('scat'); if (!el) return;
+  if (!ST.band) { el.innerHTML = ''; return; }
+  if (!SCAT) { el.innerHTML = '<span class="sub">Streuung wird gerechnet …</span>'; return; }
+  const q = SCAT.held / SCAT.N, cls = q >= 0.9 ? 'ok' : q >= 0.5 ? 'hi' : 'bad';
+  el.innerHTML = `<div class="sc-bar" aria-hidden="true"><i class="bg-${cls}" style="width:${q * 100}%"></i></div><p>Mit ±${Math.round(SCAT.band * 100)} % Streuung der Richtwerte: <b class="c-${cls}">hält in ${SCAT.held} von ${SCAT.N} Rechnungen</b>` +
+    (SCAT.p90 > 1 ? `, Fangstoß ${fmtKN(SCAT.p10 / 1000)}–${fmtKN(SCAT.p90 / 1000)} kN.` : '.') + '</p>';
+}
+function computeScatter() {
+  const tok = ++scatTok; SCAT = null; scatLine();
+  if (!ST.band) { renderChart(); PB.shown = null; PB.dirty = true; return; }
+  const sc = ST.sc, v = cloneVar(actVar());
+  setTimeout(() => { if (tok !== scatTok) return; SCAT = scatter(sc, v, ST.band); scatLine(); renderChart(); PB.shown = null; PB.dirty = true; }, 120);
+}
+
+// ---------- 2) Teilen per Link ----------
+function encState() {
+  const d0 = mkVar(ST.sc, null);
+  const diff = v => { const o = {}; ['p', 'c'].forEach(k => { const d = {}; Object.keys(v[k]).forEach(x => { if (v[k][x] !== d0[k][x]) d[x] = v[k][x]; }); if (Object.keys(d).length) o[k] = d; }); ['mF', 'mH', 'basis'].forEach(x => { if (v[x] !== d0[x]) o[x] = v[x]; }); return o; };
+  const s = JSON.stringify({ s: ST.sc, v: ST.vars.map(diff), i: ST.vi });
+  return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decState(code) {
+  try {
+    const o = JSON.parse(decodeURIComponent(escape(atob(code.replace(/-/g, '+').replace(/_/g, '/')))));
+    if (!SCEN[o.s] || !Array.isArray(o.v) || !o.v.length) return null;
+    const vars = o.v.slice(0, 2).map(d => {
+      const v = mkVar(o.s, null);
+      ['p', 'c'].forEach(k => Object.keys(d[k] || {}).forEach(x => { if (x in v[k] && typeof d[k][x] === typeof v[k][x]) v[k][x] = d[k][x]; }));
+      if (typeof d.mF === 'number') v.mF = clamp(d.mF, 45, 120); if (typeof d.mH === 'number') v.mH = clamp(d.mH, 45, 120); if (d.basis === 'norm') v.basis = 'norm';
+      return v;
+    });
+    return { sc: o.s, vars, vi: o.i === 1 && vars.length === 2 ? 1 : 0 };
+  } catch (e) { return null; }
+}
+function openShared(st) {
+  ST.mode = 'sandbox'; document.body.dataset.mode = 'sandbox'; $('menu').hidden = true; $('app').inert = false; $('modeName').textContent = 'Sandbox';
+  loadState(st.sc, st.vars[0], null, {});
+  if (st.vars.length === 2) { ST.vars = st.vars; ST.cmp = true; ST.vi = st.vi; syncCmp(); renderControls(); syncRanges(); }
+  refresh({ auto: true });
+}
+function shareLink() {
+  const url = location.href.split('#')[0] + '#s=' + encState(), box = $('shareBox'), inp = $('shareUrl'), msg = $('shareMsg');
+  try { history.replaceState(null, '', '#s=' + encState()); } catch (e) { /* in eingebetteten Ansichten gesperrt */ }
+  box.hidden = false; inp.value = url; inp.focus(); inp.select();
+  const done = ok => { msg.textContent = ok ? 'Link kopiert.' : 'Link markiert. Mit Strg/Cmd + C kopieren.'; };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(() => done(true), () => done(false)); else done(false);
+}
+
+// ---------- 4) Quiz ----------
+const QZ = { order: [], i: -1, right: 0, done: 0, held: null, loc: null, shown: false };
+function paramRows() {
+  const v = actVar(), p = v.p, c = v.c, Sd = SCEN[ST.sc], rows = [];
+  Sd.groups.forEach(([, its]) => its.filter(it => !it.show || it.show(p)).forEach(it => rows.push([fieldLabel(it), valLabel(it, p[it.id])])));
+  rows.push(['Masse ' + Sd.roleF, v.mF + ' kg'], ['Masse ' + Sd.roleH, v.mH + ' kg'], ['Seil', ROPES[c.ropeType].label + ', ' + fmt(c.ropeD, 1) + ' mm']);
+  return rows;
+}
+function quizNext() {
+  if (!QZ.order.length || QZ.i >= QZ.order.length - 1) {
+    QZ.order = []; SC_ORDER.forEach(sc => SCEN[sc].presets.forEach((_, i) => QZ.order.push([sc, i])));
+    const r = rng32((Date.now() & 0xffff) + 7); for (let i = QZ.order.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [QZ.order[i], QZ.order[j]] = [QZ.order[j], QZ.order[i]]; }
+    QZ.i = -1;
+  }
+  QZ.i++; QZ.held = null; QZ.loc = null; QZ.shown = false;
+  const [sc, i] = QZ.order[QZ.i];
+  document.body.classList.add('qz-hide');
+  loadState(sc, mkVar(sc, i), null, {}); seek(T0);
+  VIEWS.forEach(V => V.cv.setAttribute('aria-label', `Szene ${SCEN[sc].label}, Ausgangslage vor dem Sturz`));
+  renderQuiz(true);
+}
+function renderQuiz(focus) {
+  const ctx = actCtx(), Sd = SCEN[ST.sc], names = Sd.locNames, locs = LOC_ORDER.filter(L => ctx.R.rows.some(r => r.loc === L));
+  const heldTrue = holdsR(ctx), locTrue = ctx.R.weak ? ctx.R.weak.loc : null;
+  const opt = (g, val, lbl, sel, truth) => `<button type="button" role="radio" aria-checked="${sel === val}" data-q="${g}" data-v="${val}"${QZ.shown ? ' disabled' : ''} class="${QZ.shown ? (val === truth ? 'ok' : sel === val ? 'no' : '') : ''}">${lbl}</button>`;
+  let h = `<div class="qz-top"><span>Fall ${QZ.done + (QZ.shown ? 0 : 1)}</span><span>${QZ.right} von ${QZ.done} richtig</span></div><h2 id="qzH" tabindex="-1">${esc(Sd.label)}</h2>` +
+    `<p class="wz-x">Die Szene zeigt die Ausgangslage. Erst einschätzen, dann auflösen.</p><dl class="wz-sum">${paramRows().map(r => `<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd></div>`).join('')}</dl>` +
+    `<h3 id="q1">Hält die Sicherungskette?</h3><div class="qz-o" role="radiogroup" aria-labelledby="q1">${opt('held', 'y', 'Gehalten', QZ.held, heldTrue ? 'y' : 'n')}${opt('held', 'n', 'Nicht gehalten', QZ.held, heldTrue ? 'y' : 'n')}</div>` +
+    `<h3 id="q2">Wo liegt das am höchsten belastete Glied?</h3><div class="qz-o" role="radiogroup" aria-labelledby="q2">${locs.map(L => opt('loc', L, `<b>${L}</b> ${esc(names[L] || L)}`, QZ.loc, locTrue)).join('')}</div>`;
+  if (!QZ.shown) h += `<div class="wz-nav"><button type="button" class="btn" data-qa="show"${QZ.held && QZ.loc ? '' : ' disabled'}>Auflösen</button></div>`;
+  else {
+    const ok1 = (QZ.held === 'y') === heldTrue, ok2 = QZ.loc === locTrue;
+    h += `<div class="qz-res" role="status"><p><b class="c-${ok1 ? 'ok' : 'bad'}">${ok1 ? 'Ergebnis richtig.' : 'Ergebnis falsch.'}</b> <b class="c-${ok2 ? 'ok' : 'bad'}">${ok2 ? 'Ort richtig.' : 'Ort falsch.'}</b></p><p>${esc(ctx.R.verdict.title)}. ${esc(verdictText(ctx))} ${esc(weakText(ctx))}</p></div>` +
+      `<div class="wz-nav"><button type="button" class="btn ghost" data-qa="sand">In der Sandbox ansehen</button><button type="button" class="btn" data-qa="next">Nächster Fall</button></div>`;
+  }
+  $('quiz').innerHTML = h;
+  if (focus) $('qzH').focus({ preventScroll: true });
+}
+function initExtra() {
+  $('quiz').addEventListener('click', e => {
+    const q = e.target.closest('[data-q]');
+    if (q && !q.disabled) { QZ[q.dataset.q] = q.dataset.v; renderQuiz(); const b = $('quiz').querySelector(`[data-q="${q.dataset.q}"][data-v="${q.dataset.v}"]`); if (b) b.focus({ preventScroll: true }); return; }
+    const a = e.target.closest('[data-qa]'); if (!a || a.disabled) return;
+    if (a.dataset.qa === 'show') {
+      const ctx = actCtx(); QZ.shown = true; QZ.done++;
+      if ((QZ.held === 'y') === holdsR(ctx) && QZ.loc === (ctx.R.weak && ctx.R.weak.loc)) QZ.right++;
+      document.body.classList.remove('qz-hide'); buildOverlay(VIEWS[0]); renderQuiz(); renderChart();
+      if (RM()) seek(TEND); else { PB.t = T0; PB.stopAt = null; setPlaying(true); }
+      const s = $('quiz').querySelector('.qz-res'); if (s) s.scrollIntoView({ block: 'nearest' });
+    } else if (a.dataset.qa === 'next') quizNext(); else setMode('sandbox');
+  });
+  rovingTabs($('quiz'), '[data-q]:not([disabled])', b => b.click());
+  $('shareBtn').addEventListener('click', shareLink);
+  $('shareX').addEventListener('click', () => { $('shareBox').hidden = true; $('shareBtn').focus(); });
+  $('nums').addEventListener('change', e => { if (e.target.id === 'bandSel') { ST.band = +e.target.value; LS.set('sk-band', String(ST.band)); computeScatter(); } });
+}
+
+// ===== App: Zustand, Rechnung, Bedienung =====
 const MQ_RM = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
-const ST = { sc: 'lead', vars: [], vi: 0, cmp: false, preset: 0, speed: 0.5, motion: LS.get('sk-motion') || (MQ_RM.matches ? 'reduced' : 'full'), mag: true, tab: 'ctrl', hl: null, guide: null };
+const ST = { sc: 'lead', vars: [], vi: 0, cmp: false, preset: 0, speed: 0.5, motion: LS.get('sk-motion') || (MQ_RM.matches ? 'reduced' : 'full'), mag: true, tab: 'ctrl', hl: null, guide: null, mode: 'menu', band: LS.get('sk-band') != null ? +LS.get('sk-band') : 0.25 };
 const RM = () => ST.motion === 'reduced';
 const PB = { t: 0, playing: false, last: 0, stopAt: null, shown: null, lastDraw: 0, dirty: true };
 const VIEWS = [];
@@ -2708,7 +3175,7 @@ function simFor(sc, v) {
     const p = { ...v.p }, c = { ...v.c, mF: v.mF, mH: v.mH, basis: v.basis };
     const M = BUILDERS[sc](p, c), S = simulate(M), R = evaluate(M, S);
     r = { M, S, R, p, c }; SIMC.set(key, r);
-    if (SIMC.size > 90) SIMC.delete(SIMC.keys().next().value);
+    if (SIMC.size > 500) SIMC.delete(SIMC.keys().next().value);
   }
   return r;
 }
@@ -2838,7 +3305,7 @@ function refresh(opt = {}) {
   if (opt.auto && !RM()) { PB.t = T0; PB.stopAt = null; setPlaying(true); }
   else { setPlaying(false); PB.t = opt.keepT ? Math.min(PB.t, TEND) : TEND; }
   PB.shown = null; renderAt(PB.t, performance.now() / 1000);
-  if (!opt.light) announce();
+  if (!opt.light) { announce(); computeLimits(); computeScatter(); }
 }
 let rq = 0, fullTimer = 0;
 function changed(drag) {
@@ -2881,6 +3348,7 @@ let stageVis = true;
 function tick(now) {
   requestAnimationFrame(tick);
   if (document.hidden || !VIEWS.length || !VIEWS[0].ctx) return;
+  if (ST.mode === 'menu') { drawHero(now / 1000); PB.last = now; return; }
   const dt = Math.min(0.05, (now - PB.last) / 1000); PB.last = now;
   if (PB.playing) {
     const slow = !RM() && inCatchCtx(actCtx(), PB.t);
@@ -2922,6 +3390,7 @@ function renderChart() {
   s += `<text class="ch-tx" x="${L - 5}" y="${T - 4}" text-anchor="end">kN</text>`;
   if (w0 > 0.01) s += `<line class="ch-w" x1="${L}" x2="${W - Rr}" y1="${R1(Y(w0))}" y2="${R1(Y(w0))}"/>`;
   const path = (SS, vv) => { let d = '', n = SS.t.length, stp = Math.max(1, Math.floor(n / 600)); for (let i = 0; i < n; i += stp) d += (d ? 'L' : 'M') + R1(X(SS.t[i])) + ',' + R1(Y(vv[i] / 1000)); return d + 'L' + R1(X(SS.t[n - 1])) + ',' + R1(Y(vv[n - 1] / 1000)); };
+  if (SCAT && ST.band && SCAT.key === ST.band + ST.sc + JSON.stringify(actVar())) { const n = SCAT.lo.length - 1; let d = ''; for (let i = 0; i <= n; i++) d += (i ? 'L' : 'M') + R1(X(SCAT.tE * i / n)) + ',' + R1(Y(Math.min(ym, SCAT.hi[i] / 1000))); for (let i = n; i >= 0; i--) d += 'L' + R1(X(SCAT.tE * i / n)) + ',' + R1(Y(SCAT.lo[i] / 1000)); s += `<path class="ch-band" d="${d}Z"/>`; }
   if (other) s += `<path class="ch-ref" d="${path(other, other.Ff)}"/>`;
   const same = S.Ff.every((v, i) => Math.abs(v - S.Fh[i]) < 1), dF = path(S, S.Ff);
   s += `<path class="ch-area" d="${dF}L${R1(X(A.tEnd))},${R1(Y(0))}L${R1(X(S.t[0]))},${R1(Y(0))}Z"/>`;
@@ -2935,7 +3404,7 @@ function renderChart() {
   s += `<g id="chCur"><line class="ch-cur" x1="0" x2="0" y1="${T - 4}" y2="${H - B}"/><path class="ch-grip" d="M-6,${T - 10}h12l-6,7z"/><circle id="chDot" class="ch-dot" cx="0" cy="${Y(0)}" r="4.5"/></g>`;
   svg.innerHTML = s;
   $('chartLeg').innerHTML = `<span><i class="lg-f"></i>Last am ${esc(SCEN[A.sc].roleF)}${same ? ' = Sicherungsseite' : ''}</span>` + (same ? '' : `<span><i class="lg-h"></i>Sicherungsseite</span>`) +
-    (w0 > 0.01 ? `<span><i class="lg-w"></i>Gewichtskraft ${fmt(w0, 2)} kN</span>` : '') + (other ? `<span><i class="lg-r"></i>Variante ${AB[1 - ST.vi]}</span>` : '');
+    (w0 > 0.01 ? `<span><i class="lg-w"></i>Gewichtskraft ${fmt(w0, 2)} kN</span>` : '') + (other ? `<span><i class="lg-r"></i>Variante ${AB[1 - ST.vi]}</span>` : '') + (ST.band ? `<span><i class="lg-b"></i>Streuung ±${Math.round(ST.band * 100)} %</span>` : '');
 }
 function renderPhases() {
   const A = actCtx(); PH.cur = -1;
@@ -2982,10 +3451,11 @@ function renderBefund(full) {
   const w = ctx.R.weak;
   el.className = 'befund lv-' + v.level + (full ? '' : ' stale');
   el.innerHTML = `<div class="bf-h"><span class="bf-ico" aria-hidden="true">${v.level === 'ok' ? '✓' : v.level === 'warn' ? '!' : '×'}</span><h2>${ST.cmp ? `<span class="vbadge">${AB[ST.vi]}</span> ` : ''}${esc(v.title)}</h2></div>` +
-    `<p class="bf-x">${esc(verdictText(ctx))}</p>` +
+    `<p class="bf-x">${esc(verdictText(ctx))}</p><div class="scat" id="scat"></div>` +
     (w ? `<p class="bf-w"><span class="c-${RL(w.risk)}">${weakTitle(w)}:</span> <b>${esc(w.name)}</b> (${esc(w.detail)}), ${esc(valueText(w))}.</p>` : '') +
     (REM.length ? `<div class="bf-r"><h3>Das verbessert das Ergebnis</h3><ul>${REM.map((r, i) => `<li><button type="button" class="rem" data-r="${i}"><b>${esc(r.label)}</b><span class="c-${r.level === 'ok' ? 'ok' : r.level === 'warn' ? 'hi' : 'bad'}">${esc(r.eff)}</span></button></li>`).join('')}</ul><p class="sub">Antippen rechnet die Änderung als Variante B und stellt sie daneben.</p></div>`
       : (v.level !== 'ok' ? `<p class="sub">Keine der hinterlegten Einzelmaßnahmen verbessert dieses Ergebnis deutlich. Siehe Reiter „Erklärung“.</p>` : ''));
+  scatLine();
 }
 
 // ---------- Kette ----------
@@ -3054,7 +3524,8 @@ function renderNums() {
     const dv = b ? b[k] - a[k] : 0;
     h += `<tr><th scope="row">${k === 'ff' && slope ? 'Sturzfaktor, formal' : l}</th><td>${fmt(a[k], d)}${u ? ' ' + u : ''}</td>` + (b ? `<td>${fmt(b[k], d)}${u ? ' ' + u : ''}</td><td>${Math.abs(dv) < 0.5 * 10 ** -d ? '±0' : (dv > 0 ? '+' : '−') + fmt(Math.abs(dv), d)}</td>` : '') + '</tr>';
   });
-  $('nums').innerHTML = h + '</tbody></table>' + (slope ? '<p class="sub">Der Sturzfaktor ist für freien Fall definiert. Im geneigten Gelände dient er nur dem Vergleich.</p>' : '');
+  $('nums').innerHTML = h + '</tbody></table>' + (slope ? '<p class="sub">Der Sturzfaktor ist für freien Fall definiert. Im geneigten Gelände dient er nur dem Vergleich.</p>' : '') +
+    `<div class="fld" style="margin-top:16px"><label for="bandSel">Streuung der Richtwerte</label><select id="bandSel">${[[0, 'aus'], [0.15, '±15 %'], [0.25, '±25 %'], [0.4, '±40 %']].map(o => `<option value="${o[0]}"${ST.band === o[0] ? ' selected' : ''}>${o[1]}</option>`).join('')}</select><small class="hint">60 Rechnungen mit zufällig veränderten Reibwerten, Brems- und Haltekräften, Seilsteifigkeit und der Festigkeit von Fixpunkten und Kanten. Die Bandbreite ist eine Annahme.</small></div>`;
 }
 function renderFlow() {
   const ph = actCtx().phases;
@@ -3080,12 +3551,16 @@ function fieldHTML(it, scope, obj) {
   const hid = hint ? ` aria-describedby="${id}-h"` : '', hh = hint ? `<small class="hint" id="${id}-h">${hint}</small>` : '';
   if (it.type === 'range') {
     const mn = it.minFn ? it.minFn(obj) : it.min, mx = it.maxFn ? it.maxFn(obj) : it.max;
-    return `<div class="fld"><label for="${id}"><span>${label}</span><output id="${id}-o" for="${id}">${fmtV(v, it)}</output></label><input type="range" id="${id}" data-k="${key}" min="${mn}" max="${mx}" step="${it.step}" value="${v}"${hid}><div class="rng"><span id="${id}-mn">${fmtV(mn, it)}</span><span id="${id}-mx">${fmtV(mx, it)}</span></div>${hh}</div>`;
+    return `<div class="fld"><label for="${id}"><span>${label}</span><output id="${id}-o" for="${id}">${fmtV(v, it)}</output></label><input type="range" id="${id}" data-k="${key}" min="${mn}" max="${mx}" step="${it.step}" value="${v}"${hid}><div class="rng"><i class="limtick" id="${id}-lt" hidden></i><span id="${id}-mn">${fmtV(mn, it)}</span><span id="${id}-mx">${fmtV(mx, it)}</span></div><div class="lim" id="${id}-lim" aria-live="off"></div>${hh}</div>`;
   }
   if (it.type === 'select') return `<div class="fld"><label for="${id}">${label}</label><select id="${id}" data-k="${key}"${hid}>${it.options.map(([k2, l]) => `<option value="${k2}"${String(v) === String(k2) ? ' selected' : ''}>${l}</option>`).join('')}</select>${hh}</div>`;
   return `<label class="tgl"><input type="checkbox" role="switch" id="${id}" data-k="${key}"${v ? ' checked' : ''}><span>${label}</span></label>`;
 }
 function renderControls() {
+  if (ST.mode === 'editor') { $('ctrl').innerHTML = ''; renderWizard(); return; }
+  $('wizard').innerHTML = '';
+  if (ST.mode === 'quiz') { $('ctrl').innerHTML = ''; return; }
+  $('quiz').innerHTML = '';
   const sc = ST.sc, Sd = SCEN[sc], v = actVar(), p = v.p, c = v.c;
   let h = '';
   if (ST.cmp) h += `<div class="varsw" role="group" aria-label="Variante bearbeiten"><span>Bearbeitet wird</span>${AB.map((n, i) => `<button type="button" data-v="${i}" aria-pressed="${ST.vi === i}">Variante ${n}</button>`).join('')}</div>`;
@@ -3107,7 +3582,7 @@ function syncRanges() {
   const p = actVar().p;
   if (ST.sc === 'top') p.hc = Math.min(p.hc, p.H - 1);
   if (ST.sc === 'steep') p.above = Math.min(p.above, p.Lr - 1);
-  $('ctrl').querySelectorAll('input[type=range]').forEach(inp => {
+  $('side').querySelectorAll('input[type=range][data-k]').forEach(inp => {
     const f = FIELD[inp.dataset.k], obj = getObj(f.scope), it = f.it;
     const mn = it.minFn ? it.minFn(obj) : it.min, mx = it.maxFn ? it.maxFn(obj) : it.max;
     if (+inp.max !== mx) { inp.max = mx; $(inp.id + '-mx').textContent = fmtV(mx, it); }
@@ -3119,16 +3594,12 @@ function syncRanges() {
   });
 }
 function renderCases() {
-  $('cases').innerHTML = SCEN[ST.sc].presets.map((pr, i) => `<button type="button" class="case" data-i="${i}" aria-pressed="${ST.preset === i}">${pr[0]}</button>`).join('');
+  $('cases').innerHTML = SCEN[ST.sc].presets.map((pr, i) => `<button type="button" class="case" data-i="${i}" aria-pressed="${ST.preset === i}">${pr[0]}</button>`).join('') +
+    SAVED.map((s, i) => s.sc === ST.sc ? `<button type="button" class="case own" data-i="${-i - 1}" aria-pressed="${ST.preset === -i - 1}">${esc(s.name)}</button>` : '').join('');
 }
 function clearPreset() { if (ST.preset == null) return; ST.preset = null; $('cases').querySelectorAll('.case').forEach(b => b.setAttribute('aria-pressed', 'false')); }
-function setScenario(sc) {
-  if (sc === ST.sc) return;
-  ST.sc = sc; ST.preset = 0; ST.vars = [mkVar(sc, 0)]; ST.vi = 0; ST.cmp = false;
-  $('tabs').querySelectorAll('.tab').forEach(b => { const on = b.dataset.sc === sc; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && b.scrollIntoView) b.scrollIntoView({ block: 'nearest', inline: 'center' }); });
-  regFields(); renderCases(); renderControls(); renderInfo(); syncCmp(); refresh({ auto: true, fade: true });
-}
-function applyPreset(i) { ST.vars[ST.vi] = mkVar(ST.sc, i); ST.preset = i; renderCases(); renderControls(); syncRanges(); refresh({ auto: true, fade: true }); }
+function setScenario(sc) { if (sc !== ST.sc) loadState(sc, mkVar(sc, 0), 0); }
+function applyPreset(i) { ST.vars[ST.vi] = i < 0 ? cloneVar(SAVED[-i - 1].v) : mkVar(ST.sc, i); ST.preset = i; renderCases(); renderControls(); syncRanges(); refresh({ auto: true, fade: true }); }
 function syncCmp() {
   const b = $('cmpBtn'); b.setAttribute('aria-pressed', ST.cmp); b.lastChild.textContent = ST.cmp ? 'Vergleich beenden' : 'Vergleichen';
   document.body.classList.toggle('cmp', ST.cmp);
@@ -3238,7 +3709,7 @@ function initUI() {
   $('ptabs').addEventListener('click', e => { const b = e.target.closest('[role=tab]'); if (b) setTab(b.dataset.t); });
   rovingTabs($('ptabs'), '[role=tab]', b => setTab(b.dataset.t));
   $('cases').addEventListener('click', e => { const b = e.target.closest('.case'); if (b) applyPreset(+b.dataset.i); });
-  const ctrl = $('ctrl');
+  const ctrl = $('side');
   ctrl.addEventListener('input', e => {
     const el = e.target, f = FIELD[el.dataset.k];
     if (!f || f.it.type !== 'range') return;
@@ -3278,7 +3749,7 @@ function initUI() {
   if (LS.get('sk-tip') === '1') $('tip').hidden = true;
   $('tipX').addEventListener('click', () => { $('tip').hidden = true; LS.set('sk-tip', '1'); });
   // Thema und Größe
-  const reTheme = () => { readTheme(); SPR = null; VIEWS.forEach(V => { V.bgKey = null; }); if (VIEWS.length) refresh({ keepT: true }); };
+  const reTheme = () => { readTheme(); SPR = null; HERO.W = 0; VIEWS.forEach(V => { V.bgKey = null; }); if (VIEWS.length) refresh({ keepT: true }); };
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', reTheme);
   new MutationObserver(reTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   let rt = 0;
@@ -3287,11 +3758,14 @@ function initUI() {
   if (window.IntersectionObserver) new IntersectionObserver(es => { stageVis = es[0].isIntersecting; }).observe($('views'));
   ST.vars = [mkVar(ST.sc, 0)];
   regFields(); renderCases(); renderControls(); renderInfo(); syncCmp(); setTab('ctrl');
-  refresh({ auto: true });
+  refresh({});
+  initModes(); initExtra(); renderMenu(); document.body.dataset.mode = 'menu'; $('app').inert = true;
+  const hs = /[#&]s=([\w-]+)/.exec(location.hash), shared = hs && decState(hs[1]);
+  if (shared) openShared(shared);
   requestAnimationFrame(tick);
 }
 initUI();
-window.__sk = { ST, PB, VIEWS, SCEN, SC_ORDER, seek, setScenario, applyPreset, setCompare, setTab, setMotion, refresh, simFor, mkVar, actCtx, guideGo, get TEND() { return TEND; } };
+window.__sk = { encState, decState, scatter, QZ, quizNext, setMode, tutGo, WZ, renderWizard, ST, PB, VIEWS, SCEN, SC_ORDER, seek, setScenario, applyPreset, setCompare, setTab, setMotion, refresh, simFor, mkVar, actCtx, guideGo, get TEND() { return TEND; } };
 
 
 })();
